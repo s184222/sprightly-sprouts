@@ -10,6 +10,7 @@ const char* vertexShaderSource = "#version 300 es\n"
 "}\0";
 
 const char* fragmentShaderSource = "#version 300 es\n"
+"precision mediump float;\n"
 "out vec4 FragColor;\n"
 "uniform vec4 ourColor;\n"
 "void main()\n"
