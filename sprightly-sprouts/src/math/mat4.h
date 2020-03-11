@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vec4.h"
+#include "vec3.h"
 
 #include <ostream>
 
@@ -44,22 +45,40 @@ public:
 	Mat4& rotateY(float degrees);
 	Mat4& rotateZ(float degrees);
 
+	Mat4& rotate(float degrees, const Vec3& axis);
+	Mat4& setRotation(float degrees, const Vec3& axis);
+
+	Mat4& translate(const Vec3& translation);
+	Mat4& translate(float xt, float yt, float zt);
+
+	Mat4& scale(const Vec3& scl);
+	Mat4& scale(float xs, float ys, float zs);
+
 	Mat4& add(const Mat4& right);
 	Mat4& sub(const Mat4& right);
 
 	Mat4& mul(const Mat4& right);
-	
-	Mat4& operator =(const Mat4& right);
+	Mat4& mul(const Mat4& right, Mat4& dest) const;
 
-	Mat4& operator +=(const Mat4& right);
-	Mat4& operator -=(const Mat4& right);
-	Mat4& operator *=(const Mat4& right);
+	Vec4& mul(Vec4& right) const;
+	Vec4& mul(const Vec4& right, Vec4& dest) const;
+	Vec3& mul(Vec3& right) const;
+	Vec3& mul(const Vec3& right, Vec3& dest) const;
+	
+	Mat4& operator=(const Mat4& right);
+
+	Mat4& operator+=(const Mat4& right);
+	Mat4& operator-=(const Mat4& right);
+	Mat4& operator*=(const Mat4& right);
 	
 	Vec4& operator[](unsigned int rowIndex);
 
-	friend Mat4 operator +(Mat4 left, const Mat4& right);
-	friend Mat4 operator -(Mat4 left, const Mat4& right);
-	friend Mat4 operator *(Mat4 left, const Mat4& right);
+	friend Mat4 operator+(Mat4 left, const Mat4& right);
+	friend Mat4 operator-(Mat4 left, const Mat4& right);
+	friend Mat4 operator*(Mat4 left, const Mat4& right);
+
+	friend Vec4 operator*(const Mat4& left, Vec4 right);
+	friend Vec3 operator*(const Mat4& left, Vec3 right);
 
 	friend std::ostream& operator<<(std::ostream& os, const Mat4& mat);
 

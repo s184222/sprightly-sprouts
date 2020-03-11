@@ -4,11 +4,11 @@
 #include <math.h>
 
 Vec4::Vec4(float c) :
-	Vec4(c, c, c)
+	Vec4(c, c, c, c)
 { }
 
-Vec4::Vec4(float x, float y, float z) :
-	x(x), y(y), z(z)
+Vec4::Vec4(float x, float y, float z, float w) :
+	x(x), y(y), z(z), w(w)
 { }
 
 Vec4::Vec4(const Vec4& other) 
@@ -22,11 +22,15 @@ Vec4& Vec4::set(const Vec4& other)
 	y = other.y;
 	z = other.z;
 	w = other.w;
+
+	return *this;
 }
 
 Vec4& Vec4::set(float c) 
 {
 	x = y = z = w = c;
+
+	return *this;
 }
 
 Vec4& Vec4::add(const Vec4& other)
@@ -35,6 +39,8 @@ Vec4& Vec4::add(const Vec4& other)
 	y += other.y;
 	z += other.z;
 	w += other.w;
+
+	return *this;
 }
 
 Vec4& Vec4::sub(const Vec4& other)
@@ -43,6 +49,8 @@ Vec4& Vec4::sub(const Vec4& other)
 	y -= other.y;
 	z -= other.z;
 	w -= other.w;
+
+	return *this;
 }
 
 Vec4& Vec4::mul(const Vec4& other) 
@@ -50,7 +58,10 @@ Vec4& Vec4::mul(const Vec4& other)
 	x *= other.x;
 	y *= other.y;
 	z *= other.z;
-	w *= other.x;
+
+	w *= other.w;
+
+	return *this;
 }
 
 Vec4& Vec4::div(const Vec4& other) 
@@ -59,6 +70,8 @@ Vec4& Vec4::div(const Vec4& other)
 	y /= other.y;
 	z /= other.z;
 	w /= other.w;
+
+	return *this;
 }
 
 Vec4& Vec4::add(float c)
@@ -67,6 +80,8 @@ Vec4& Vec4::add(float c)
 	y += c;
 	z += c;
 	w += c;
+
+	return *this;
 }
 
 Vec4& Vec4::sub(float c)
@@ -75,6 +90,8 @@ Vec4& Vec4::sub(float c)
 	y -= c;
 	z -= c;
 	w -= c;
+
+	return *this;
 }
 
 Vec4& Vec4::mul(float c)
@@ -83,6 +100,8 @@ Vec4& Vec4::mul(float c)
 	y *= c;
 	z *= c;
 	w *= c;
+
+	return *this;
 }
 
 Vec4& Vec4::div(float c)
@@ -91,6 +110,8 @@ Vec4& Vec4::div(float c)
 	y /= c;
 	z /= c;
 	w /= c;
+
+	return *this;
 }
 
 float Vec4::dot(const Vec4& other) const

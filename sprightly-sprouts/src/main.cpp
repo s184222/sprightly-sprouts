@@ -18,6 +18,7 @@ const char* fragmentShaderSource = "#version 300 es\n"
 "   FragColor = ourColor;\n"
 "}\n\0";
 
+#include "math/mat4.h"
 
 int main() {
 	if (glfwInit() != GLFW_TRUE)

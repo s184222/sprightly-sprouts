@@ -21,7 +21,7 @@ public:
 
 	Vec4() : Vec4(0.0f) { }
 	explicit Vec4(float c);
-	Vec4(float x, float y, float z);
+	Vec4(float x, float y, float z, float w);
 	Vec4(const Vec4& other);
 
 	Vec4& set(const Vec4& other);

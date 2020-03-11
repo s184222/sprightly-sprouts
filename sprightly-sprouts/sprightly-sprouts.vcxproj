@@ -133,12 +133,14 @@
   <ItemGroup>
     <ClCompile Include="src\math\mat4.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\math\vec3.cpp" />
+    <ClCompile Include="src\math\vec4.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\glad.c" />
-    <ClCompile Include="Vec2.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Vec2.h" />
+    <ClInclude Include="src\math\vec3.h" />
+    <ClInclude Include="src\math\vec4.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\math\mat4.h" />
