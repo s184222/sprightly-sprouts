@@ -3,6 +3,7 @@
 #include<iostream>
 #include"shader.h" 
 
+#include "math/mat4.h"
 
 int main() {
 	if (glfwInit() != GLFW_TRUE)
