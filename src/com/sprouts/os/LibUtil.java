@@ -1,39 +1,18 @@
 package com.sprouts.os;
 
 import java.io.File;
-import java.util.LinkedList;
 import java.util.Locale;
-import java.util.Queue;
 
 public class LibUtil {
 
 	private static final String NATIVES_PATH = "lib/natives";
 	private static final String WINDOWS_NATIVES_PATH = NATIVES_PATH + "/windows";
-	private static final String LINUX_NATIVES_PATH = NATIVES_PATH + "/windows";
+	private static final String LINUX_NATIVES_PATH = NATIVES_PATH + "/linux";
 
 	public static void loadNatives() {
-		// Look for native files
-		Queue<File> filesToSearch = new LinkedList<File>();
-		filesToSearch.add(new File(getNativesPath()));
-	
-		String libraryPath = System.getProperty("java.library.path");
-		
-		File file;
-		while ((file = filesToSearch.poll()) != null) {
-			if (file.isDirectory()) {
-				for (File subFile : file.listFiles())
-					filesToSearch.add(subFile);
-			} else if (isNativeFile(file)) {
-				libraryPath += File.pathSeparator + file.getAbsolutePath();
-			}
-		}
-		
-		System.setProperty("java.library.path", libraryPath);
-	}
-	
-	private static boolean isNativeFile(File file) {
-		String name = file.getName();
-		return name.endsWith(".dll") || name.endsWith(".os");
+		String libraryPath = System.getProperty("org.lwjgl.librarypath");
+		String nativePath = new File(getNativesPath()).getAbsolutePath();
+		System.setProperty("org.lwjgl.librarypath", nativePath + File.pathSeparator + libraryPath);
 	}
 	
 	public static String getNativesPath() {
