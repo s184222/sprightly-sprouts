@@ -2,8 +2,10 @@ package pack;
 
 import org.lwjgl.*;
 import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.*;
+
+import com.sprouts.os.LibUtil;
 
 import java.nio.*;
 
@@ -15,6 +17,10 @@ import static org.lwjgl.system.MemoryUtil.*;
 
 public class HelloWorld {
 
+	static {
+		LibUtil.loadNatives();
+	}
+	
 	// The window handle
 	private long window;
 
