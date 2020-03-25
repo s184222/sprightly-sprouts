@@ -5,7 +5,7 @@ import java.util.Locale;
 
 public class LibUtil {
 
-	private static final String NATIVES_PATH = "lib/natives";
+	private static final String NATIVES_PATH = "./lib/natives";
 	private static final String WINDOWS_NATIVES_PATH = NATIVES_PATH + "/windows";
 	private static final String LINUX_NATIVES_PATH = NATIVES_PATH + "/linux";
 

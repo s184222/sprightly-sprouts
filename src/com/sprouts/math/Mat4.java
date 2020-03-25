@@ -1,5 +1,7 @@
 package com.sprouts.math;
 
+import java.nio.FloatBuffer;
+
 public class Mat4 {
 
 	/** Element m[c][r], where c is column and r is row. */
@@ -394,5 +396,12 @@ public class Mat4 {
 		this.m33 = m33;
 	
 		return this;
+	}
+
+	public void writeBuffer(FloatBuffer buf) {
+		buf.put(m00).put(m10).put(m20).put(m30)
+		   .put(m01).put(m11).put(m21).put(m31)
+		   .put(m02).put(m12).put(m22).put(m32)
+		   .put(m03).put(m13).put(m23).put(m33);
 	}
 }
