@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
@@ -57,7 +58,7 @@ public abstract class ShaderProgram {
 
 	protected void uniformMat4(int location, Mat4 m) {
 		if (mat4Buffer == null)
-			mat4Buffer = FloatBuffer.allocate(4 * 4);
+			mat4Buffer = BufferUtils.createFloatBuffer(16);
 		mat4Buffer.clear();
 		m.writeBuffer(mat4Buffer);
 		mat4Buffer.flip();
@@ -66,7 +67,10 @@ public abstract class ShaderProgram {
 	}
 	
 	protected int getUniformLocation(String uniformName) {
-		return GL30.glGetUniformLocation(programID, uniformName);
+		int location = GL30.glGetUniformLocation(programID, uniformName);
+		if (location == -1)
+			System.out.println("Unable to find uniform: " + uniformName);
+		return location;
 	}
 	
 	public void enable() {
