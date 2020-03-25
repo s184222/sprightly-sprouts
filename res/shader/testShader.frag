@@ -1,11 +1,11 @@
-precision mediump float;
+#version 120
 
-layout (location = 0) out vec4 frag_color;
+precision highp float;
 
-in DATA {
-	vec3 color;
-} fs_in;
+in vec3 fs_color;
+
+out vec4 frag_color;
 
 void main(void) {
-	frag_color = vec4(fs_in.color, 1.0);
+	frag_color = vec4(fs_color, 1.0);
 }

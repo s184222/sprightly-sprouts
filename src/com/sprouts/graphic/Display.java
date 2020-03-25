@@ -1,8 +1,6 @@
 package com.sprouts.graphic;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
-import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
@@ -77,9 +75,6 @@ public class Display {
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 		
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-
 		// Create the window
 		windowHandle = glfwCreateWindow(width, height, title, NULL, NULL);
 		if (windowHandle == NULL)
@@ -102,7 +97,7 @@ public class Display {
 		
 		// Center the window
 		setDisplayPosition((vidmode.width()  - size.width ) / 2, 
-		                  (vidmode.height() - size.height) / 2);
+		                   (vidmode.height() - size.height) / 2);
 		
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(windowHandle);
