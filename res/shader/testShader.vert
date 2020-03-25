@@ -1,9 +1,9 @@
-#version 120
+#version 300 es
 
-attribute vec3 position;
-attribute vec3 color;
+in vec3 position;
+in vec3 color;
 
-varying vec3 fs_color;
+out vec3 fs_color;
 
 uniform mat4 proj_mat;
 uniform mat4 view_mat;
