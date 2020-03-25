@@ -1,8 +1,8 @@
 package com.sprouts.graphic.shader;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL11;
@@ -35,8 +35,8 @@ public abstract class ShaderProgram {
 
 	protected abstract void bindAttributes();
 	
-	protected void bindAttribute(int attribute, String variableName) {
-		GL30.glBindAttribLocation(programID, attribute, variableName);
+	protected void bindAttribute(int attribIndex, String variableName) {
+		GL30.glBindAttribLocation(programID, attribIndex, variableName);
 	}
 
 	protected void uniformFloat(int location, float f) {
@@ -89,9 +89,9 @@ public abstract class ShaderProgram {
 		GL30.glDeleteProgram(programID);
 	}
 
-	public int loadShader(String path, int type) {
+	private static int loadShader(String path, int type) {
 		StringBuilder shaderSource = new StringBuilder();
-		try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(ShaderProgram.class.getResourceAsStream(path)))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				shaderSource.append(line);

@@ -20,6 +20,7 @@ import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
 import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
@@ -30,6 +31,8 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -40,8 +43,24 @@ public class Display {
 
 	private long windowHandle;
 	
+	private List<DisplayListener> listeners;
+	
 	public Display() {
 		windowHandle = -1L;
+		
+		listeners = new ArrayList<DisplayListener>();
+	}
+	
+	public void addDisplayListener(DisplayListener listener) {
+		synchronized (listeners) {
+			listeners.add(listener);
+		}
+	}
+
+	public void removeDisplayListener(DisplayListener listener) {
+		synchronized (listeners) {
+			listeners.remove(listener);
+		}
 	}
 	
 	public void initDisplay(String title, int width, int height) {
@@ -67,22 +86,18 @@ public class Display {
 			if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
 				glfwSetWindowShouldClose(window, true);
 		});
+		
+		glfwSetWindowSizeCallback(windowHandle, (window, newWidth, newHeight) -> {
+			dispatchSizeChangedEvent(newWidth, newHeight);
+		});
 
-		// Center window location
-		try (MemoryStack stack = stackPush()) {
-			IntBuffer pWidth = stack.mallocInt(1); // int*
-			IntBuffer pHeight = stack.mallocInt(1); // int*
-
-			// Get the window size passed to glfwCreateWindow
-			glfwGetWindowSize(windowHandle, pWidth, pHeight);
-
-			// Get the resolution of the primary monitor
-			GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-			// Center the window
-			setWindowPosition((vidmode.width()  - pWidth.get(0) ) / 2, 
-			                  (vidmode.height() - pHeight.get(0)) / 2);
-		}
+		// Get the resolution of the primary monitor
+		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		DisplaySize size = getDisplaySize();
+		
+		// Center the window
+		setDisplayPosition((vidmode.width()  - size.width ) / 2, 
+		                  (vidmode.height() - size.height) / 2);
 		
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(windowHandle);
@@ -99,8 +114,24 @@ public class Display {
 		glfwSwapBuffers(windowHandle);
 		glfwPollEvents();
 	}
+
+	private void dispatchSizeChangedEvent(int width, int height) {
+		for (DisplayListener listener : listeners)
+			listener.sizeChanged(width, height);
+	}
 	
-	public void setWindowPosition(int wx, int wy) {
+	public DisplaySize getDisplaySize() {
+		try (MemoryStack stack = stackPush()) {
+			IntBuffer pWidth = stack.mallocInt(1); // int*
+			IntBuffer pHeight = stack.mallocInt(1); // int*
+	
+			glfwGetWindowSize(windowHandle, pWidth, pHeight);
+		
+			return new DisplaySize(pWidth.get(0), pHeight.get(0));
+		}
+	}
+	
+	public void setDisplayPosition(int wx, int wy) {
 		glfwSetWindowPos(windowHandle, wx, wy);
 	}
 	
