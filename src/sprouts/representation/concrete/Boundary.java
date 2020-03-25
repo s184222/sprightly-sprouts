@@ -50,7 +50,7 @@ public class Boundary {
 	public Boundary grabFrom(int toId) {
 		return new Boundary(vertices.subList(getIndexOfFirstMatch(toId), vertices.size()));
 	}
-
+	
 	public Boundary grabRange(int fromId, int toId) {
 		int index1 = getIndexOfFirstMatch(fromId);
 		int index2 = getIndexOfFirstMatch(toId);
@@ -65,6 +65,14 @@ public class Boundary {
 			if (id == otherId) return true;
 		}
 		return false;
+	}
+	
+	public boolean containsAllVertices(List<Integer> vertexIds) {
+		for (Integer id : vertexIds) {
+			if (!containsVertex(id)) return false;
+		}
+		
+		return true;
 	}
 	
 	@Override

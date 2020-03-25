@@ -9,14 +9,19 @@ import sprouts.test.Test;
 
 public class ConcreteFacade {
 	
+	private UidGenerator vertexIdGenerator;
 	private Position position;
 
+	public ConcreteFacade() {
+		vertexIdGenerator = new UidGenerator();
+	}
+	
 	public void makeMove(Move move) {
 		position.makeMove(move);
 	}
 	
-	public void createFreshGame(int initialNumberOfSpots) {
-		position = new Position(initialNumberOfSpots);
+	public void createFreshPosition(int initialNumberOfSpots) {
+		position = new Position(initialNumberOfSpots, vertexIdGenerator);
 	}
 
 	public String getPosition() {
@@ -27,7 +32,7 @@ public class ConcreteFacade {
 	// testing purposes
 	// ================
 	
-	public void  buildGame(String raw) {
+	public void  buildPosition(String raw) {
 		int endTokenAt = raw.length() - 1;
 		if (raw.charAt(endTokenAt) != '!') {
 			throw new IllegalStateException("illegal expression");
@@ -35,7 +40,7 @@ public class ConcreteFacade {
 		
 		String noEndToken = raw.substring(0, endTokenAt);
 		
-		position = new Position();
+		position = new Position(vertexIdGenerator);
 		
 		String[] regions = noEndToken.split("}");
 		for (String regionString : regions) {
@@ -48,9 +53,11 @@ public class ConcreteFacade {
 				region.addBoundary(boundary);
 				
 				for (int i = 0; i < boundaryString.length(); i++) {
-					char vertex = boundaryString.charAt(i);
+					char vertexName = boundaryString.charAt(i);
 					
-					int id = VertexUtil.getIndex(vertex);
+					int id = VertexUtil.getId(vertexName);
+					vertexIdGenerator.update(id);
+					
 					boundary.addVertex(id);
 				}
 			}
@@ -68,7 +75,7 @@ public class ConcreteFacade {
 	}
 	
 	private Move interpretMove(String raw) {
-		String regex = "(\\d+),(\\d+)(\\[\\d+(?:,\\d+)*\\])?";
+		String regex = "(\\d+),(\\d+)(?:(\\[\\d+(?:,\\d+)*\\])(\\{\\d+(?:,\\d+)*\\}))?";
 
 		List<String> matches = match(regex, raw);
 
@@ -80,12 +87,22 @@ public class ConcreteFacade {
 		move.toId = toVertexId;
 
 		String maybeContaining = matches.get(3);
-		if (maybeContaining != null) {
-			String peeled = peel(maybeContaining);
-			String[] rawVertexIds = peeled.split(",");
-			for (String rawId : rawVertexIds) {
+		String maybeOuter = matches.get(4);
+		if (maybeContaining != null && maybeOuter != null) {
+			// containing
+			String peeledContaining = peel(maybeContaining);
+			String[] rawVertexIdsContaining = peeledContaining.split(",");
+			for (String rawId : rawVertexIdsContaining) {
 				int vertexId = Integer.parseInt(rawId);
 				move.containingIds.add(vertexId);
+			}
+			
+			// outer
+			String peeledOuter = peel(maybeOuter);
+			String[] rawVertexIdsOuter = peeledOuter.split(",");
+			for (String rawId : rawVertexIdsOuter) {
+				int vertexId = Integer.parseInt(rawId);
+				move.idsOfContainingBoundary.add(vertexId);
 			}
 		}
 
@@ -103,16 +120,15 @@ public class ConcreteFacade {
 		boolean match = matcher.matches();
 
 		if (!match) {
-			throw new IllegalStateException("no match: " + matcher.group());
+			throw new IllegalStateException("no match!");
 		}
 		
-		System.out.printf("====================\n");
 		List<String> matches = new LinkedList<>();
 		for (int i = 0; i <= matcher.groupCount(); i++) {
 			String stringMatch = matcher.group(i);
 			matches.add(stringMatch);
 			
-			System.out.printf("stringMatcher: '%s'\n", stringMatch);
+			// System.out.printf("group: '%s'\n", stringMatch);
 		}
 		
 		return matches;

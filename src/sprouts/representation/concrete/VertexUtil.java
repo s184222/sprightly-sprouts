@@ -8,7 +8,7 @@ public class VertexUtil {
 		return (char) (startCharacter + id);
 	}
 	
-	public static int getIndex(char name) {
+	public static int getId(char name) {
 		return name - startCharacter;
 	}
 }

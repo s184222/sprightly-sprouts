@@ -9,6 +9,6 @@ public class Move {
 	
 	// only used when a 1 boundary move is made.
 	public List<Integer> containingIds = new LinkedList<>();
-	// public List<Integer> idsOfContainingBoundary = new LinkedList<>();	
+	public List<Integer> idsOfContainingBoundary = new LinkedList<>();	
 	
 }

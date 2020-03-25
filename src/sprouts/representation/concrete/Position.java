@@ -24,17 +24,27 @@ public class Position {
 	 * 	 winning = abstract.isWinning(abstract) 
 	 *   if winning then concrete.doMove(m)
 	 */
+	
+	private UidGenerator vertexIdGenerator;
+
+	private int initialNumberOfLives;
 
 	private List<Region> regions;
 	private Map<Integer, Integer> spotIdToLives;
 	
-	public Position() {
-		this(0);
+	public Position(UidGenerator vertexIdGenerator) {
+		this(0, vertexIdGenerator);
 	}
 
-	public Position(int initialNumberOfSpots) {
+	public Position(int initialNumberOfSpots, UidGenerator vertexIdGenerator) {
+		this.vertexIdGenerator = vertexIdGenerator;
+		
+		vertexIdGenerator.reset();
+		
 		regions = new ArrayList<>();
 		spotIdToLives = new HashMap<>();
+		
+		initialNumberOfLives = 3;
 
 		if (initialNumberOfSpots > 0) {
 			Region initialRegion = new Region();
@@ -51,45 +61,71 @@ public class Position {
 		}
 	}
 	
+
+	// @move?
+	public List<Move> getAllMoves() {
+		List<Move> moves = new LinkedList<>();
+		
+		for (Region region : regions) {
+
+			// 1 boundary moves
+			List<Boundary> boundaries = region.getBoundaries();
+			
+			for (int i = 0; i < boundaries.size(); i++) {
+				Boundary boundary = boundaries.get(i);
+				List<Integer> vertices = boundary.getVertices();
+				
+				for (int j = i; j < vertices.size(); j++) {
+					
+					
+					
+					Move move = new Move();
+					move.fromId = j;
+					move.toId = i;
+					
+					moves.add(move);
+				}
+			}
+
+			// 2 boundary moves
+			
+		}
+		
+		return moves;
+	}
+
+	
 	public void addRegion(Region region) {
 		regions.add(region);
 		
 		for (Boundary boundary : region.getBoundaries()) {
 			for (int vertexId : boundary.getVertices()) {
 				Integer live = spotIdToLives.remove(vertexId);
-				int updatedLive = (live == null) ? 3 : live - 1;
+				int updatedLive = (live == null) ? initialNumberOfLives : live - 1;
 				spotIdToLives.put(vertexId, updatedLive);
-				
-				// @hack
-				if (vertexId >= currentVertexId) currentVertexId += 1;
 			}
 		}
 	}
 
-	// ==============
-	// @move, we need vertexId in graphics representation aswell, so the mapping of vertex ids:
-	// graphic representation <-> concrete representation 
-	// is easier.
-	int currentVertexId = 0;
-
 	private int createVertex() {
-		int id = currentVertexId;
-		spotIdToLives.put(id, 3);
-		currentVertexId += 1;
+		int id = vertexIdGenerator.generate();
+		spotIdToLives.put(id, initialNumberOfLives);
 		return id;
 	}
-	// ================
 
 	/*
-	 * start,end[{boundary of spots}={containing spots}]
-	 * start,end[containing spots] this may be enough?
-	 * 
+	 * start,end[containing spots]{containing spots}
 	 */
+	
+	// we need vertexId in graphics representation aswell, so the mapping of vertex ids:
+	// graphic representation <-> concrete representation 
+	// is easier. We could result a moveResult (success, id) so the graphics get it.
+
 	public void makeMove(Move move) {
 		int i = move.fromId;
 		int j = move.toId;
 
-		Region region = getJointRegion(i, j);
+		Region region = getJointRegion(move);
 
 		Boundary x = region.getBoundary(i);
 		Boundary y = region.getBoundary(j);
@@ -125,20 +161,8 @@ public class Position {
 			region.addBoundary(merged);
 
 		} else {
-
 			//System.out.printf("1-boundary\n");
 			// === 1-boundary move ===
-			List<Boundary> otherBoundaries = new LinkedList<>();
-			otherBoundaries.addAll(region.getBoundaries());
-			otherBoundaries.remove(x);
-
-			// @test: put the right one the right place
-			List<Boundary> B1 = getBoundariesContainingVertices(move.containingIds, otherBoundaries);
-			List<Boundary> B2 = getBoundaryAMinusBoundaryB(otherBoundaries, B1);
-
-			//System.out.printf("B1: %d\n", B1.size());
-			//System.out.printf("B2: %d\n", B2.size());
-
 			int z = createVertex();
 
 			// === region 1 ===
@@ -164,9 +188,6 @@ public class Position {
 
 			Region r1 = new Region();
 			r1.addBoundary(b1);
-			r1.addBoundaries(B1);
-
-			regions.add(r1);
 
 			// === region 2 ===
 			Boundary b2 = new Boundary();
@@ -178,8 +199,30 @@ public class Position {
 
 			Region r2 = new Region();
 			r2.addBoundary(b2);
-			r2.addBoundaries(B2);
 
+			
+			// === make B1 and B2 ===
+			List<Boundary> otherBoundaries = new LinkedList<>();
+			otherBoundaries.addAll(region.getBoundaries());
+			otherBoundaries.remove(x);
+
+			// @test: put the right one the right place
+			List<Boundary> B2 = getBoundariesContainingVertices(move.containingIds, otherBoundaries);
+			List<Boundary> B1 = getFirstBoundaryMinusSecondBoundary(otherBoundaries, B2);
+
+			
+			if (b1.containsAllVertices(move.idsOfContainingBoundary)) {
+				r1.addBoundaries(B1);
+				r2.addBoundaries(B2);
+			} else {
+				// @todo
+				// assert (b2.containsAllVertices(move.containingIds)
+				r1.addBoundaries(B2);
+				r2.addBoundaries(B1);
+			}
+			
+
+			regions.add(r1);
 			regions.add(r2);
 
 			// remove outdated region
@@ -190,11 +233,10 @@ public class Position {
 	private List<Boundary> getBoundariesContainingVertices(List<Integer> vertices, List<Boundary> boundaries) {
 		List<Boundary> containing = new LinkedList<>();
 
-		next: for (Boundary boundary : boundaries) {
+		for (Boundary boundary : boundaries) {
 			for (int vertex : vertices) {
 				if (boundary.containsVertex(vertex)) {
 					containing.add(boundary);
-					break next;
 				}
 			}
 		}
@@ -202,25 +244,33 @@ public class Position {
 		return containing;
 	}
 
-	private List<Boundary> getBoundaryAMinusBoundaryB(List<Boundary> boundaryA, List<Boundary> boundaryB) {
+	private List<Boundary> getFirstBoundaryMinusSecondBoundary(List<Boundary> first, List<Boundary> second) {
 		List<Boundary> minus = new LinkedList<>();
-		minus.addAll(boundaryA);
+		minus.addAll(first);
 
-		for (Boundary a : boundaryA) {
-			if (boundaryB.contains(a)) minus.remove(a);
+		for (Boundary a : first) {
+			if (second.contains(a)) minus.remove(a);
 		}
 
 		return minus;
 	}
 
-	private Region getJointRegion(int vertexA, int vertexB) {
-		List<Region> regionsA = getRegions(vertexA);
-		List<Region> regionsB = getRegions(vertexB);
+	// @speed
+	private Region getJointRegion(Move move) {
+		List<Region> regionsA = getRegions(move.fromId);
+		List<Region> regionsB = getRegions(move.toId);
 
 		regionsA.retainAll(regionsB);
 
+		for (int id : move.containingIds) {
+			List<Region> regionsC = getRegions(id);
+			regionsA.retainAll(regionsC);
+
+		}
+		
 		if (regionsA.size() != 1) {
-			throw new IllegalStateException("could not find joint region!");
+			String error = String.format("found %d joint regions.", regionsA.size());
+			throw new IllegalStateException(error);
 		}
 
 		return regionsA.get(0);
