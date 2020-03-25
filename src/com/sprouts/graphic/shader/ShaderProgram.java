@@ -69,16 +69,16 @@ public abstract class ShaderProgram {
 		return GL20.glGetUniformLocation(programID, uniformName);
 	}
 	
-	public void bind() {
+	public void enable() {
 		GL20.glUseProgram(programID);
 	}
 
-	public void unbind() {
+	public void disable() {
 		GL20.glUseProgram(0);
 	}
 
-	public void cleanUp() {
-		unbind();
+	public void dispose() {
+		disable();
 		
 		GL20.glDetachShader(programID, vertexShaderID);
 		GL20.glDetachShader(programID, fragmentShaderID);
