@@ -6,6 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import sprouts.test.Assert;
+
 public class Position {
 
 	/*
@@ -60,8 +62,8 @@ public class Position {
 			}
 		}
 	}
-	
 
+	// @incomplete
 	// @move?
 	public List<Move> getAllMoves() {
 		List<Move> moves = new LinkedList<>();
@@ -76,9 +78,6 @@ public class Position {
 				List<Integer> vertices = boundary.getVertices();
 				
 				for (int j = i; j < vertices.size(); j++) {
-					
-					
-					
 					Move move = new Move();
 					move.fromId = j;
 					move.toId = i;
@@ -114,7 +113,7 @@ public class Position {
 	}
 
 	/*
-	 * start,end[containing spots]{containing spots}
+	 * start,end[inner boundary]{outer boundary}
 	 */
 	
 	// we need vertexId in graphics representation aswell, so the mapping of vertex ids:
@@ -130,6 +129,9 @@ public class Position {
 		Boundary x = region.getBoundary(i);
 		Boundary y = region.getBoundary(j);
 
+		//System.out.printf("x: %s\n", x);
+		//System.out.printf("y: %s\n", y);
+		
 		if (!x.equals(y)) {
 			//System.out.printf("2-boundary\n");
 			// === 2-boundary move ===
@@ -184,8 +186,6 @@ public class Position {
 			Boundary x1_xi = x.grabTo(i);
 			b1.addVertices(x1_xi.getVertices());
 
-			b1.addVertex(z);
-
 			Region r1 = new Region();
 			r1.addBoundary(b1);
 
@@ -195,33 +195,33 @@ public class Position {
 			Boundary xi_xj = x.grabRange(i, j);
 			b2.addVertices(xi_xj.getVertices());
 
-			b2.addVertex(z);
-
 			Region r2 = new Region();
 			r2.addBoundary(b2);
 
-			
 			// === make B1 and B2 ===
 			List<Boundary> otherBoundaries = new LinkedList<>();
 			otherBoundaries.addAll(region.getBoundaries());
 			otherBoundaries.remove(x);
 
 			// @test: put the right one the right place
-			List<Boundary> B2 = getBoundariesContainingVertices(move.containingIds, otherBoundaries);
-			List<Boundary> B1 = getFirstBoundaryMinusSecondBoundary(otherBoundaries, B2);
-
+			List<Boundary> B1 = getBoundariesContainingVertices(move.innerIds, otherBoundaries);
+			List<Boundary> B2 = getFirstBoundaryMinusSecondBoundary(otherBoundaries, B1);
 			
-			if (b1.containsAllVertices(move.idsOfContainingBoundary)) {
+			// check which one is the outer boundary
+			// the outer boundary has to contain all of either b1 or b2
+			// but no more or less vertices.
+			if (b1.containsExactlyVertices(move.outerIds)) {
 				r1.addBoundaries(B1);
 				r2.addBoundaries(B2);
 			} else {
-				// @todo
-				// assert (b2.containsAllVertices(move.containingIds)
+				Assert.assertTrue(b2.containsExactlyVertices(move.outerIds));
 				r1.addBoundaries(B2);
 				r2.addBoundaries(B1);
 			}
 			
-
+			b1.addVertex(z);
+			b2.addVertex(z);
+			
 			regions.add(r1);
 			regions.add(r2);
 
@@ -262,10 +262,9 @@ public class Position {
 
 		regionsA.retainAll(regionsB);
 
-		for (int id : move.containingIds) {
+		for (int id : move.innerIds) {
 			List<Region> regionsC = getRegions(id);
 			regionsA.retainAll(regionsC);
-
 		}
 		
 		if (regionsA.size() != 1) {

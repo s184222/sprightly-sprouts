@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import sprouts.test.Test;
+import sprouts.test.Assert;
 
 public class ConcreteFacade {
 	
@@ -66,7 +66,7 @@ public class ConcreteFacade {
 		}
 		
 		// bulletproof
-		Test.equals(getPosition(), raw);
+		Assert.equals(getPosition(), raw);
 	}
 	
 	public void makeMove(String raw) {
@@ -75,7 +75,7 @@ public class ConcreteFacade {
 	}
 	
 	private Move interpretMove(String raw) {
-		String regex = "(\\d+),(\\d+)(?:(\\[\\d+(?:,\\d+)*\\])(\\{\\d+(?:,\\d+)*\\}))?";
+		String regex = "(\\d+),(\\d+)(?:(\\[(?:\\d+)?(?:,\\d+)*\\])(\\{\\d+(?:,\\d+)*\\}))?";
 
 		List<String> matches = match(regex, raw);
 
@@ -86,23 +86,24 @@ public class ConcreteFacade {
 		move.fromId = fromVertexId;
 		move.toId = toVertexId;
 
-		String maybeContaining = matches.get(3);
+		String maybeInner = matches.get(3);
 		String maybeOuter = matches.get(4);
-		if (maybeContaining != null && maybeOuter != null) {
-			// containing
-			String peeledContaining = peel(maybeContaining);
-			String[] rawVertexIdsContaining = peeledContaining.split(",");
-			for (String rawId : rawVertexIdsContaining) {
-				int vertexId = Integer.parseInt(rawId);
-				move.containingIds.add(vertexId);
+		if (maybeInner != null && maybeOuter != null) {
+			String peeledInner = peel(maybeInner);
+			
+			if (peeledInner.length() > 0) {
+				String[] rawVertexIdsInner = peeledInner.split(",");
+				for (String rawId : rawVertexIdsInner) {
+					int vertexId = Integer.parseInt(rawId);
+					move.innerIds.add(vertexId);
+				}
 			}
 			
-			// outer
 			String peeledOuter = peel(maybeOuter);
 			String[] rawVertexIdsOuter = peeledOuter.split(",");
 			for (String rawId : rawVertexIdsOuter) {
 				int vertexId = Integer.parseInt(rawId);
-				move.idsOfContainingBoundary.add(vertexId);
+				move.outerIds.add(vertexId);
 			}
 		}
 
@@ -118,7 +119,6 @@ public class ConcreteFacade {
 		Matcher matcher = pattern.matcher(text);
 		
 		boolean match = matcher.matches();
-
 		if (!match) {
 			throw new IllegalStateException("no match!");
 		}
@@ -128,7 +128,7 @@ public class ConcreteFacade {
 			String stringMatch = matcher.group(i);
 			matches.add(stringMatch);
 			
-			// System.out.printf("group: '%s'\n", stringMatch);
+			//System.out.printf("group: '%s'\n", stringMatch);
 		}
 		
 		return matches;

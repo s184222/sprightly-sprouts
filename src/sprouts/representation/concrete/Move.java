@@ -8,7 +8,9 @@ public class Move {
 	public int fromId, toId;
 	
 	// only used when a 1 boundary move is made.
-	public List<Integer> containingIds = new LinkedList<>();
-	public List<Integer> idsOfContainingBoundary = new LinkedList<>();	
+	// when a 1 boundary move is made, then some other boudaries
+	// within that same region, will be split.
+	public List<Integer> innerIds = new LinkedList<>();
+	public List<Integer> outerIds = new LinkedList<>();	
 	
 }

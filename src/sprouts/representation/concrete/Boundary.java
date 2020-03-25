@@ -21,9 +21,7 @@ public class Boundary {
 	}
 
 	public void addVertices(List<Integer> vs) {
-		for (int vertex : vs) {
-			addVertex(vertex);
-		}
+		vertices.addAll(vs);
 	}
 
 	public List<Integer> getVertices() {
@@ -61,17 +59,20 @@ public class Boundary {
 	}
 
 	public boolean containsVertex(int otherId) {
-		for (int id : vertices) {
-			if (id == otherId) return true;
+		for (int vertex : vertices) {
+			if (vertex == otherId) return true;
 		}
+		
 		return false;
 	}
 	
-	public boolean containsAllVertices(List<Integer> vertexIds) {
-		for (Integer id : vertexIds) {
-			if (!containsVertex(id)) return false;
+	public boolean containsExactlyVertices(List<Integer> vertexIds) {
+		for (int vertex : vertices) {
+			if (!vertexIds.contains(vertex)) return false;
 		}
-		
+		for (int vertex : vertexIds) {
+			if (!vertices.contains(vertex)) return false;
+		}
 		return true;
 	}
 	
