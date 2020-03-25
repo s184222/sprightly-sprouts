@@ -59,6 +59,9 @@ public class Position {
 				Integer live = spotIdToLives.remove(vertexId);
 				int updatedLive = (live == null) ? 3 : live - 1;
 				spotIdToLives.put(vertexId, updatedLive);
+				
+				// @hack
+				if (vertexId >= currentVertexId) currentVertexId += 1;
 			}
 		}
 	}

@@ -51,8 +51,6 @@ public class ConcreteFacade {
 					char vertex = boundaryString.charAt(i);
 					
 					int id = VertexUtil.getIndex(vertex);
-					
-					
 					boundary.addVertex(id);
 				}
 			}
