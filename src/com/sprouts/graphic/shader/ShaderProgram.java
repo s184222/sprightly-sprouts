@@ -1,4 +1,4 @@
-package com.sprouts.graphic.shaders;
+package com.sprouts.graphic.shader;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
