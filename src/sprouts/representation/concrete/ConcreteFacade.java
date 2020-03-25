@@ -52,6 +52,7 @@ public class ConcreteFacade {
 					
 					int id = VertexUtil.getIndex(vertex);
 					
+					
 					boundary.addVertex(id);
 				}
 			}
@@ -69,18 +70,32 @@ public class ConcreteFacade {
 	}
 	
 	private Move interpretMove(String raw) {
-		String regex = "(\\d+),(\\d+)";
+		String regex = "(\\d+),(\\d+)(\\[\\d+(?:,\\d+)*\\])?";
 
 		List<String> matches = match(regex, raw);
 
 		int fromVertexId = Integer.parseInt(matches.get(1));
 		int toVertexId = Integer.parseInt(matches.get(2));
-
+		
 		Move move = new Move();
 		move.fromId = fromVertexId;
 		move.toId = toVertexId;
 
+		String maybeContaining = matches.get(3);
+		if (maybeContaining != null) {
+			String peeled = peel(maybeContaining);
+			String[] rawVertexIds = peeled.split(",");
+			for (String rawId : rawVertexIds) {
+				int vertexId = Integer.parseInt(rawId);
+				move.containingIds.add(vertexId);
+			}
+		}
+
 		return move;
+	}
+	
+	private String peel(String string) {
+		return string.substring(1, string.length() - 1);
 	}
 	
 	private List<String> match(String regex, String text) {
@@ -93,10 +108,13 @@ public class ConcreteFacade {
 			throw new IllegalStateException("no match: " + matcher.group());
 		}
 		
+		System.out.printf("====================\n");
 		List<String> matches = new LinkedList<>();
 		for (int i = 0; i <= matcher.groupCount(); i++) {
 			String stringMatch = matcher.group(i);
 			matches.add(stringMatch);
+			
+			System.out.printf("stringMatcher: '%s'\n", stringMatch);
 		}
 		
 		return matches;

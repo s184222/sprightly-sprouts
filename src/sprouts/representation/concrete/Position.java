@@ -79,15 +79,17 @@ public class Position {
 
 	/*
 	 * start,end[{boundary of spots}={containing spots}]
+	 * start,end[containing spots] this may be enough?
+	 * 
 	 */
 	public void makeMove(Move move) {
-		int from = move.fromId;
-		int to = move.toId;
+		int i = move.fromId;
+		int j = move.toId;
 
-		Region region = getJointRegion(from, to);
+		Region region = getJointRegion(i, j);
 
-		Boundary x = region.getBoundary(from);
-		Boundary y = region.getBoundary(to);
+		Boundary x = region.getBoundary(i);
+		Boundary y = region.getBoundary(j);
 
 		if (!x.equals(y)) {
 			//System.out.printf("2-boundary\n");
@@ -96,22 +98,22 @@ public class Position {
 
 			int z = createVertex();
 
-			Boundary x1_xi = x.grabTo(from);
+			Boundary x1_xi = x.grabTo(i);
 
 			merged.addVertices(x1_xi.getVertices());
 			merged.addVertex(z);
 
 			if (y.size() > 1) {
-				Boundary yi_yn = y.grabFrom(from);
-				merged.addVertices(yi_yn.getVertices());
+				Boundary yj_yn = y.grabFrom(j);
+				merged.addVertices(yj_yn.getVertices());
 			}
 
-			Boundary y1_yj = y.grabTo(to);
+			Boundary y1_yj = y.grabTo(j);
 			merged.addVertices(y1_yj.getVertices());
 			merged.addVertex(z);
 
 			if (x.size() > 1) {
-				Boundary xi_xm = x.grabFrom(from);
+				Boundary xi_xm = x.grabFrom(i);
 				merged.addVertices(xi_xm.getVertices());
 			}
 
@@ -127,7 +129,7 @@ public class Position {
 			otherBoundaries.addAll(region.getBoundaries());
 			otherBoundaries.remove(x);
 
-			// @todo: put the right one the right place
+			// @test: put the right one the right place
 			List<Boundary> B1 = getBoundariesContainingVertices(move.containingIds, otherBoundaries);
 			List<Boundary> B2 = getBoundaryAMinusBoundaryB(otherBoundaries, B1);
 
@@ -148,11 +150,11 @@ public class Position {
 			Boundary b1 = new Boundary();
 
 			if (x.size() > 1) {
-				Boundary xj_xn = x.grabFrom(to);
+				Boundary xj_xn = x.grabFrom(j);
 				b1.addVertices(xj_xn.getVertices());
 			}
 
-			Boundary x1_xi = x.grabTo(from);
+			Boundary x1_xi = x.grabTo(i);
 			b1.addVertices(x1_xi.getVertices());
 
 			b1.addVertex(z);
@@ -166,7 +168,7 @@ public class Position {
 			// === region 2 ===
 			Boundary b2 = new Boundary();
 
-			Boundary xi_xj = x.grabRange(from, to);
+			Boundary xi_xj = x.grabRange(i, j);
 			b2.addVertices(xi_xj.getVertices());
 
 			b2.addVertex(z);

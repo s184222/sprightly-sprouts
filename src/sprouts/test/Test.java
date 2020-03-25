@@ -7,7 +7,7 @@ public class Test {
 		throw new TestException(error);
 	}
 
-	public static void equals(String is, String shouldBe) {
+	public static void equals(String shouldBe, String is) {
 		if (!shouldBe.equals(is)) error(is, shouldBe);
 	}
 }
