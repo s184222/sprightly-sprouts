@@ -11,11 +11,12 @@ public class VertexArray {
 		vaoID = GL30.glGenVertexArrays();
 	}
 	
-	public void storeDataInAttributeList(int attributeNumber, VertexBuffer vbo) {
+	public void storeDataInAttributeList(int attributeIndex, VertexBuffer vbo) {
+		bind();
 		vbo.bind();
-		GL20.glVertexAttribPointer(attributeNumber, vbo.getComponentCount(), GL11.GL_FLOAT, false, 0, 0);
+		GL20.glVertexAttribPointer(attributeIndex, vbo.getComponentCount(), GL11.GL_FLOAT, false, 0, 0);
 		vbo.unbind();
-		
+		unbind();
 	}
 	
 	public void unbind() {
