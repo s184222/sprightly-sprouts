@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
+import org.lwjgl.opengl.GL30;
 
 import com.sprouts.math.Mat4;
 import com.sprouts.math.Vec2;
@@ -22,37 +22,37 @@ public abstract class ShaderProgram {
 	private int fragmentShaderID;
 
 	public ShaderProgram(String vertexFile, String fragmentFile) {
-		vertexShaderID = loadShader(vertexFile, GL20.GL_VERTEX_SHADER);
-		fragmentShaderID = loadShader(fragmentFile, GL20.GL_FRAGMENT_SHADER);
-		programID = GL20.glCreateProgram();
+		vertexShaderID = loadShader(vertexFile, GL30.GL_VERTEX_SHADER);
+		fragmentShaderID = loadShader(fragmentFile, GL30.GL_FRAGMENT_SHADER);
+		programID = GL30.glCreateProgram();
 
-		GL20.glAttachShader(programID, vertexShaderID);
-		GL20.glAttachShader(programID, fragmentShaderID);
+		GL30.glAttachShader(programID, vertexShaderID);
+		GL30.glAttachShader(programID, fragmentShaderID);
 		bindAttributes();
-		GL20.glLinkProgram(programID);
-		GL20.glValidateProgram(programID);
+		GL30.glLinkProgram(programID);
+		GL30.glValidateProgram(programID);
 	}
 
 	protected abstract void bindAttributes();
 	
 	protected void bindAttribute(int attribute, String variableName) {
-		GL20.glBindAttribLocation(programID, attribute, variableName);
+		GL30.glBindAttribLocation(programID, attribute, variableName);
 	}
 
 	protected void uniformFloat(int location, float f) {
-		GL20.glUniform1f(location, f);
+		GL30.glUniform1f(location, f);
 	}
 	
 	protected void uniformVec2(int location, Vec2 v) {
-		GL20.glUniform2f(location, v.x, v.y);
+		GL30.glUniform2f(location, v.x, v.y);
 	}
 
 	protected void uniformVec3(int location, Vec3 v) {
-		GL20.glUniform3f(location, v.x, v.y, v.z);
+		GL30.glUniform3f(location, v.x, v.y, v.z);
 	}
 
 	protected void uniformVec4(int location, Vec4 v) {
-		GL20.glUniform4f(location, v.x, v.y, v.z, v.w);
+		GL30.glUniform4f(location, v.x, v.y, v.z, v.w);
 	}
 
 	protected void uniformMat4(int location, Mat4 m) {
@@ -62,31 +62,31 @@ public abstract class ShaderProgram {
 		m.writeBuffer(mat4Buffer);
 		mat4Buffer.flip();
 		
-		GL20.glUniformMatrix4fv(location, true, mat4Buffer);
+		GL30.glUniformMatrix4fv(location, true, mat4Buffer);
 	}
 	
 	protected int getUniformLocation(String uniformName) {
-		return GL20.glGetUniformLocation(programID, uniformName);
+		return GL30.glGetUniformLocation(programID, uniformName);
 	}
 	
 	public void enable() {
-		GL20.glUseProgram(programID);
+		GL30.glUseProgram(programID);
 	}
 
 	public void disable() {
-		GL20.glUseProgram(0);
+		GL30.glUseProgram(0);
 	}
 
 	public void dispose() {
 		disable();
 		
-		GL20.glDetachShader(programID, vertexShaderID);
-		GL20.glDetachShader(programID, fragmentShaderID);
+		GL30.glDetachShader(programID, vertexShaderID);
+		GL30.glDetachShader(programID, fragmentShaderID);
 		
-		GL20.glDeleteShader(vertexShaderID);
-		GL20.glDeleteShader(fragmentShaderID);
+		GL30.glDeleteShader(vertexShaderID);
+		GL30.glDeleteShader(fragmentShaderID);
 		
-		GL20.glDeleteProgram(programID);
+		GL30.glDeleteProgram(programID);
 	}
 
 	public int loadShader(String path, int type) {
@@ -102,12 +102,12 @@ public abstract class ShaderProgram {
 			throw new RuntimeException("Unable to load shader: " + path, e);
 		}
 		
-		int shaderID = GL20.glCreateShader(type);
-		GL20.glShaderSource(shaderID, shaderSource);
-		GL20.glCompileShader(shaderID);
+		int shaderID = GL30.glCreateShader(type);
+		GL30.glShaderSource(shaderID, shaderSource);
+		GL30.glCompileShader(shaderID);
 		
-		if (GL20.glGetShaderi(shaderID, GL20.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
-			System.out.println(GL20.glGetShaderInfoLog(shaderID, 500));
+		if (GL30.glGetShaderi(shaderID, GL30.GL_COMPILE_STATUS) == GL11.GL_FALSE) {
+			System.out.println(GL30.glGetShaderInfoLog(shaderID, 500));
 			throw new RuntimeException("Could not compile shader: " + path);
 		}
 		
