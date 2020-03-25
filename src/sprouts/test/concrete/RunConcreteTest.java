@@ -12,10 +12,10 @@ public class RunConcreteTest {
 		
 		facade.createFreshGame(3);
 		
-		facade.makeMove("0,1");
-		Test.equals("C.ADBD.}!", facade.getPosition());
+		facade.makeMove("1,2");
+		Test.equals("A.BDCD.}!", facade.getPosition());
 		
-		facade.makeMove("0,1");
-		Test.equals("BDAE.}ADBE.C.}!", facade.getPosition());
+		facade.makeMove("1,1");
+		Test.equals("BDCDBE.}BE.A.}!", facade.getPosition());
 	}
 }
