@@ -6,6 +6,10 @@ public class Vec3 {
 	public float y;
 	public float z;
 	
+	public Vec3() {
+		this(0.0f);
+	}
+	
 	public Vec3(float c) {
 		this(c, c, c);
 	}
@@ -121,5 +125,9 @@ public class Vec3 {
 		return new Vec3(y * right.z - z * right.y, 
 		                z * right.x - x * right.z, 
 		                x * right.y - y * right.x);
+	}
+	
+	public Vec3 copy() {
+		return new Vec3(this);
 	}
 }

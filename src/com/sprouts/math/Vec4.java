@@ -6,6 +6,10 @@ public class Vec4 {
 	public float y;
 	public float z;
 	public float w;
+
+	public Vec4() {
+		this(0.0f);
+	}
 	
 	public Vec4(float c) {
 		this(c, c, c, c);
@@ -127,5 +131,9 @@ public class Vec4 {
 	public Vec4 normalize() {
 		float len = length();
 		return (len < LinMath.EPSILON) ? set(0.0f) : div(len);
+	}
+	
+	public Vec4 copy() {
+		return new Vec4(this);
 	}
 }
