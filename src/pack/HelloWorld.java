@@ -186,7 +186,7 @@ public class HelloWorld {
 	private void onViewportChanged(int width, int height) {
 		GL11.glViewport(0, 0, width, height);
 
-		projMat.toPerspective(70.0f, (float)width / height, 0.01f, 100.0f);
+		projMat.toPerspective(70.0f, (float)width / height, 0.01f, 1000.0f);
 		
 		shader.enable();
 		shader.setProjMat(projMat);
@@ -198,13 +198,15 @@ public class HelloWorld {
 		onViewportChanged(display.getDisplaySize());
 
 		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		
 		while (!display.isCloseRequested()) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			shader.enable();
 			
-			viewMat.toIdentity().translate(0.0f, 0.0f, -70.0f);
+			viewMat.toIdentity().translate(0.0f, 0.0f, -2.0f);
 			shader.setViewMat(viewMat);
 			
 			rot += 0.1f;
@@ -212,7 +214,6 @@ public class HelloWorld {
 			modlMat.toIdentity().rotateX(rot).rotateY(rot).translate(-0.5f, -0.5f, -0.5f);
 			shader.setModlMat(modlMat);
 
-			// Draw 1 triangle.
 			vertexArray.bind();
 			GL30.glDrawArrays(GL30.GL_TRIANGLES, 0, 3 * 2 * 6);
 			vertexArray.unbind();
