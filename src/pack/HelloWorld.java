@@ -64,7 +64,7 @@ public class HelloWorld {
 	}
 	
 	private void loop() {
-		glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		onViewportChanged(display.getDisplaySize());
 
 		while (!display.isCloseRequested()) {
