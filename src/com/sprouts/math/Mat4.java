@@ -54,7 +54,7 @@ public class Mat4 {
 	public Mat4 toPerspective(float fov, float aspect, float near, float far) {
 		toIdentity();
 
-		float q = (float)(1.0 / LinMath.tand(fov * 0.5));
+		float q = (float)(1.0 / Math.tan(Math.toRadians(fov * 0.5)));
 
 		m00 = q / aspect;
 		m11 = q;

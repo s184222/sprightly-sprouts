@@ -14,6 +14,7 @@ import com.sprouts.graphic.DisplaySize;
 import com.sprouts.graphic.buffer.VertexArray;
 import com.sprouts.graphic.buffer.VertexBuffer;
 import com.sprouts.graphic.shader.TestShader;
+import com.sprouts.math.Mat4;
 import com.sprouts.os.LibUtil;
 
 public class HelloWorld {
@@ -30,6 +31,12 @@ public class HelloWorld {
 
 	private TestShader shader;
 	private VertexArray vertexArray;
+	
+	private Mat4 projMat;
+	private Mat4 viewMat;
+	private Mat4 modlMat;
+	
+	private float rot;
 	
 	public HelloWorld() {
 		this.display = new Display();
@@ -53,12 +60,123 @@ public class HelloWorld {
 		shader = new TestShader();
 		vertexArray = new VertexArray();
 		
-		VertexBuffer posBuffer = new VertexBuffer(new float[] {
-			 0.00f,  0.75f, 0.0f,
-			 0.75f, -0.75f, 0.0f,
-			-0.75f, -0.75f, 0.0f
+		VertexBuffer positionBuffer = new VertexBuffer(new float[] {
+			// FRONT
+			 1.0f, -0.0f,  1.0f,
+			-0.0f,  1.0f,  1.0f,
+			-0.0f, -0.0f,  1.0f,
+			
+			 1.0f, -0.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			-0.0f,  1.0f,  1.0f,
+
+			// BACK
+			-0.0f, -0.0f, -0.0f,
+			 1.0f,  1.0f, -0.0f,
+			 1.0f, -0.0f, -0.0f,
+			
+			-0.0f, -0.0f, -0.0f,
+			-0.0f,  1.0f, -0.0f,
+			 1.0f,  1.0f, -0.0f,
+
+			// BOTTOM
+			-0.0f, -0.0f,  1.0f,
+			 1.0f, -0.0f, -0.0f,
+			 1.0f, -0.0f,  1.0f,
+			
+			-0.0f, -0.0f,  1.0f,
+			-0.0f, -0.0f, -0.0f,
+			 1.0f, -0.0f, -0.0f,
+
+			// TOP 
+			-0.0f,  1.0f, -0.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f, -0.0f,
+			
+			-0.0f,  1.0f, -0.0f,
+			-0.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			
+			// LEFT
+			-0.0f, -0.0f,  1.0f,
+			-0.0f,  1.0f, -0.0f,
+			-0.0f, -0.0f, -0.0f,
+			
+			-0.0f, -0.0f,  1.0f,
+			-0.0f,  1.0f,  1.0f,
+			-0.0f,  1.0f, -0.0f,
+			
+			// RIGHT
+			 1.0f, -0.0f, -0.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f, -0.0f,  1.0f,
+
+			 1.0f, -0.0f, -0.0f,
+			 1.0f,  1.0f, -0.0f,
+			 1.0f,  1.0f,  1.0f
 		}, 3);
-		vertexArray.storeAttributeBuffer(TestShader.POSITION_ATTRIB_INDEX, posBuffer);
+		vertexArray.storeAttributeBuffer(TestShader.POSITION_ATTRIB_INDEX, positionBuffer);
+
+		VertexBuffer colorBuffer = new VertexBuffer(new float[] {
+			// FRONT
+			 1.0f, -0.0f,  1.0f,
+			-0.0f,  1.0f,  1.0f,
+			-0.0f, -0.0f,  1.0f,
+			
+			 1.0f, -0.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			-0.0f,  1.0f,  1.0f,
+
+			// BACK
+			-0.0f, -0.0f, -0.0f,
+			 1.0f,  1.0f, -0.0f,
+			 1.0f, -0.0f, -0.0f,
+			
+			-0.0f, -0.0f, -0.0f,
+			-0.0f,  1.0f, -0.0f,
+			 1.0f,  1.0f, -0.0f,
+
+			// BOTTOM
+			-0.0f, -0.0f,  1.0f,
+			 1.0f, -0.0f, -0.0f,
+			 1.0f, -0.0f,  1.0f,
+			
+			-0.0f, -0.0f,  1.0f,
+			-0.0f, -0.0f, -0.0f,
+			 1.0f, -0.0f, -0.0f,
+
+			// TOP 
+			-0.0f,  1.0f, -0.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f, -0.0f,
+			
+			-0.0f,  1.0f, -0.0f,
+			-0.0f,  1.0f,  1.0f,
+			 1.0f,  1.0f,  1.0f,
+			
+			// LEFT
+			-0.0f, -0.0f,  1.0f,
+			-0.0f,  1.0f, -0.0f,
+			-0.0f, -0.0f, -0.0f,
+			
+			-0.0f, -0.0f,  1.0f,
+			-0.0f,  1.0f,  1.0f,
+			-0.0f,  1.0f, -0.0f,
+			
+			// RIGHT
+			 1.0f, -0.0f, -0.0f,
+			 1.0f,  1.0f,  1.0f,
+			 1.0f, -0.0f,  1.0f,
+
+			 1.0f, -0.0f, -0.0f,
+			 1.0f,  1.0f, -0.0f,
+			 1.0f,  1.0f,  1.0f
+		}, 3);
+		vertexArray.storeAttributeBuffer(TestShader.COLOR_ATTRIB_INDEX, colorBuffer);
+	
+		projMat = new Mat4();
+		viewMat = new Mat4();
+		modlMat = new Mat4();
 	}
 
 	private void onViewportChanged(DisplaySize size) {
@@ -67,22 +185,39 @@ public class HelloWorld {
 
 	private void onViewportChanged(int width, int height) {
 		GL11.glViewport(0, 0, width, height);
+
+		projMat.toPerspective(70.0f, (float)width / height, 0.01f, 1000.0f);
+		
+		shader.enable();
+		shader.setProjMat(projMat);
+		shader.disable();
 	}
 	
 	private void loop() {
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		onViewportChanged(display.getDisplaySize());
 
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glCullFace(GL11.GL_BACK);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		
 		while (!display.isCloseRequested()) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			shader.enable();
+			
+			viewMat.toIdentity().translate(0.0f, 0.0f, -2.0f);
+			shader.setViewMat(viewMat);
+			
+			rot += 0.1f;
+			
+			modlMat.toIdentity().rotateX(rot).rotateY(rot).translate(-0.5f, -0.5f, -0.5f);
+			shader.setModlMat(modlMat);
+
 			vertexArray.bind();
-			
-			// Draw 1 triangle.
-			GL30.glDrawArrays(GL30.GL_TRIANGLES, 0, 3);
-			
+			GL30.glDrawArrays(GL30.GL_TRIANGLES, 0, 3 * 2 * 6);
 			vertexArray.unbind();
+
 			shader.disable();
 			
 			checkGLErrors();
