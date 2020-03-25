@@ -1,36 +1,50 @@
 package com.sprouts.graphic.buffer;
 
+import java.util.LinkedList;
+
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
 public class VertexArray {
-	private int vaoID;
+	
+	private int vaoHandle;
+	
+	private LinkedList<VertexBuffer> buffers;
 	
 	public VertexArray() {
-		vaoID = GL30.glGenVertexArrays();
+		vaoHandle = GL30.glGenVertexArrays();
+	
+		buffers = new LinkedList<VertexBuffer>();
 	}
 	
-	public void storeDataInAttributeList(int attributeIndex, VertexBuffer vbo) {
+	public void storeAttributeBuffer(int attributeIndex, VertexBuffer buffer) {
 		bind();
-		vbo.bind();
-		GL20.glVertexAttribPointer(attributeIndex, vbo.getComponentCount(), GL11.GL_FLOAT, false, 0, 0);
-		vbo.unbind();
+		buffer.bind();
+		GL30.glVertexAttribPointer(attributeIndex, buffer.getComponentCount(), GL11.GL_FLOAT, false, 0, 0);
+		buffer.unbind();
+
+		GL30.glEnableVertexAttribArray(attributeIndex);
 		unbind();
+		
+		buffers.add(buffer);
 	}
 	
+	public void bind() {
+		GL30.glBindVertexArray(vaoHandle);
+	}
+
 	public void unbind() {
 		GL30.glBindVertexArray(0);
 	}
 	
-	public void bind() {
-		GL30.glBindVertexArray(vaoID);
-	}
-	
 	public void dispose() {
-		if (vaoID != -1) {
-			GL30.glDeleteVertexArrays(vaoID);;
-			vaoID = -1;
+		if (vaoHandle != -1) {
+			GL30.glDeleteVertexArrays(vaoHandle);
+			vaoHandle = -1;
 		}
+		
+		for (VertexBuffer buffer : buffers)
+			buffer.dispose();
+		buffers.clear();
 	}
 }

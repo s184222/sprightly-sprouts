@@ -13,6 +13,6 @@ public class TestShader extends ShaderProgram {
 
 	@Override
 	protected void bindAttributes() {
-		bindAttribute(POSITION_ATTRIB_INDEX, "pos");
+		bindAttribute(POSITION_ATTRIB_INDEX, "position");
 	}
 }

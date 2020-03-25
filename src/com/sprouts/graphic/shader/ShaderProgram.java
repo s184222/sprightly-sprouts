@@ -72,9 +72,17 @@ public abstract class ShaderProgram {
 	public void enable() {
 		GL30.glUseProgram(programID);
 	}
+	
+	protected void enableAttribute(int attribIndex) {
+		GL30.glEnableVertexAttribArray(attribIndex);
+	}
 
 	public void disable() {
 		GL30.glUseProgram(0);
+	}
+
+	protected void disableAttribute(int attribIndex) {
+		GL30.glDisableVertexAttribArray(attribIndex);
 	}
 
 	public void dispose() {

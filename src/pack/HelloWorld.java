@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL30;
 
 import com.sprouts.graphic.Display;
 import com.sprouts.graphic.DisplaySize;
+import com.sprouts.graphic.buffer.VertexArray;
 import com.sprouts.graphic.buffer.VertexBuffer;
 import com.sprouts.graphic.shader.TestShader;
 import com.sprouts.os.LibUtil;
@@ -28,7 +29,7 @@ public class HelloWorld {
 	private final Display display;
 
 	private TestShader shader;
-	private VertexBuffer buffer;
+	private VertexArray vertexArray;
 	
 	public HelloWorld() {
 		this.display = new Display();
@@ -40,6 +41,8 @@ public class HelloWorld {
 		init();
 		loop();
 		
+		shader.dispose();
+		vertexArray.dispose();
 		display.dispose();
 	}
 
@@ -48,11 +51,14 @@ public class HelloWorld {
 		display.addDisplayListener(this::onViewportChanged);
 	
 		shader = new TestShader();
-		buffer = new VertexBuffer(new float[] {
-			  0.0f,  0.75f, 0.0f,
+		vertexArray = new VertexArray();
+		
+		VertexBuffer posBuffer = new VertexBuffer(new float[] {
+			 0.00f,  0.75f, 0.0f,
 			 0.75f, -0.75f, 0.0f,
 			-0.75f, -0.75f, 0.0f
 		}, 3);
+		vertexArray.storeAttributeBuffer(TestShader.POSITION_ATTRIB_INDEX, posBuffer);
 	}
 
 	private void onViewportChanged(DisplaySize size) {
@@ -71,15 +77,24 @@ public class HelloWorld {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			shader.enable();
-			buffer.bind();
-			GL30.glEnableVertexAttribArray(TestShader.POSITION_ATTRIB_INDEX);
-			GL30.glVertexAttribPointer(TestShader.POSITION_ATTRIB_INDEX, buffer.getComponentCount(), GL30.GL_FLOAT, false, 0, 0);
-			GL30.glDrawArrays(GL30.GL_TRIANGLES, 0, buffer.getSize() / buffer.getComponentCount());
-			GL30.glDisableVertexAttribArray(TestShader.POSITION_ATTRIB_INDEX);
-			buffer.unbind();
+			vertexArray.bind();
+			
+			// Draw 1 triangle.
+			GL30.glDrawArrays(GL30.GL_TRIANGLES, 0, 3);
+			
+			vertexArray.unbind();
 			shader.disable();
 			
+			checkGLErrors();
+			
 			display.update();
+		}
+	}
+	
+	private void checkGLErrors() {
+		int err;
+		while ((err = GL11.glGetError()) != GL11.GL_NO_ERROR) {
+			System.err.println("OpenGL error: " + err);
 		}
 	}
 
