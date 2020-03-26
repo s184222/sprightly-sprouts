@@ -50,7 +50,7 @@ public class ConcreteFacade {
 			
 			for (String boundaryString : boundaries) {
 				Boundary boundary = new Boundary();
-				region.addBoundary(boundary);
+				region.add(boundary);
 				
 				for (int i = 0; i < boundaryString.length(); i++) {
 					char vertexName = boundaryString.charAt(i);
@@ -58,11 +58,11 @@ public class ConcreteFacade {
 					int id = VertexUtil.getId(vertexName);
 					vertexIdGenerator.update(id);
 					
-					boundary.addVertex(id);
+					boundary.add(id);
 				}
 			}
 			
-			position.addRegion(region);
+			position.add(region);
 		}
 		
 		// bulletproof

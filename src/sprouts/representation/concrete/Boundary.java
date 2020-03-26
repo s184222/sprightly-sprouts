@@ -16,11 +16,11 @@ public class Boundary {
 		vertices.addAll(other);
 	}
 
-	public void addVertex(int vertex) {
+	public void add(int vertex) {
 		vertices.add(vertex);
 	}
 
-	public void addVertices(List<Integer> vs) {
+	public void add(List<Integer> vs) {
 		vertices.addAll(vs);
 	}
 
@@ -41,32 +41,28 @@ public class Boundary {
 		throw new IllegalStateException("no match");
 	}
 
-	public Boundary grabTo(int toId) {
-		return new Boundary(vertices.subList(0, getIndexOfFirstMatch(toId) + 1));
+	public List<Integer> grabTo(int toId) {
+		return vertices.subList(0, getIndexOfFirstMatch(toId) + 1);
 	}
 	
-	public Boundary grabFrom(int toId) {
-		return new Boundary(vertices.subList(getIndexOfFirstMatch(toId), vertices.size()));
+	public List<Integer> grabFrom(int toId) {
+		return vertices.subList(getIndexOfFirstMatch(toId), vertices.size());
 	}
 	
-	public Boundary grabRange(int fromId, int toId) {
+	public List<Integer> grabRange(int fromId, int toId) {
 		int index1 = getIndexOfFirstMatch(fromId);
 		int index2 = getIndexOfFirstMatch(toId);
 		
 		List<Integer> subset = (index1 < index2) ? vertices.subList(index1, index2 + 1) : vertices.subList(index2, index1 + 1);
 		
-		return new Boundary(subset);
-	}
-
-	public boolean containsVertex(int otherId) {
-		for (int vertex : vertices) {
-			if (vertex == otherId) return true;
-		}
-		
-		return false;
+		return subset;
 	}
 	
-	public boolean containsExactlyVertices(List<Integer> vertexIds) {
+	public boolean contains(int vertexId) {
+		return vertices.contains(vertexId);
+	}
+	
+	public boolean containsSameVertices(List<Integer> vertexIds) {
 		for (int vertex : vertices) {
 			if (!vertexIds.contains(vertex)) return false;
 		}

@@ -11,15 +11,15 @@ public class Region {
 		boundaries = new ArrayList<>();
 	}
 
-	public void addBoundary(Boundary boundary) {
+	public void add(Boundary boundary) {
 		boundaries.add(boundary);
 	}
 
-	public void removeBoundary(Boundary boundary) {
+	public void remove(Boundary boundary) {
 		boundaries.remove(boundary);
 	}
 	
-	public void addBoundaries(List<Boundary> other) {
+	public void add(List<Boundary> other) {
 		boundaries.addAll(other);
 	}
 
@@ -29,7 +29,7 @@ public class Region {
 
 	public Boundary getBoundary(int vertexId) {
 		for (Boundary boundary : boundaries) {
-			if (boundary.containsVertex(vertexId)) return boundary;
+			if (boundary.contains(vertexId)) return boundary;
 		}
 		
 		throw new IllegalStateException("could not find its boundary");

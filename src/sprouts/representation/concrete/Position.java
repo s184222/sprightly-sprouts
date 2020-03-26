@@ -2,6 +2,7 @@ package sprouts.representation.concrete;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -56,9 +57,9 @@ public class Position {
 				int vertex = createVertex();
 	
 				Boundary boundary = new Boundary();
-				boundary.addVertex(vertex);
+				boundary.add(vertex);
 	
-				initialRegion.addBoundary(boundary);
+				initialRegion.add(boundary);
 			}
 		}
 	}
@@ -94,7 +95,7 @@ public class Position {
 	}
 
 	
-	public void addRegion(Region region) {
+	public void add(Region region) {
 		regions.add(region);
 		
 		for (Boundary boundary : region.getBoundaries()) {
@@ -121,13 +122,13 @@ public class Position {
 	// is easier. We could result a moveResult (success, id) so the graphics get it.
 
 	public void makeMove(Move move) {
-		int i = move.fromId;
-		int j = move.toId;
+		int from = move.fromId;
+		int to = move.toId;
 
 		Region region = getJointRegion(move);
 
-		Boundary x = region.getBoundary(i);
-		Boundary y = region.getBoundary(j);
+		Boundary x = region.getBoundary(from);
+		Boundary y = region.getBoundary(to);
 
 		//System.out.printf("x: %s\n", x);
 		//System.out.printf("y: %s\n", y);
@@ -137,37 +138,38 @@ public class Position {
 			// === 2-boundary move ===
 			Boundary merged = new Boundary();
 
+			// @todo: update numberOfLives hashmap
 			int z = createVertex();
 
-			Boundary x1_xi = x.grabTo(i);
+			List<Integer> x1_xi = x.grabTo(from);
 
-			merged.addVertices(x1_xi.getVertices());
-			merged.addVertex(z);
+			merged.add(x1_xi);
+			merged.add(z);
 
 			if (y.size() > 1) {
-				Boundary yj_yn = y.grabFrom(j);
-				merged.addVertices(yj_yn.getVertices());
+				List<Integer> yj_yn = y.grabFrom(to);
+				merged.add(yj_yn);
 			}
 
-			Boundary y1_yj = y.grabTo(j);
-			merged.addVertices(y1_yj.getVertices());
-			merged.addVertex(z);
+			List<Integer> y1_yj = y.grabTo(to);
+			merged.add(y1_yj);
+			merged.add(z);
 
 			if (x.size() > 1) {
-				Boundary xi_xm = x.grabFrom(i);
-				merged.addVertices(xi_xm.getVertices());
+				List<Integer> xi_xm = x.grabFrom(from);
+				merged.add(xi_xm);
 			}
 
-			region.removeBoundary(x);
-			region.removeBoundary(y);
-			region.addBoundary(merged);
+			region.remove(x);
+			region.remove(y);
+			region.add(merged);
 
 		} else {
 			//System.out.printf("1-boundary\n");
 			// === 1-boundary move ===
 			int z = createVertex();
 
-			// === region 1 ===
+			// region 1
 
 			// It seems like the paper has made a mistake for region 1.
 			// It should be:
@@ -176,54 +178,59 @@ public class Position {
 			// 		x1_xi z xj_xn
 			// @testing
 
-			Boundary b1 = new Boundary();
+			Boundary boundary1 = new Boundary();
 
 			if (x.size() > 1) {
-				Boundary xj_xn = x.grabFrom(j);
-				b1.addVertices(xj_xn.getVertices());
+				List<Integer> xj_xn = x.grabFrom(to);
+				boundary1.add(xj_xn);
 			}
 
-			Boundary x1_xi = x.grabTo(i);
-			b1.addVertices(x1_xi.getVertices());
+			List<Integer> x1_xi = x.grabTo(from);
+			boundary1.add(x1_xi);
 
-			Region r1 = new Region();
-			r1.addBoundary(b1);
+			Region region1 = new Region();
+			region1.add(boundary1);
 
-			// === region 2 ===
-			Boundary b2 = new Boundary();
+			
+			// region 2
+			Boundary boundary2 = new Boundary();
 
-			Boundary xi_xj = x.grabRange(i, j);
-			b2.addVertices(xi_xj.getVertices());
+			// @fix: should from <= to? The paper may have a mistake.
+			// grabRange should be wrong either way
+			List<Integer> xi_xj = x.grabRange(from, to);
+			boundary2.add(xi_xj);
 
-			Region r2 = new Region();
-			r2.addBoundary(b2);
+			Region region2 = new Region();
+			region2.add(boundary2);
 
-			// === make B1 and B2 ===
+			
 			List<Boundary> otherBoundaries = new LinkedList<>();
 			otherBoundaries.addAll(region.getBoundaries());
 			otherBoundaries.remove(x);
 
 			// @test: put the right one the right place
 			List<Boundary> B1 = getBoundariesContainingVertices(move.innerIds, otherBoundaries);
-			List<Boundary> B2 = getFirstBoundaryMinusSecondBoundary(otherBoundaries, B1);
+			List<Boundary> B2 = getFirstBoundariesMinusSecondBoundaries(otherBoundaries, B1);
 			
 			// check which one is the outer boundary
 			// the outer boundary has to contain all of either b1 or b2
 			// but no more or less vertices.
-			if (b1.containsExactlyVertices(move.outerIds)) {
-				r1.addBoundaries(B1);
-				r2.addBoundaries(B2);
+			if (boundary1.containsSameVertices(move.outerIds)) {
+				region1.add(B1);
+				region2.add(B2);
 			} else {
-				Assert.assertTrue(b2.containsExactlyVertices(move.outerIds));
-				r1.addBoundaries(B2);
-				r2.addBoundaries(B1);
+				Assert.assertTrue(boundary2.containsSameVertices(move.outerIds));
+				region1.add(B2);
+				region2.add(B1);
 			}
 			
-			b1.addVertex(z);
-			b2.addVertex(z);
+			// add z after doing the B1/B2 placement, because we expect that that
+			// the outer boundary ignores the newly generated vertex when checking.
+			boundary1.add(z);
+			boundary2.add(z);
 			
-			regions.add(r1);
-			regions.add(r2);
+			regions.add(region1);
+			regions.add(region2);
 
 			// remove outdated region
 			regions.remove(region);
@@ -235,8 +242,9 @@ public class Position {
 
 		for (Boundary boundary : boundaries) {
 			for (int vertex : vertices) {
-				if (boundary.containsVertex(vertex)) {
+				if (boundary.contains(vertex)) {
 					containing.add(boundary);
+					break;
 				}
 			}
 		}
@@ -244,42 +252,50 @@ public class Position {
 		return containing;
 	}
 
-	private List<Boundary> getFirstBoundaryMinusSecondBoundary(List<Boundary> first, List<Boundary> second) {
+	private List<Boundary> getFirstBoundariesMinusSecondBoundaries(List<Boundary> first, List<Boundary> second) {
 		List<Boundary> minus = new LinkedList<>();
 		minus.addAll(first);
-
-		for (Boundary a : first) {
-			if (second.contains(a)) minus.remove(a);
-		}
-
+		minus.removeAll(second);
 		return minus;
 	}
 
-	// @speed
-	private Region getJointRegion(Move move) {
-		List<Region> regionsA = getRegions(move.fromId);
-		List<Region> regionsB = getRegions(move.toId);
+	private void removeRegionsNotContainingVertex(List<Region> regions, int vertexId) {
+		for (Iterator<Region> it = regions.iterator(); it.hasNext();) {
+			Region region = it.next();
 
-		regionsA.retainAll(regionsB);
+			boolean insideRegion = false;
+			for (Boundary boundary : region.getBoundaries()) {
+				if (boundary.contains(vertexId)) {
+					insideRegion = true;
+					break;
+				}
+			}
+			
+			if (!insideRegion) it.remove();
+		}
+	}
+	
+	private Region getJointRegion(Move move) {
+		List<Region> joint = getRegions(move.fromId);
+		removeRegionsNotContainingVertex(joint, move.toId);
 
 		for (int id : move.innerIds) {
-			List<Region> regionsC = getRegions(id);
-			regionsA.retainAll(regionsC);
+			removeRegionsNotContainingVertex(joint, id);
 		}
 		
-		if (regionsA.size() != 1) {
-			String error = String.format("found %d joint regions.", regionsA.size());
+		if (joint.size() != 1) {
+			String error = String.format("found %d joint regions.", joint.size());
 			throw new IllegalStateException(error);
 		}
 
-		return regionsA.get(0);
+		return joint.get(0);
 	}
 
 	private List<Region> getRegions(int vertex) {
 		List<Region> found = new ArrayList<>();
 		for (Region region : regions) {
 			for (Boundary boundary : region.getBoundaries()) {
-				if (boundary.containsVertex(vertex)) {
+				if (boundary.contains(vertex)) {
 					found.add(region);
 					break;
 				}
