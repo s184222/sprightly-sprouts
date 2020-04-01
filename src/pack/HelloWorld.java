@@ -19,7 +19,7 @@ import com.sprouts.graphic.tessellator.BasicTessellator;
 import com.sprouts.graphic.texture.Texture;
 import com.sprouts.graphic.texture.TextureLoader;
 import com.sprouts.math.Mat4;
-import com.sprouts.os.LibUtil;
+import com.sprouts.util.LibUtil;
 
 public class HelloWorld {
 
@@ -31,7 +31,7 @@ public class HelloWorld {
 	private static final int WINDOW_WIDTH  = 500;
 	private static final int WINDOW_HEIGHT = 500;
 
-	private static final String SPONGE_BOB_PATH = "res/textures/spongebob.png";
+	private static final String SPONGE_BOB_PATH = "/textures/spongebob.png";
 	
 	private final Display display;
 
@@ -65,6 +65,9 @@ public class HelloWorld {
 			texture = TextureLoader.loadTexture(SPONGE_BOB_PATH);
 		} catch (IOException e) {
 			e.printStackTrace();
+			
+			// TODO: Do something else here.
+			System.exit(0);
 		}
 		
 		shader = new TestShader();
@@ -82,61 +85,59 @@ public class HelloWorld {
 		vertexArray = new VertexArray();
 		
 		try (BasicTessellator t = new BasicTessellator()) {
-			t.clearColor();
-			
 			// FRONT
-			t.position( 1.0f, -0.0f,  1.0f).texCoord( 1.0f, -0.0f).next();
-			t.position(-0.0f,  1.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
-			t.position(-0.0f, -0.0f,  1.0f).texCoord(-0.0f, -0.0f).next();
+			t.position( 1.0f, -0.0f,  1.0f).color( 1.0f, -0.0f,  1.0f).texCoord( 1.0f, -0.0f).next();
+			t.position(-0.0f,  1.0f,  1.0f).color(-0.0f,  1.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
+			t.position(-0.0f, -0.0f,  1.0f).color(-0.0f, -0.0f,  1.0f).texCoord(-0.0f, -0.0f).next();
 
-			t.position( 1.0f, -0.0f,  1.0f).texCoord( 1.0f, -0.0f).next();
-			t.position( 1.0f,  1.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
-			t.position(-0.0f,  1.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
+			t.position( 1.0f, -0.0f,  1.0f).color( 1.0f, -0.0f,  1.0f).texCoord( 1.0f, -0.0f).next();
+			t.position( 1.0f,  1.0f,  1.0f).color( 1.0f,  1.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
+			t.position(-0.0f,  1.0f,  1.0f).color(-0.0f,  1.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
 
 			// BACK
-			t.position(-0.0f, -0.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
-			t.position( 1.0f,  1.0f, -0.0f).texCoord( 1.0f,  1.0f).next();
-			t.position( 1.0f, -0.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
+			t.position(-0.0f, -0.0f, -0.0f).color(-0.0f, -0.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
+			t.position( 1.0f,  1.0f, -0.0f).color( 1.0f,  1.0f, -0.0f).texCoord( 1.0f,  1.0f).next();
+			t.position( 1.0f, -0.0f, -0.0f).color( 1.0f, -0.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
 
-			t.position(-0.0f, -0.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
-			t.position(-0.0f,  1.0f, -0.0f).texCoord(-0.0f,  1.0f).next();
-			t.position( 1.0f,  1.0f, -0.0f).texCoord( 1.0f,  1.0f).next();
+			t.position(-0.0f, -0.0f, -0.0f).color(-0.0f, -0.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
+			t.position(-0.0f,  1.0f, -0.0f).color(-0.0f,  1.0f, -0.0f).texCoord(-0.0f,  1.0f).next();
+			t.position( 1.0f,  1.0f, -0.0f).color( 1.0f,  1.0f, -0.0f).texCoord( 1.0f,  1.0f).next();
 
 			// BOTTOM
-			t.position(-0.0f, -0.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
-			t.position( 1.0f, -0.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
-			t.position( 1.0f, -0.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
+			t.position(-0.0f, -0.0f,  1.0f).color(-0.0f, -0.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
+			t.position( 1.0f, -0.0f, -0.0f).color( 1.0f, -0.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
+			t.position( 1.0f, -0.0f,  1.0f).color( 1.0f, -0.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
 
-			t.position(-0.0f, -0.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
-			t.position(-0.0f, -0.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
-			t.position( 1.0f, -0.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
+			t.position(-0.0f, -0.0f,  1.0f).color(-0.0f, -0.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
+			t.position(-0.0f, -0.0f, -0.0f).color(-0.0f, -0.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
+			t.position( 1.0f, -0.0f, -0.0f).color( 1.0f, -0.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
 
 			// TOP
-			t.position(-0.0f,  1.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
-			t.position( 1.0f,  1.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
-			t.position( 1.0f,  1.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
+			t.position(-0.0f,  1.0f, -0.0f).color(-0.0f,  1.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
+			t.position( 1.0f,  1.0f,  1.0f).color( 1.0f,  1.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
+			t.position( 1.0f,  1.0f, -0.0f).color( 1.0f,  1.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
 
-			t.position(-0.0f,  1.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
-			t.position(-0.0f,  1.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
-			t.position( 1.0f,  1.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
+			t.position(-0.0f,  1.0f, -0.0f).color(-0.0f,  1.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
+			t.position(-0.0f,  1.0f,  1.0f).color(-0.0f,  1.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
+			t.position( 1.0f,  1.0f,  1.0f).color( 1.0f,  1.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
 
 			// LEFT
-			t.position(-0.0f, -0.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
-			t.position(-0.0f,  1.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
-			t.position(-0.0f, -0.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
+			t.position(-0.0f, -0.0f,  1.0f).color(-0.0f, -0.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
+			t.position(-0.0f,  1.0f, -0.0f).color(-0.0f,  1.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
+			t.position(-0.0f, -0.0f, -0.0f).color(-0.0f, -0.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
 
-			t.position(-0.0f, -0.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
-			t.position(-0.0f,  1.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
-			t.position(-0.0f,  1.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
+			t.position(-0.0f, -0.0f,  1.0f).color(-0.0f, -0.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
+			t.position(-0.0f,  1.0f,  1.0f).color(-0.0f,  1.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
+			t.position(-0.0f,  1.0f, -0.0f).color(-0.0f,  1.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
 
 			// RIGHT
-			t.position( 1.0f, -0.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
-			t.position( 1.0f,  1.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
-			t.position( 1.0f, -0.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
+			t.position( 1.0f, -0.0f, -0.0f).color( 1.0f, -0.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
+			t.position( 1.0f,  1.0f,  1.0f).color( 1.0f,  1.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
+			t.position( 1.0f, -0.0f,  1.0f).color( 1.0f, -0.0f,  1.0f).texCoord(-0.0f,  1.0f).next();
 
-			t.position( 1.0f, -0.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
-			t.position( 1.0f,  1.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
-			t.position( 1.0f,  1.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
+			t.position( 1.0f, -0.0f, -0.0f).color( 1.0f, -0.0f, -0.0f).texCoord(-0.0f, -0.0f).next();
+			t.position( 1.0f,  1.0f, -0.0f).color( 1.0f,  1.0f, -0.0f).texCoord( 1.0f, -0.0f).next();
+			t.position( 1.0f,  1.0f,  1.0f).color( 1.0f,  1.0f,  1.0f).texCoord( 1.0f,  1.0f).next();
 			
 			vertexArray.storeAttributeBuffer(TestShader.POSITION_ATTRIB_INDEX, t.writePositionBuffer());
 			vertexArray.storeAttributeBuffer(TestShader.COLOR_ATTRIB_INDEX, t.writeColorBuffer());
@@ -187,6 +188,7 @@ public class HelloWorld {
 			GL30.glActiveTexture(GL30.GL_TEXTURE0);
 			texture.bind();
 			GL30.glDrawArrays(GL30.GL_TRIANGLES, 0, 3 * 2 * 6);
+			texture.unbind();
 			vertexArray.unbind();
 
 			shader.disable();

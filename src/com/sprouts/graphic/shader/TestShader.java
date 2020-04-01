@@ -45,6 +45,6 @@ public class TestShader extends ShaderProgram {
 	}
 	
 	public void setTextureUnit(int tex) {
-		uniformUnsignedInt(texLocation, tex);
+		uniformInt(texLocation, tex);
 	}
 }
