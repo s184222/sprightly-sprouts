@@ -14,6 +14,7 @@ public class TestShader extends ShaderProgram {
 	private final int projMatLocation;
 	private final int viewMatLocation;
 	private final int modlMatLocation;
+	private final int texLocation;
 	
 	public TestShader() {
 		super(VERTEX_SHADER_PATH, FRAGMENT_SHADER_PATH);
@@ -21,6 +22,7 @@ public class TestShader extends ShaderProgram {
 		projMatLocation = getUniformLocation("proj_mat");
 		viewMatLocation = getUniformLocation("view_mat");
 		modlMatLocation = getUniformLocation("modl_mat");
+		texLocation = getUniformLocation("tex");
 	}
 
 	@Override
@@ -40,5 +42,9 @@ public class TestShader extends ShaderProgram {
 
 	public void setModlMat(Mat4 modlMat) {
 		uniformMat4(modlMatLocation, modlMat);
+	}
+	
+	public void setTextureUnit(int tex) {
+		uniformUnsignedInt(texLocation, tex);
 	}
 }

@@ -68,13 +68,16 @@ public class HelloWorld {
 		}
 		
 		shader = new TestShader();
+		shader.enable();
+		shader.setTextureUnit(0);
+		shader.disable();
 	}
 	
 	private void init() {
-		loadResources();
-		
 		display.initDisplay(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
 		display.addDisplayListener(this::onViewportChanged);
+
+		loadResources();		
 	
 		vertexArray = new VertexArray();
 		

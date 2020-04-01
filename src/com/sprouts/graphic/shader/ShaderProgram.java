@@ -39,6 +39,14 @@ public abstract class ShaderProgram {
 	protected void bindAttribute(int attribIndex, String variableName) {
 		GL30.glBindAttribLocation(programID, attribIndex, variableName);
 	}
+	
+	protected void uniformUnsignedInt(int location, int i) {
+		GL30.glUniform1ui(location, i);
+	}
+	
+	protected void uniformInt(int location, int i) {
+		GL30.glUniform1i(location, i);
+	}
 
 	protected void uniformFloat(int location, float f) {
 		GL30.glUniform1f(location, f);
