@@ -1,14 +1,14 @@
-package com.sprouts.texture;
+package com.sprouts.graphic.texture;
 
 public class Texture {
+	
 	private int id;
 	
-	public Texture(int id) {
+	Texture(int id) {
 		this.id = id;
 	}
 
 	public int getId() {
 		return id;
 	}
-	
 }
