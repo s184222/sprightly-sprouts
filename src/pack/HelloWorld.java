@@ -12,8 +12,8 @@ import org.lwjgl.opengl.GL30;
 import com.sprouts.graphic.Display;
 import com.sprouts.graphic.DisplaySize;
 import com.sprouts.graphic.buffer.VertexArray;
-import com.sprouts.graphic.buffer.VertexBuffer;
 import com.sprouts.graphic.shader.TestShader;
+import com.sprouts.graphic.tessellator.BasicTessellator;
 import com.sprouts.math.Mat4;
 import com.sprouts.os.LibUtil;
 
@@ -60,120 +60,65 @@ public class HelloWorld {
 		shader = new TestShader();
 		vertexArray = new VertexArray();
 		
-		VertexBuffer positionBuffer = new VertexBuffer(new float[] {
+		try (BasicTessellator t = new BasicTessellator()) {
 			// FRONT
-			 1.0f, -0.0f,  1.0f,
-			-0.0f,  1.0f,  1.0f,
-			-0.0f, -0.0f,  1.0f,
-			
-			 1.0f, -0.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			-0.0f,  1.0f,  1.0f,
+			t.position( 1.0f, -0.0f,  1.0f).color( 1.0f, -0.0f,  1.0f).next();
+			t.position(-0.0f,  1.0f,  1.0f).color(-0.0f,  1.0f,  1.0f).next();
+			t.position(-0.0f, -0.0f,  1.0f).color(-0.0f, -0.0f,  1.0f).next();
+
+			t.position( 1.0f, -0.0f,  1.0f).color( 1.0f, -0.0f,  1.0f).next();
+			t.position( 1.0f,  1.0f,  1.0f).color( 1.0f,  1.0f,  1.0f).next();
+			t.position(-0.0f,  1.0f,  1.0f).color(-0.0f,  1.0f,  1.0f).next();
 
 			// BACK
-			-0.0f, -0.0f, -0.0f,
-			 1.0f,  1.0f, -0.0f,
-			 1.0f, -0.0f, -0.0f,
-			
-			-0.0f, -0.0f, -0.0f,
-			-0.0f,  1.0f, -0.0f,
-			 1.0f,  1.0f, -0.0f,
+			t.position(-0.0f, -0.0f, -0.0f).color(-0.0f, -0.0f, -0.0f).next();
+			t.position( 1.0f,  1.0f, -0.0f).color( 1.0f,  1.0f, -0.0f).next();
+			t.position( 1.0f, -0.0f, -0.0f).color( 1.0f, -0.0f, -0.0f).next();
+
+			t.position(-0.0f, -0.0f, -0.0f).color(-0.0f, -0.0f, -0.0f).next();
+			t.position(-0.0f,  1.0f, -0.0f).color(-0.0f,  1.0f, -0.0f).next();
+			t.position( 1.0f,  1.0f, -0.0f).color( 1.0f,  1.0f, -0.0f).next();
 
 			// BOTTOM
-			-0.0f, -0.0f,  1.0f,
-			 1.0f, -0.0f, -0.0f,
-			 1.0f, -0.0f,  1.0f,
-			
-			-0.0f, -0.0f,  1.0f,
-			-0.0f, -0.0f, -0.0f,
-			 1.0f, -0.0f, -0.0f,
+			t.position(-0.0f, -0.0f,  1.0f).color(-0.0f, -0.0f,  1.0f).next();
+			t.position( 1.0f, -0.0f, -0.0f).color( 1.0f, -0.0f, -0.0f).next();
+			t.position( 1.0f, -0.0f,  1.0f).color( 1.0f, -0.0f,  1.0f).next();
 
-			// TOP 
-			-0.0f,  1.0f, -0.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f, -0.0f,
-			
-			-0.0f,  1.0f, -0.0f,
-			-0.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			
+			t.position(-0.0f, -0.0f,  1.0f).color(-0.0f, -0.0f,  1.0f).next();
+			t.position(-0.0f, -0.0f, -0.0f).color(-0.0f, -0.0f, -0.0f).next();
+			t.position( 1.0f, -0.0f, -0.0f).color( 1.0f, -0.0f, -0.0f).next();
+
+			// TOP
+			t.position(-0.0f,  1.0f, -0.0f).color(-0.0f,  1.0f, -0.0f).next();
+			t.position( 1.0f,  1.0f,  1.0f).color( 1.0f,  1.0f,  1.0f).next();
+			t.position( 1.0f,  1.0f, -0.0f).color( 1.0f,  1.0f, -0.0f).next();
+
+			t.position(-0.0f,  1.0f, -0.0f).color(-0.0f,  1.0f, -0.0f).next();
+			t.position(-0.0f,  1.0f,  1.0f).color(-0.0f,  1.0f,  1.0f).next();
+			t.position( 1.0f,  1.0f,  1.0f).color( 1.0f,  1.0f,  1.0f).next();
+
 			// LEFT
-			-0.0f, -0.0f,  1.0f,
-			-0.0f,  1.0f, -0.0f,
-			-0.0f, -0.0f, -0.0f,
-			
-			-0.0f, -0.0f,  1.0f,
-			-0.0f,  1.0f,  1.0f,
-			-0.0f,  1.0f, -0.0f,
-			
+			t.position(-0.0f, -0.0f,  1.0f).color(-0.0f, -0.0f,  1.0f).next();
+			t.position(-0.0f,  1.0f, -0.0f).color(-0.0f,  1.0f, -0.0f).next();
+			t.position(-0.0f, -0.0f, -0.0f).color(-0.0f, -0.0f, -0.0f).next();
+
+			t.position(-0.0f, -0.0f,  1.0f).color(-0.0f, -0.0f,  1.0f).next();
+			t.position(-0.0f,  1.0f,  1.0f).color(-0.0f,  1.0f,  1.0f).next();
+			t.position(-0.0f,  1.0f, -0.0f).color(-0.0f,  1.0f, -0.0f).next();
+
 			// RIGHT
-			 1.0f, -0.0f, -0.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f, -0.0f,  1.0f,
+			t.position( 1.0f, -0.0f, -0.0f).color( 1.0f, -0.0f, -0.0f).next();
+			t.position( 1.0f,  1.0f,  1.0f).color( 1.0f,  1.0f,  1.0f).next();
+			t.position( 1.0f, -0.0f,  1.0f).color( 1.0f, -0.0f,  1.0f).next();
 
-			 1.0f, -0.0f, -0.0f,
-			 1.0f,  1.0f, -0.0f,
-			 1.0f,  1.0f,  1.0f
-		}, 3);
-		vertexArray.storeAttributeBuffer(TestShader.POSITION_ATTRIB_INDEX, positionBuffer);
+			t.position( 1.0f, -0.0f, -0.0f).color( 1.0f, -0.0f, -0.0f).next();
+			t.position( 1.0f,  1.0f, -0.0f).color( 1.0f,  1.0f, -0.0f).next();
+			t.position( 1.0f,  1.0f,  1.0f).color( 1.0f,  1.0f,  1.0f).next();
+			
+			vertexArray.storeAttributeBuffer(TestShader.POSITION_ATTRIB_INDEX, t.writePositionBuffer());
+			vertexArray.storeAttributeBuffer(TestShader.COLOR_ATTRIB_INDEX, t.writeColorBuffer());
+		}
 
-		VertexBuffer colorBuffer = new VertexBuffer(new float[] {
-			// FRONT
-			 1.0f, -0.0f,  1.0f,
-			-0.0f,  1.0f,  1.0f,
-			-0.0f, -0.0f,  1.0f,
-			
-			 1.0f, -0.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			-0.0f,  1.0f,  1.0f,
-
-			// BACK
-			-0.0f, -0.0f, -0.0f,
-			 1.0f,  1.0f, -0.0f,
-			 1.0f, -0.0f, -0.0f,
-			
-			-0.0f, -0.0f, -0.0f,
-			-0.0f,  1.0f, -0.0f,
-			 1.0f,  1.0f, -0.0f,
-
-			// BOTTOM
-			-0.0f, -0.0f,  1.0f,
-			 1.0f, -0.0f, -0.0f,
-			 1.0f, -0.0f,  1.0f,
-			
-			-0.0f, -0.0f,  1.0f,
-			-0.0f, -0.0f, -0.0f,
-			 1.0f, -0.0f, -0.0f,
-
-			// TOP 
-			-0.0f,  1.0f, -0.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f, -0.0f,
-			
-			-0.0f,  1.0f, -0.0f,
-			-0.0f,  1.0f,  1.0f,
-			 1.0f,  1.0f,  1.0f,
-			
-			// LEFT
-			-0.0f, -0.0f,  1.0f,
-			-0.0f,  1.0f, -0.0f,
-			-0.0f, -0.0f, -0.0f,
-			
-			-0.0f, -0.0f,  1.0f,
-			-0.0f,  1.0f,  1.0f,
-			-0.0f,  1.0f, -0.0f,
-			
-			// RIGHT
-			 1.0f, -0.0f, -0.0f,
-			 1.0f,  1.0f,  1.0f,
-			 1.0f, -0.0f,  1.0f,
-
-			 1.0f, -0.0f, -0.0f,
-			 1.0f,  1.0f, -0.0f,
-			 1.0f,  1.0f,  1.0f
-		}, 3);
-		vertexArray.storeAttributeBuffer(TestShader.COLOR_ATTRIB_INDEX, colorBuffer);
-	
 		projMat = new Mat4();
 		viewMat = new Mat4();
 		modlMat = new Mat4();

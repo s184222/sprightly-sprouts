@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.system.MemoryUtil;
 
 import com.sprouts.math.Mat4;
 import com.sprouts.math.Vec2;
@@ -58,12 +58,12 @@ public abstract class ShaderProgram {
 
 	protected void uniformMat4(int location, Mat4 m) {
 		if (mat4Buffer == null)
-			mat4Buffer = BufferUtils.createFloatBuffer(16);
+			mat4Buffer = MemoryUtil.memAllocFloat(16);
 		mat4Buffer.clear();
-		m.writeBuffer(mat4Buffer);
+		m.writeBuffer(mat4Buffer, false);
 		mat4Buffer.flip();
 		
-		GL30.glUniformMatrix4fv(location, true, mat4Buffer);
+		GL30.glUniformMatrix4fv(location, false, mat4Buffer);
 	}
 	
 	protected int getUniformLocation(String uniformName) {

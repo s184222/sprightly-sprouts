@@ -398,10 +398,17 @@ public class Mat4 {
 		return this;
 	}
 
-	public void writeBuffer(FloatBuffer buf) {
-		buf.put(m00).put(m10).put(m20).put(m30)
-		   .put(m01).put(m11).put(m21).put(m31)
-		   .put(m02).put(m12).put(m22).put(m32)
-		   .put(m03).put(m13).put(m23).put(m33);
+	public void writeBuffer(FloatBuffer buf, boolean rowMajor) {
+		if (rowMajor) {
+			buf.put(m00).put(m10).put(m20).put(m30)
+			   .put(m01).put(m11).put(m21).put(m31)
+			   .put(m02).put(m12).put(m22).put(m32)
+			   .put(m03).put(m13).put(m23).put(m33);
+		} else {
+			buf.put(m00).put(m01).put(m02).put(m03)
+			   .put(m10).put(m11).put(m12).put(m13)
+			   .put(m20).put(m21).put(m22).put(m23)
+			   .put(m30).put(m31).put(m32).put(m33);
+		}
 	}
 }
