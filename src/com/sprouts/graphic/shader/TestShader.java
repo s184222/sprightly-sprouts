@@ -9,6 +9,7 @@ public class TestShader extends ShaderProgram {
 	
 	public static final int POSITION_ATTRIB_INDEX = 0;
 	public static final int COLOR_ATTRIB_INDEX = 1;
+	public static final int TEX_COORD_ATTRIB_INDEX = 2;
 	
 	private final int projMatLocation;
 	private final int viewMatLocation;
@@ -26,6 +27,7 @@ public class TestShader extends ShaderProgram {
 	protected void bindAttributes() {
 		bindAttribute(POSITION_ATTRIB_INDEX, "position");
 		bindAttribute(COLOR_ATTRIB_INDEX, "color");
+		bindAttribute(TEX_COORD_ATTRIB_INDEX, "texCoord");
 	}
 
 	public void setProjMat(Mat4 projMat) {

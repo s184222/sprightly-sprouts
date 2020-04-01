@@ -10,8 +10,6 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
 import static org.lwjgl.opengl.GL11.GL_UNPACK_ALIGNMENT;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
-import static org.lwjgl.opengl.GL11.glBindTexture;
-import static org.lwjgl.opengl.GL11.glGenTextures;
 import static org.lwjgl.opengl.GL11.glPixelStorei;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
@@ -51,9 +49,9 @@ public class TextureLoader {
 			comp = c.get(0);
 		}
 
-		int texID = glGenTextures();
-
-		glBindTexture(GL_TEXTURE_2D, texID);
+		Texture result = new Texture();
+		
+		result.bind();
 		
 		// Use nearest neighbor for scaling
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -74,6 +72,8 @@ public class TextureLoader {
 		} else if (comp == 4) {
 			format = GL_RGBA;
 		} else {
+			result.dispose();
+			
 			throw new RuntimeException("Invalid format. Must be either RGB or RGBA.");
 		}
 
@@ -81,7 +81,9 @@ public class TextureLoader {
 
 		stbi_image_free(image);
 
-		return new Texture(texID);
+		result.unbind();
+		
+		return result;
 
 	}
 }
