@@ -1,4 +1,4 @@
-package pack;
+package com.sprouts;
 
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
@@ -18,10 +18,12 @@ import com.sprouts.graphic.shader.TestShader;
 import com.sprouts.graphic.tessellator.BasicTessellator;
 import com.sprouts.graphic.texture.Texture;
 import com.sprouts.graphic.texture.TextureLoader;
+import com.sprouts.input.Keyboard;
+import com.sprouts.input.Mouse;
 import com.sprouts.math.Mat4;
 import com.sprouts.util.LibUtil;
 
-public class HelloWorld {
+public class SproutsMain {
 
 	static {
 		LibUtil.loadNatives();
@@ -34,7 +36,9 @@ public class HelloWorld {
 	private static final String SPONGE_BOB_PATH = "/textures/spongebob.png";
 	
 	private final Display display;
-
+	private final Mouse mouse;
+	private final Keyboard keyboard;
+	
 	private TestShader shader;
 	private Texture texture;
 	private VertexArray vertexArray;
@@ -45,8 +49,10 @@ public class HelloWorld {
 	
 	private float rot;
 	
-	public HelloWorld() {
-		this.display = new Display();
+	public SproutsMain() {
+		display = new Display();
+		mouse = new Mouse(display);
+		keyboard = new Keyboard(display);
 	}
 	
 	public void run() {
@@ -79,8 +85,11 @@ public class HelloWorld {
 	private void init() {
 		display.initDisplay(WINDOW_TITLE, WINDOW_WIDTH, WINDOW_HEIGHT);
 		display.addDisplayListener(this::onViewportChanged);
-
-		loadResources();		
+		
+		mouse.init();
+		keyboard.init();
+		
+		loadResources();
 	
 		vertexArray = new VertexArray();
 		
@@ -205,8 +214,16 @@ public class HelloWorld {
 			System.err.println("OpenGL error: " + err);
 		}
 	}
+	
+	public Mouse getMouse() {
+		return mouse;
+	}
+
+	public Keyboard getKeyboard() {
+		return keyboard;
+	}
 
 	public static void main(String[] args) {
-		new HelloWorld().run();
+		new SproutsMain().run();
 	}
 }
