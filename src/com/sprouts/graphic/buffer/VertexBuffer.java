@@ -1,9 +1,14 @@
 package com.sprouts.graphic.buffer;
 
-import java.nio.FloatBuffer;
+import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
+import static org.lwjgl.opengl.GL15.glBindBuffer;
+import static org.lwjgl.opengl.GL15.glBufferData;
+import static org.lwjgl.opengl.GL15.glBufferSubData;
+import static org.lwjgl.opengl.GL15.glDeleteBuffers;
+import static org.lwjgl.opengl.GL15.glGenBuffers;
 
-import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
+import java.nio.FloatBuffer;
 
 public class VertexBuffer {
 
@@ -17,7 +22,7 @@ public class VertexBuffer {
 	 * @param componentCount - the number of elements for each vertex.
 	 */
 	public VertexBuffer(int componentCount) {
-		bufferHandle = GL30.glGenBuffers();
+		bufferHandle = glGenBuffers();
 		this.componentCount = componentCount;
 		size = -1;
 	}
@@ -37,10 +42,10 @@ public class VertexBuffer {
 	public void storeData(FloatBuffer buffer) {
 		bind();
 		if (size != buffer.remaining()) {
-			GL30.glBufferData(GL20.GL_ARRAY_BUFFER, buffer, GL20.GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
 			size = buffer.remaining();
 		} else {
-			GL30.glBufferSubData(GL20.GL_ARRAY_BUFFER, 0, buffer);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
 		}
 		unbind();
 	}
@@ -48,20 +53,20 @@ public class VertexBuffer {
 	public void storeData(float[] data) {
 		bind();
 		if (size != data.length) {
-			GL30.glBufferData(GL20.GL_ARRAY_BUFFER, data, GL20.GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, data, GL_STATIC_DRAW);
 			size = data.length;
 		} else {
-			GL30.glBufferSubData(GL20.GL_ARRAY_BUFFER, 0, data);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, data);
 		}
 		unbind();
 	}
 	
 	public void bind() {
-		GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, bufferHandle);
+		glBindBuffer(GL_ARRAY_BUFFER, bufferHandle);
 	}
 
 	public void unbind() {
-		GL30.glBindBuffer(GL30.GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 	
 	public int getComponentCount() {
@@ -74,7 +79,7 @@ public class VertexBuffer {
 	
 	public void dispose() {
 		if (bufferHandle != -1) {
-			GL30.glDeleteBuffers(bufferHandle);
+			glDeleteBuffers(bufferHandle);
 			bufferHandle = -1;
 		}
 	}

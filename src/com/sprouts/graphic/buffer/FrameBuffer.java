@@ -8,6 +8,7 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
 import static org.lwjgl.opengl.GL11.glDrawBuffer;
 import static org.lwjgl.opengl.GL11.glGenTextures;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
@@ -18,6 +19,8 @@ import static org.lwjgl.opengl.GL30.GL_FRAMEBUFFER;
 import static org.lwjgl.opengl.GL30.GL_RENDERBUFFER;
 import static org.lwjgl.opengl.GL30.glBindFramebuffer;
 import static org.lwjgl.opengl.GL30.glBindRenderbuffer;
+import static org.lwjgl.opengl.GL30.glDeleteFramebuffers;
+import static org.lwjgl.opengl.GL30.glDeleteRenderbuffers;
 import static org.lwjgl.opengl.GL30.glFramebufferRenderbuffer;
 import static org.lwjgl.opengl.GL30.glGenFramebuffers;
 import static org.lwjgl.opengl.GL30.glGenRenderbuffers;
@@ -32,9 +35,9 @@ public class FrameBuffer {
 	private int width;
 	private int height;
 	
-	private final int frameBufferID;
-	private final int textureID;
-	private final int depthBufferID;
+	private int frameBufferID;
+	private int textureID;
+	private int depthBufferID;
 
 	public FrameBuffer(FrameBufferType type, int width, int height) {
 		this.type = type;
@@ -85,7 +88,7 @@ public class FrameBuffer {
 		}
 	}
 	
-	public void bind(){
+	public void bind() {
 		glBindFramebuffer(GL_FRAMEBUFFER, frameBufferID);
 	}
 	
@@ -117,5 +120,22 @@ public class FrameBuffer {
 
 	public int getHeight() {
 		return height;
+	}
+	
+	public void dispose() {
+		if (textureID != -1) {
+			glDeleteTextures(textureID);
+			textureID = -1;
+		}
+
+		if (depthBufferID != -1) {
+			glDeleteRenderbuffers(depthBufferID);
+			depthBufferID = -1;
+		}
+		
+		if (frameBufferID != -1) {
+			glDeleteFramebuffers(frameBufferID);
+			frameBufferID = -1;
+		}
 	}
 }
