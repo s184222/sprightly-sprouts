@@ -1,4 +1,4 @@
-package com.sprouts.os;
+package com.sprouts.util;
 
 public class UnknownOSException extends RuntimeException {
 	private static final long serialVersionUID = 8583264485034836215L;

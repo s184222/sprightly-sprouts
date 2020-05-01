@@ -2,8 +2,6 @@ package com.sprouts.graphic;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
@@ -16,8 +14,12 @@ import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
 import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSetCharCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetMouseButtonCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetScrollCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
@@ -34,7 +36,12 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.glfw.GLFWCharCallbackI;
+import org.lwjgl.glfw.GLFWCursorPosCallbackI;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWKeyCallbackI;
+import org.lwjgl.glfw.GLFWMouseButtonCallbackI;
+import org.lwjgl.glfw.GLFWScrollCallbackI;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
@@ -80,13 +87,6 @@ public class Display {
 		if (windowHandle == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 
-		// TODO: move this out of display class
-		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
-		glfwSetKeyCallback(windowHandle, (window, key, scancode, action, mods) -> {
-			if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-				glfwSetWindowShouldClose(window, true);
-		});
-		
 		glfwSetWindowSizeCallback(windowHandle, (window, newWidth, newHeight) -> {
 			dispatchSizeChangedEvent(newWidth, newHeight);
 		});
@@ -134,11 +134,35 @@ public class Display {
 	public void setDisplayPosition(int wx, int wy) {
 		glfwSetWindowPos(windowHandle, wx, wy);
 	}
+
+	public void setKeyCallback(GLFWKeyCallbackI callback) {
+		glfwSetKeyCallback(windowHandle, callback);
+	}
+
+	public void setCharCallback(GLFWCharCallbackI callback) {
+		glfwSetCharCallback(windowHandle, callback);
+	}
+	
+	public void setCursorPosCallback(GLFWCursorPosCallbackI callback) {
+		glfwSetCursorPosCallback(windowHandle, callback);
+	}
+
+	public void setMouseButtonCallback(GLFWMouseButtonCallbackI callback) {
+		glfwSetMouseButtonCallback(windowHandle, callback);
+	}
+	
+	public void setScrollCallback(GLFWScrollCallbackI callback) {
+		glfwSetScrollCallback(windowHandle, callback);
+	}
+	
+	public void setWindowShouldClose(boolean value) {
+		glfwSetWindowShouldClose(windowHandle, value);
+	}
 	
 	public boolean isCloseRequested() {
 		return glfwWindowShouldClose(windowHandle);
 	}
-	
+
 	public void dispose() {
 		// Free the window callbacks and destroy the window
 		glfwFreeCallbacks(windowHandle);

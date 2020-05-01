@@ -40,10 +40,6 @@ public abstract class ShaderProgram {
 		GL30.glBindAttribLocation(programID, attribIndex, variableName);
 	}
 	
-	protected void uniformUnsignedInt(int location, int i) {
-		GL30.glUniform1ui(location, i);
-	}
-	
 	protected void uniformInt(int location, int i) {
 		GL30.glUniform1i(location, i);
 	}
