@@ -95,7 +95,7 @@ public class ConcreteFacade {
 				String[] rawVertexIdsInner = peeledInner.split(",");
 				for (String rawId : rawVertexIdsInner) {
 					int vertexId = Integer.parseInt(rawId);
-					move.innerIds.add(vertexId);
+					move.innerIds1.add(vertexId);
 				}
 			}
 			
@@ -103,7 +103,7 @@ public class ConcreteFacade {
 			String[] rawVertexIdsOuter = peeledOuter.split(",");
 			for (String rawId : rawVertexIdsOuter) {
 				int vertexId = Integer.parseInt(rawId);
-				move.outerIds.add(vertexId);
+				move.outerIds2.add(vertexId);
 			}
 		}
 

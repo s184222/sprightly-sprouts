@@ -27,5 +27,13 @@ public class RunConcreteTest {
 		facade.buildPosition("AGBF.C.D.E.}AGBF.}!");
 		facade.makeMove("0,1[2,3]{1,0,5}");
 		Assert.equals("AGBF.}BFAH.C.D.}AGBH.E.}!", facade.getPosition());
+		
+		facade.createFreshPosition(5);
+    facade.makeMove("0,1");
+    Assert.equals("C.D.E.AFBF.}!", facade.getPosition());
+    facade.makeMove("4,4[0,1,2,3,5]{4}");
+    Assert.equals("EG.C.D.AFBF.}EG.}!", facade.getPosition());
+    facade.makeMove("6,4[0,1,5]{4,6}");
+    Assert.equals("EG}GEH.AFBF.}GEH.C.D.}!", facade.getPosition());
 	}
 }
