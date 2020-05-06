@@ -90,7 +90,10 @@ public final class LinMath {
 			float py = p.y - a.y;
 			float divisor = -((bx*cy) - (by*cx));
 			
-			if (divisor == 0)System.out.println("divide by 0 error");
+			if (Math.abs(divisor) < EPSILON * EPSILON) {
+				return false;
+			}
+			
 			float w1 = 	((cx*py)-(cy*px))/divisor;
 			float w2 =  -((bx*py) - (by*px))/divisor;
 			
@@ -99,13 +102,4 @@ public final class LinMath {
 			
 			else return false;
 		}
-		public static void main(String[] args) {
-			Vec2 p0 = new Vec2 (100,100);
-			Vec2 p1 = new Vec2 (500,500);
-			Vec2 p2 = new Vec2 (200,200);
-			Vec2 p3 = new Vec2 (600,600);
-//			List<Vec2> line = new LinkedList<>();
-			
-			System.out.println(LinMath.intersect(p0, p1, p2, p3, true, true).y);
-			System.out.println(LinMath.intersect(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, true, true).x);
-}}
+}
