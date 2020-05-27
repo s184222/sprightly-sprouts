@@ -1,6 +1,6 @@
 package sprouts.test.concrete;
 
-import sprouts.representation.concrete.ConcreteFacade;
+import sprouts.mvc.game.model.representation.concrete.ConcreteFacade;
 import sprouts.test.Assert;
 
 public class RunConcreteTest {

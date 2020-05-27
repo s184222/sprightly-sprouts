@@ -1,4 +1,4 @@
-package sprouts.representation.concrete;
+package sprouts.mvc.game.model.representation.concrete;
 
 public class VertexUtil {
 	
