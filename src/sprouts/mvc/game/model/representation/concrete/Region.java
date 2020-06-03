@@ -1,4 +1,4 @@
-package sprouts.representation.concrete;
+package sprouts.mvc.game.model.representation.concrete;
 
 import java.util.ArrayList;
 import java.util.List;

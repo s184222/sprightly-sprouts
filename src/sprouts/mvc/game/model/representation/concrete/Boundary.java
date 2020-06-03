@@ -1,4 +1,4 @@
-package sprouts.representation.concrete;
+package sprouts.mvc.game.model.representation.concrete;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class Boundary {
 	public void add(List<Integer> vs) {
 		vertices.addAll(vs);
 	}
-
+	
 	public List<Integer> getVertices() {
 		return vertices;
 	}
@@ -32,7 +32,7 @@ public class Boundary {
 		return vertices.size();
 	}
 	
-	private int getIndexOfFirstMatch(int id) {
+	public int getIndexOfFirstMatch(int id) {
 		for (int i = 0; i < vertices.size(); i++) {
 			int vertex = vertices.get(i);
 			if (vertex == id) return i;
@@ -41,21 +41,16 @@ public class Boundary {
 		throw new IllegalStateException("no match");
 	}
 
-	public List<Integer> grabTo(int toId) {
-		return vertices.subList(0, getIndexOfFirstMatch(toId) + 1);
+	public List<Integer> grabTo(int toIndex) {
+		return vertices.subList(0, toIndex + 1);
 	}
 	
-	public List<Integer> grabFrom(int toId) {
-		return vertices.subList(getIndexOfFirstMatch(toId), vertices.size());
+	public List<Integer> grabFrom(int toIndex) {
+		return vertices.subList(toIndex, vertices.size());
 	}
 	
-	public List<Integer> grabRange(int fromId, int toId) {
-		int index1 = getIndexOfFirstMatch(fromId);
-		int index2 = getIndexOfFirstMatch(toId);
-		
-		List<Integer> subset = (index1 < index2) ? vertices.subList(index1, index2 + 1) : vertices.subList(index2, index1 + 1);
-		
-		return subset;
+	public List<Integer> grabRange(int fromIndex, int toIndex) {
+		return  vertices.subList(fromIndex, toIndex + 1);
 	}
 	
 	public boolean contains(int vertexId) {

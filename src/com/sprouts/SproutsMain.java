@@ -23,6 +23,12 @@ import com.sprouts.input.Mouse;
 import com.sprouts.math.Mat4;
 import com.sprouts.util.LibUtil;
 
+import sprouts.mvc.ContextManager;
+import sprouts.mvc.MVCContext;
+import sprouts.mvc.game.controller.GameController;
+import sprouts.mvc.game.model.representation.graphical.GameModel;
+import sprouts.mvc.game.view.GameView;
+
 public class SproutsMain {
 
 	static {
@@ -49,10 +55,28 @@ public class SproutsMain {
 	
 	private float rot;
 	
+	private ContextManager contextManager;
+	
 	public SproutsMain() {
 		display = new Display();
 		mouse = new Mouse(display);
 		keyboard = new Keyboard(display);
+		
+		// @merge
+		contextManager = new ContextManager();
+		
+		GameModel gameModel = new GameModel();
+		GameView gameView = new GameView();
+		GameController gameController = new GameController();
+		
+		gameController.model = gameModel;
+		gameController.view = gameView;
+		
+		gameView.controller = gameController;
+		gameView.model = gameModel;
+		
+		contextManager.addMVCContext("game", gameModel, gameView, gameController);
+		contextManager.setActiveContext("game");
 	}
 	
 	public void run() {
@@ -88,6 +112,27 @@ public class SproutsMain {
 		
 		mouse.init();
 		keyboard.init();
+
+		// @merge
+		/*
+		@Override
+		public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+			MVCContext context = contextManager.getActiveContext();
+			context.controller.touchDown(screenX, screenY, button);
+		}
+		
+		@Override
+		public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+			MVCContext context = contextManager.getActiveContext();
+			context.controller.touchUp(screenX, screenY, button);
+		}
+		
+		@Override
+		public boolean touchDragged(int screenX, int screenY, int pointer) {
+			MVCContext context = contextManager.getActiveContext();
+			context.controller.touchDragged(screenX, screenY);
+		}
+		*/
 		
 		loadResources();
 	
@@ -164,7 +209,12 @@ public class SproutsMain {
 
 	private void onViewportChanged(int width, int height) {
 		GL11.glViewport(0, 0, width, height);
+		
+		// @merge
+		MVCContext context = contextManager.getActiveContext();
+		context.view.resize(width, height);
 
+		
 		projMat.toPerspective(70.0f, (float)width / height, 0.01f, 1000.0f);
 		
 		shader.enable();
@@ -183,6 +233,12 @@ public class SproutsMain {
 		while (!display.isCloseRequested()) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+			// @merge
+			MVCContext context = contextManager.getActiveContext();
+			context.controller.update();
+			context.view.draw();
+
+			
 			shader.enable();
 			
 			viewMat.toIdentity().translate(0.0f, 0.0f, -2.0f);

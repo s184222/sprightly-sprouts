@@ -77,6 +77,13 @@ public class Vec2 {
 
 		return this;
 	}
+	
+	public Vec2 sub(float x1, float y1) {
+		x -= x1;
+		y -= y1;
+
+		return this;
+	}
 
 	public Vec2 mul(float c) {
 		x *= c;
@@ -110,6 +117,44 @@ public class Vec2 {
 		return (len < LinMath.EPSILON) ? set(0.0f) : div(len);
 	}
 	
+	public Vec2 setAngleRad(float radians) {
+		set(length(), 0f);
+		rotateRad(radians);
+
+		return this;
+	}
+	
+	public Vec2 setAngle(float degrees) {
+		rotateRad(degrees * MathUtils.radiansToDegrees);
+		return this;
+	}
+	
+	public Vec2 rotateRad(float radians) {
+		float cos = (float)Math.cos(radians);
+		float sin = (float)Math.sin(radians);
+
+		float newX = this.x * cos - this.y * sin;
+		float newY = this.x * sin + this.y * cos;
+
+		this.x = newX;
+		this.y = newY;
+
+		return this;
+		
+	}
+	
+	public float angle () {
+		float angle = (float)Math.atan2(y, x) * MathUtils.radiansToDegrees;
+		if (angle < 0) angle += 360;
+		return angle;
+	}
+
+	public float dst (float x, float y) {
+		final float x_d = x - this.x;
+		final float y_d = y - this.y;
+		return (float)Math.sqrt(x_d * x_d + y_d * y_d);
+	}
+
 	public Vec2 copy() {
 		return new Vec2(this);
 	}
