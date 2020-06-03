@@ -1,5 +1,6 @@
 package com.sprouts.math;
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 public class Mat4 {
@@ -51,10 +52,10 @@ public class Mat4 {
 		return this;
 	}
 
-	public Mat4 toPerspective(float fov, float aspect, float near, float far) {
+	public Mat4 toPerspective(float fovRadians, float aspect, float near, float far) {
 		toIdentity();
 
-		float q = (float)(1.0 / Math.tan(Math.toRadians(fov * 0.5)));
+		float q = (float)(1.0 / Math.tan(fovRadians * 0.5));
 
 		m00 = q / aspect;
 		m11 = q;
@@ -67,10 +68,9 @@ public class Mat4 {
 		return this;
 	}
 
-	public Mat4 rotateX(float degrees) {
-		double r = Math.toRadians(degrees);
-		float c = (float)Math.cos(r);
-		float s = (float)Math.sin(r);
+	public Mat4 rotateX(float radians) {
+		float c = (float)Math.cos(radians);
+		float s = (float)Math.sin(radians);
 
 		float n10 = m10 * c + m20 * s;
 		float n11 = m11 * c + m21 * s;
@@ -90,10 +90,9 @@ public class Mat4 {
 		return this;
 	}
 
-	public Mat4 rotateY(float degrees) {
-		double r = Math.toRadians(degrees);
-		float c = (float)Math.cos(r);
-		float s = (float)Math.sin(r);
+	public Mat4 rotateY(float radians) {
+		float c = (float)Math.cos(radians);
+		float s = (float)Math.sin(radians);
 
 		float n00 = m00 * c - m20 * s;
 		float n01 = m01 * c - m21 * s;
@@ -113,10 +112,9 @@ public class Mat4 {
 		return this;
 	}
 
-	public Mat4 rotateZ(float degrees) {
-		double r = Math.toRadians(degrees);
-		float c = (float)Math.cos(r);
-		float s = (float)Math.sin(r);
+	public Mat4 rotateZ(float radians) {
+		float c = (float)Math.cos(radians);
+		float s = (float)Math.sin(radians);
 
 		float n00 = m00 * c + m10 * s;
 		float n01 = m01 * c + m11 * s;
@@ -136,22 +134,21 @@ public class Mat4 {
 		return this;
 	}
 
-	public Mat4 rotate(float degrees, Vec3 axis) {
-		return rotate(degrees, axis.x, axis.y, axis.z);
+	public Mat4 rotate(float radians, Vec3 axis) {
+		return rotate(radians, axis.x, axis.y, axis.z);
 	}
 
-	public Mat4 rotate(float degrees, float ax, float ay, float az) {
-		return mul(new Mat4().setRotation(degrees, ax, ay, az));
+	public Mat4 rotate(float radians, float ax, float ay, float az) {
+		return mul(new Mat4().setRotation(radians, ax, ay, az));
 	}
 	
-	public Mat4 setRotation(float degrees, Vec3 axis) {
-		return setRotation(degrees, axis.x, axis.y, axis.z);
+	public Mat4 setRotation(float radians, Vec3 axis) {
+		return setRotation(radians, axis.x, axis.y, axis.z);
 	}
 
-	public Mat4 setRotation(float degrees, float ax, float ay, float az) {
-		double r = Math.toRadians(degrees);
-		float c = (float)Math.cos(r);
-		float s = (float)Math.sin(r);
+	public Mat4 setRotation(float radians, float ax, float ay, float az) {
+		float c = (float)Math.cos(radians);
+		float s = (float)Math.sin(radians);
 		float omc = 1.0f - c;
 
 		float xy = ax * ay;
@@ -342,9 +339,9 @@ public class Mat4 {
 	}
 
 	public Vec3 mul(Vec3 right, Vec3 dest) {
-		float nx = m00 * right.x + m10 * right.y + m20 * right.z;
-		float ny = m01 * right.x + m11 * right.y + m21 * right.z;
-		dest.z   = m02 * right.x + m12 * right.y + m22 * right.z;
+		float nx = m00 * right.x + m10 * right.y + m20 * right.z + m30;
+		float ny = m01 * right.x + m11 * right.y + m21 * right.z + m31;
+		dest.z   = m02 * right.x + m12 * right.y + m22 * right.z + m32;
 		
 		dest.x = nx;
 		dest.y = ny;
@@ -409,6 +406,20 @@ public class Mat4 {
 			   .put(m10).put(m11).put(m12).put(m13)
 			   .put(m20).put(m21).put(m22).put(m23)
 			   .put(m30).put(m31).put(m32).put(m33);
+		}
+	}
+
+	public void writeBuffer(ByteBuffer buf, boolean rowMajor) {
+		if (rowMajor) {
+			buf.putFloat(m00).putFloat(m10).putFloat(m20).putFloat(m30)
+			   .putFloat(m01).putFloat(m11).putFloat(m21).putFloat(m31)
+			   .putFloat(m02).putFloat(m12).putFloat(m22).putFloat(m32)
+			   .putFloat(m03).putFloat(m13).putFloat(m23).putFloat(m33);
+		} else {
+			buf.putFloat(m00).putFloat(m01).putFloat(m02).putFloat(m03)
+			   .putFloat(m10).putFloat(m11).putFloat(m12).putFloat(m13)
+			   .putFloat(m20).putFloat(m21).putFloat(m22).putFloat(m23)
+			   .putFloat(m30).putFloat(m31).putFloat(m32).putFloat(m33);
 		}
 	}
 }
