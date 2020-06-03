@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import com.sprouts.math.MathUtils;
 import com.sprouts.math.Vec2;
 
 import sprouts.mvc.game.model.delaunay.DelaunayTriangulator;
@@ -656,7 +655,7 @@ public class GraphicalFacade {
 	}
 	
 	public LineSegment getMiddleSegment(Edge edge) {
-		int center = MathUtils.floor((edge.line.size() - 1) / 2f);
+		int center = (edge.line.size() - 1) / 2;
 
 		LineSegment segment = new LineSegment();
 		segment.from = edge.line.get(center);
@@ -670,7 +669,7 @@ public class GraphicalFacade {
 		Vec2 vec = new Vec2(worldX, worldY);
 
 		for (Sprout sprout : sprouts) {
-			if (vec.dst(sprout.position.x, sprout.position.y) <= sproutRadius) {
+			if (vec.dist(sprout.position.x, sprout.position.y) <= sproutRadius) {
 				drawingLine = true;
 				currentLine.add(sprout.position);
 				from = sprout;
@@ -688,7 +687,7 @@ public class GraphicalFacade {
 		Vec2 vec = new Vec2();
 		vec.set(worldX, worldY);
 		
-		float dst = vec.dst(front.x, front.y);
+		float dst = vec.dist(front.x, front.y);
 		if (dst >= minimumDistance) {
 			if (currentLine.size() == 1) {
 
@@ -784,7 +783,7 @@ public class GraphicalFacade {
 		List<Sprout> endCandidates = new ArrayList<>();
 		for (Sprout sprout : sprouts) {
 			if (sprout == from && currentLine.size() == 1) continue;
-			if (vec.dst(sprout.position.x, sprout.position.y) <= sproutRadius) {
+			if (vec.dist(sprout.position.x, sprout.position.y) <= sproutRadius) {
 				endCandidates.add(sprout);
 			}
 		}

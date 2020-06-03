@@ -125,7 +125,7 @@ public class Vec2 {
 	}
 	
 	public Vec2 setAngle(float degrees) {
-		rotateRad(degrees * MathUtils.radiansToDegrees);
+		rotateRad((float)Math.toRadians(degrees));
 		return this;
 	}
 	
@@ -143,16 +143,15 @@ public class Vec2 {
 		
 	}
 	
-	public float angle () {
-		float angle = (float)Math.atan2(y, x) * MathUtils.radiansToDegrees;
-		if (angle < 0) angle += 360;
-		return angle;
+	public float angle() {
+		float angle = (float)Math.toDegrees(Math.atan2(y, x));
+		return (angle < 0.0f) ? (angle + 360.0f) : angle;
 	}
 
-	public float dst (float x, float y) {
-		final float x_d = x - this.x;
-		final float y_d = y - this.y;
-		return (float)Math.sqrt(x_d * x_d + y_d * y_d);
+	public float dist(float x, float y) {
+		final float dx = x - this.x;
+		final float dy = y - this.y;
+		return (float)Math.sqrt(dx * dx + dy * dy);
 	}
 
 	public Vec2 copy() {
