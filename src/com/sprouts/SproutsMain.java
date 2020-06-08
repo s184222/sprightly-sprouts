@@ -11,6 +11,9 @@ import org.lwjgl.opengl.GL11;
 import com.sprouts.graphic.Display;
 import com.sprouts.graphic.DisplaySize;
 import com.sprouts.graphic.color.VertexColor;
+import com.sprouts.graphic.font.Font;
+import com.sprouts.graphic.font.FontData;
+import com.sprouts.graphic.font.FontLoader;
 import com.sprouts.graphic.tessellator2d.BasicTessellator2DShader;
 import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 import com.sprouts.graphic.tessellator2d.Tessellator2DShader;
@@ -40,6 +43,10 @@ public class SproutsMain {
 	private BatchedTessellator2D batchedTessellator2D;
 	private Texture spongeBobTexture;
 	
+	private Font arial;
+	
+	
+	
 	public SproutsMain() {
 		display = new Display();
 		mouse = new Mouse(display);
@@ -61,7 +68,12 @@ public class SproutsMain {
 	private void loadResources() throws Exception {
 		tessellator2DShader = new BasicTessellator2DShader();
 		batchedTessellator2D = new BatchedTessellator2D(tessellator2DShader);
-		spongeBobTexture = TextureLoader.loadTexture("/textures/spongebob.png");
+		
+		FontData arialData = FontLoader.loadFont("/fonts/arial.ttf");
+		
+		arial = arialData.createFont(32);
+		
+		spongeBobTexture = arial.getTextureAtlas();
 	}
 	
 	private void init() {
@@ -111,15 +123,19 @@ public class SproutsMain {
 	
 	private void render() {
 		batchedTessellator2D.beginBatch();
+		arial.drawString(batchedTessellator2D, 200, 200, "the brown fox");
 		
 		batchedTessellator2D.setColor(VertexColor.ORANGE);
 		batchedTessellator2D.drawQuad(0, 0, 100.0f, 100.0f);
 		
-		batchedTessellator2D.translate(200.0f, 200.0f);
-		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(0.0f, 0.0f), VertexColor.WHITE, new Vec2(0.0f, 400.0f), VertexColor.PURPLE));
-		batchedTessellator2D.drawTexturedQuad(0.0f, 0.0f, 400.0f, 400.0f, spongeBobTexture);
-
+		
+		//batchedTessellator2D.translate(200.0f, 200.0f);
+		//batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(0.0f, 0.0f), VertexColor.WHITE, new Vec2(0.0f, 400.0f), VertexColor.PURPLE));
+		//batchedTessellator2D.drawTexturedQuad(0.0f, 0.0f, 400.0f, 400.0f, spongeBobTexture);
+		
 		batchedTessellator2D.endBatch();
+
+		
 	}
 	
 	private void checkGLErrors() {

@@ -1,62 +1,67 @@
 package com.sprouts.graphic.font;
 
-import static org.lwjgl.stb.STBImageWrite.stbi_write_png;
-import static org.lwjgl.stb.STBTruetype.stbtt_PackBegin;
-import static org.lwjgl.stb.STBTruetype.stbtt_PackEnd;
-import static org.lwjgl.stb.STBTruetype.stbtt_PackFontRange;
-import static org.lwjgl.stb.STBTruetype.stbtt_PackSetOversampling;
-import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.system.MemoryUtil.memAllocFloat;
 
-import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBTTFontinfo;
-import org.lwjgl.stb.STBTTPackContext;
+import static org.lwjgl.stb.STBTruetype.stbtt_GetPackedQuad;
+
+import org.lwjgl.stb.STBTTAlignedQuad;
 import org.lwjgl.stb.STBTTPackedchar;
 
+import com.sprouts.graphic.tessellator2d.ITessellator2D;
 import com.sprouts.graphic.texture.Texture;
 
 public class Font {
-	private int ascent;
-	private int descent;
-	private int lineGap;
-	STBTTFontinfo info;
-	ByteBuffer bitmap;
-	ByteBuffer tempBitmap;
-	ByteBuffer ttf;
-	STBTTPackedchar.Buffer cdata;
+//	private int ascent;
+//	private int descent;
+//	private int lineGap;
+	private final float fontSize;
+	private final Texture textureAtlas;
+	private final STBTTPackedchar.Buffer cdata;
 	
-	public Font(int ascent, int descent, int lineGap, STBTTFontinfo info, ByteBuffer ttf) {
-		
-		this.ascent = ascent;
-		this.descent = descent;
-		this.lineGap = lineGap;
-		this.info = info;
-		this.ttf = ttf;
+	public Font(float fontSize, Texture textureAtlas, STBTTPackedchar.Buffer cdata) {
+		this.fontSize = fontSize;
+		this.textureAtlas = textureAtlas;
+		this.cdata = cdata;
 	}
-
 	
-	public Texture createFontAltlas(float fontSize) {
-		try (STBTTPackContext pc = STBTTPackContext.malloc()) {
-			int bitmapW = (int) (12*fontSize);
-			int bitmapH = (int) (8*fontSize);
-			
-			cdata = STBTTPackedchar.malloc(96);
-			
-			bitmap = BufferUtils.createByteBuffer(bitmapW*bitmapH);
-			
-			stbtt_PackBegin(pc, bitmap, bitmapW, bitmapH, 0, 1, NULL);
+	public void drawString (ITessellator2D tessellator, float x, float y, String text) {
+		tessellator.setTexture(textureAtlas);
+		
+		STBTTAlignedQuad quad  = STBTTAlignedQuad.malloc();
+		
+		FloatBuffer xb = memAllocFloat(1);
+	    FloatBuffer yb = memAllocFloat(1);
+	    
+        xb.put(0, x);
+        yb.put(0, y);
+		
+		Map<Integer, Integer> chardataIndices = new HashMap<>();
 
-	        stbtt_PackSetOversampling(pc, 1, 1);
-
-	        stbtt_PackFontRange(pc, ttf, 0, fontSize, 32, cdata);
-			
-			Texture texture = new Texture(bitmap, bitmapW, bitmapH, 1);
-			
-			return texture;		
+        for(int i = 0 ; i < cdata.remaining() ; i++) {
+            chardataIndices.put(i + 32, i);
+        }
+		
+		for (int i = 0; i < text.length(); i++) {
+            stbtt_GetPackedQuad(
+                    cdata,
+                    (int) (6*fontSize), (int) (5*fontSize),
+                    chardataIndices.get((int)text.charAt(i)),
+                    xb, yb,
+                    quad,
+                    true);
+            tessellator.drawTexturedQuad(quad.x0(), quad.y0(), quad.s0(), quad.t0(), quad.x1(), quad.y1(), quad.s1(), quad.t1());
 		}
 		
 	}
+
+	public Texture getTextureAtlas() {
+		return textureAtlas;
+	}
+
 	/*
     public float getStringWidth(String text, boolean isKerningEnabled) {
         int width = 0;

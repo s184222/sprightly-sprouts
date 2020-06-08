@@ -16,7 +16,7 @@ import com.sprouts.util.FileUtil;
 
 public class FontLoader {
 	
-	public static Font loadFont(String path) throws IOException {
+	public static FontData loadFont(String path) throws IOException {
 		int ascent;
 		int descent;
 		int lineGap;
@@ -54,10 +54,7 @@ public class FontLoader {
 		    descent = bufDescent.get(0);
 		    lineGap = bufLineGap.get(0);
 		}
-		
-		
-		Font font = new Font(ascent, descent, lineGap, info, ttf);
-		
-		return font;
+	
+		return new FontData(ttf);
 	}
 }
