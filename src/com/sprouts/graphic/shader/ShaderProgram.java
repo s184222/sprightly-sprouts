@@ -44,6 +44,10 @@ public abstract class ShaderProgram {
 		GL30.glUniform1i(location, i);
 	}
 
+	protected void uniformIntArray(int location, int[] intArray) {
+		GL30.glUniform1iv(location, intArray);
+	}
+
 	protected void uniformFloat(int location, float f) {
 		GL30.glUniform1f(location, f);
 	}

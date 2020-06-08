@@ -1,63 +1,87 @@
 package com.sprouts.graphic.buffer;
 
 import static org.lwjgl.opengl.GL15.GL_ARRAY_BUFFER;
-import static org.lwjgl.opengl.GL15.GL_STATIC_DRAW;
+import static org.lwjgl.opengl.GL15.GL_DYNAMIC_DRAW;
 import static org.lwjgl.opengl.GL15.glBindBuffer;
 import static org.lwjgl.opengl.GL15.glBufferData;
 import static org.lwjgl.opengl.GL15.glBufferSubData;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL15.glGenBuffers;
 
-import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
 
 public class VertexBuffer {
 
 	private int bufferHandle;
-	private final int componentCount;
+	private final int vertexSize;
+	private final int minimumBufferSize;
+	
+	private int bufferSize;
 	private int size;
 
 	/**
 	 * Creates a new empty OpenGL vertex buffer object.
 	 * 
-	 * @param componentCount - the number of elements for each vertex.
+	 * @param vertexSize - the number of elements for each vertex.
 	 */
-	public VertexBuffer(int componentCount) {
-		bufferHandle = glGenBuffers();
-		this.componentCount = componentCount;
-		size = -1;
+	public VertexBuffer(int vertexSize) {
+		this(vertexSize, 0);
 	}
-	
+
 	/**
-	 * Creates a new OpenGL vertex buffer object.
+	 * Creates a new empty OpenGL vertex buffer object.
 	 * 
-	 * @param data - the data to be transferred to the VBO.
-	 * @param componentCount - the number of elements for each vertex.
+	 * @param vertexSize - the number of elements for each vertex.
+	 * @param minVertexAllocation - the minimum number of vertices
+	 *                              that should be preallocated.
 	 */
-	public VertexBuffer(float[] data, int componentCount) {
-		this(componentCount);
+	public VertexBuffer(int vertexSize, int minVertexAllocation) {
+		bufferHandle = glGenBuffers();
+		this.vertexSize = vertexSize;
+		this.minimumBufferSize = vertexSize * minVertexAllocation;
 		
-		storeData(data);
+		initBuffer();
 	}
 	
-	public void storeData(FloatBuffer buffer) {
-		bind();
-		if (size != buffer.remaining()) {
-			glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
-			size = buffer.remaining();
-		} else {
-			glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
+	private void initBuffer() {
+		if (minimumBufferSize != 0) {
+			bind();
+			glBufferData(GL_ARRAY_BUFFER, minimumBufferSize, GL_DYNAMIC_DRAW);
+			bufferSize = minimumBufferSize;
+			size = 0;
+			unbind();
 		}
-		unbind();
 	}
 	
-	public void storeData(float[] data) {
-		bind();
-		if (size != data.length) {
-			glBufferData(GL_ARRAY_BUFFER, data, GL_STATIC_DRAW);
-			size = data.length;
-		} else {
-			glBufferSubData(GL_ARRAY_BUFFER, 0, data);
+	public void bufferData(ByteBuffer buffer) {
+		int numBytes = buffer.remaining();
+		
+		if (bufferSize > minimumBufferSize && numBytes <= minimumBufferSize) {
+			// In this case we can free some memory. This vertex
+			// buffer implementation will try to keep the memory
+			// usage as low as possible, but at least use up the
+			// minimumBufferSize number of bytes for performance.
+			initBuffer();
 		}
+		
+		if (numBytes <= bufferSize) {
+			bufferSubData(buffer, 0);
+		} else {
+			bind();
+			glBufferData(GL_ARRAY_BUFFER, buffer, GL_DYNAMIC_DRAW);
+			bufferSize = numBytes;
+			unbind();
+		}
+
+		size = numBytes;
+	}
+
+	public void bufferSubData(ByteBuffer buffer, int vboOffset) {
+		if (buffer.remaining() + vboOffset > bufferSize)
+			throw new IndexOutOfBoundsException("VBO offset out of bounds: " + bufferSize);
+
+		bind();
+		glBufferSubData(GL_ARRAY_BUFFER, vboOffset, buffer);
 		unbind();
 	}
 	
@@ -69,12 +93,16 @@ public class VertexBuffer {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 	
-	public int getComponentCount() {
-		return componentCount;
+	public int getVertexSize() {
+		return vertexSize;
 	}
 
 	public int getSize() {
 		return size;
+	}
+	
+	public int getMinimumBufferSize() {
+		return minimumBufferSize;
 	}
 	
 	public void dispose() {

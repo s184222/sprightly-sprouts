@@ -7,22 +7,22 @@ import com.sprouts.math.Vec4;
 
 public class BasicTessellator implements AutoCloseable {
 
-	private static final int POSITION_COMPONENT_COUNT = 3;
-	private static final int COLOR_COMPONENT_COUNT = 4;
-	private static final int TEX_COORD_COMPONENT_COUNT = 2;
+	public static final int POSITION_COMPONENT_COUNT = 3;
+	public static final int COLOR_COMPONENT_COUNT = 4;
+	public static final int TEX_COORD_COMPONENT_COUNT = 2;
 	
-	private final TessellatorAttrib positionAttrib;
-	private final TessellatorAttrib colorAttrib;
-	private final TessellatorAttrib texCoordAttrib;
+	private final VertexAttribBuilder positionAttrib;
+	private final VertexAttribBuilder colorAttrib;
+	private final VertexAttribBuilder texCoordAttrib;
 	
 	private Vec3 currentPos;
 	private Vec4 currentCol;
 	private Vec2 currentTexCoord;
 
 	public BasicTessellator() {
-		positionAttrib = new TessellatorAttrib(POSITION_COMPONENT_COUNT);
-		colorAttrib = new TessellatorAttrib(COLOR_COMPONENT_COUNT);
-		texCoordAttrib = new TessellatorAttrib(TEX_COORD_COMPONENT_COUNT);
+		positionAttrib = new VertexAttribBuilder(POSITION_COMPONENT_COUNT);
+		colorAttrib = new VertexAttribBuilder(COLOR_COMPONENT_COUNT);
+		texCoordAttrib = new VertexAttribBuilder(TEX_COORD_COMPONENT_COUNT);
 		
 		currentPos = new Vec3();
 		currentCol = new Vec4();
@@ -75,17 +75,9 @@ public class BasicTessellator implements AutoCloseable {
 		return this;
 	}
 	
-	public VertexBuffer writePositionBuffer() {
-		return writePositionBuffer(new VertexBuffer(POSITION_COMPONENT_COUNT));
-	}
-
 	public VertexBuffer writePositionBuffer(VertexBuffer positionBuffer) {
 		positionAttrib.writeBuffer(positionBuffer);
 		return positionBuffer;
-	}
-
-	public VertexBuffer writeColorBuffer() {
-		return writeColorBuffer(new VertexBuffer(COLOR_COMPONENT_COUNT));
 	}
 
 	public VertexBuffer writeColorBuffer(VertexBuffer colorBuffer) {
@@ -93,10 +85,6 @@ public class BasicTessellator implements AutoCloseable {
 		return colorBuffer;
 	}
 	
-	public VertexBuffer writeTexCoordBuffer() {
-		return writeTexCoordBuffer(new VertexBuffer(TEX_COORD_COMPONENT_COUNT));
-	}
-
 	public VertexBuffer writeTexCoordBuffer(VertexBuffer texCoordBuffer) {
 		texCoordAttrib.writeBuffer(texCoordBuffer);
 		return texCoordBuffer;

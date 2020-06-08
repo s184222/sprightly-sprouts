@@ -10,15 +10,17 @@ import org.lwjgl.opengl.GL11;
 
 import com.sprouts.graphic.Display;
 import com.sprouts.graphic.DisplaySize;
+import com.sprouts.graphic.color.VertexColor;
+import com.sprouts.graphic.tessellator2d.BasicTessellator2DShader;
+import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
+import com.sprouts.graphic.tessellator2d.Tessellator2DShader;
+import com.sprouts.graphic.tessellator2d.color.LinearColorGradient2D;
+import com.sprouts.graphic.texture.Texture;
+import com.sprouts.graphic.texture.TextureLoader;
 import com.sprouts.input.Keyboard;
 import com.sprouts.input.Mouse;
+import com.sprouts.math.Vec2;
 import com.sprouts.util.LibUtil;
-
-import sprouts.mvc.ContextManager;
-import sprouts.mvc.MVCContext;
-import sprouts.mvc.game.controller.GameController;
-import sprouts.mvc.game.model.representation.graphical.GameModel;
-import sprouts.mvc.game.view.GameView;
 
 public class SproutsMain {
 
@@ -34,28 +36,14 @@ public class SproutsMain {
 	private final Mouse mouse;
 	private final Keyboard keyboard;
 	
-	private ContextManager contextManager;
+	private Tessellator2DShader tessellator2DShader;
+	private BatchedTessellator2D batchedTessellator2D;
+	private Texture spongeBobTexture;
 	
 	public SproutsMain() {
 		display = new Display();
 		mouse = new Mouse(display);
 		keyboard = new Keyboard(display);
-		
-		// @merge
-		contextManager = new ContextManager();
-		
-		GameModel gameModel = new GameModel();
-		GameView gameView = new GameView();
-		GameController gameController = new GameController();
-		
-		gameController.model = gameModel;
-		gameController.view = gameView;
-		
-		gameView.controller = gameController;
-		gameView.model = gameModel;
-		
-		contextManager.addMVCContext("game", gameModel, gameView, gameController);
-		contextManager.setActiveContext("game");
 	}
 	
 	public void run() {
@@ -65,9 +53,15 @@ public class SproutsMain {
 		loop();
 		
 		display.dispose();
+		
+		tessellator2DShader.dispose();
+		batchedTessellator2D.dispose();
 	}
 
-	private void loadResources() {
+	private void loadResources() throws Exception {
+		tessellator2DShader = new BasicTessellator2DShader();
+		batchedTessellator2D = new BatchedTessellator2D(tessellator2DShader);
+		spongeBobTexture = TextureLoader.loadTexture("/textures/spongebob.png");
 	}
 	
 	private void init() {
@@ -77,29 +71,13 @@ public class SproutsMain {
 		mouse.init();
 		keyboard.init();
 
-		// @merge
-		/*
-		@Override
-		public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-			MVCContext context = contextManager.getActiveContext();
-			context.controller.touchDown(screenX, screenY, button);
+		try {
+			loadResources();
+		} catch (Exception e) {
+			// TODO: do something else here
+			
+			System.exit(1);
 		}
-		
-		@Override
-		public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-			MVCContext context = contextManager.getActiveContext();
-			context.controller.touchUp(screenX, screenY, button);
-		}
-		
-		@Override
-		public boolean touchDragged(int screenX, int screenY, int pointer) {
-			MVCContext context = contextManager.getActiveContext();
-			context.controller.touchDragged(screenX, screenY);
-		}
-		*/
-		
-		loadResources();
-	
 	}
 
 	private void onViewportChanged(DisplaySize size) {
@@ -109,9 +87,7 @@ public class SproutsMain {
 	private void onViewportChanged(int width, int height) {
 		GL11.glViewport(0, 0, width, height);
 		
-		// @merge
-		MVCContext context = contextManager.getActiveContext();
-		context.view.resize(width, height);
+		batchedTessellator2D.setViewport(0, 0, width, height);
 	}
 	
 	private void loop() {
@@ -125,15 +101,24 @@ public class SproutsMain {
 		while (!display.isCloseRequested()) {
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			// @merge
-			MVCContext context = contextManager.getActiveContext();
-			context.controller.update();
-			context.view.draw();
-
+			render();
+			
 			checkGLErrors();
 			
 			display.update();
 		}
+	}
+	
+	private void render() {
+		batchedTessellator2D.beginBatch();
+		
+		batchedTessellator2D.setColor(VertexColor.ORANGE);
+		batchedTessellator2D.drawQuad(0, 0, 100.0f, 100.0f);
+		
+		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(200, 200), VertexColor.WHITE, new Vec2(200, 600), VertexColor.PURPLE));
+		batchedTessellator2D.drawTexturedQuad(200, 200, 600, 600, spongeBobTexture);
+
+		batchedTessellator2D.endBatch();
 	}
 	
 	private void checkGLErrors() {

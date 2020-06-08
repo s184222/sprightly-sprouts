@@ -19,7 +19,7 @@ import java.nio.ByteBuffer;
 
 import org.lwjgl.opengl.GL11;
 
-public class Texture {
+public class Texture implements ITextureRegion {
 	
 	private final int texId;
 
@@ -82,6 +82,36 @@ public class Texture {
 
 	public void unbind() {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+	}
+	
+	@Override
+	public Texture getTexture() {
+		return this;
+	}
+
+	@Override
+	public ITextureRegion getRegion(float u0, float v0, float u1, float v1) {
+		return new TextureRegion(this, u0, v0, u1, v1);
+	}
+
+	@Override
+	public float getU0() {
+		return 0.0f;
+	}
+
+	@Override
+	public float getV0() {
+		return 0.0f;
+	}
+
+	@Override
+	public float getU1() {
+		return 1.0f;
+	}
+
+	@Override
+	public float getV1() {
+		return 1.0f;
 	}
 	
 	public void dispose() {

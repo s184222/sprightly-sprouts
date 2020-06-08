@@ -7,30 +7,30 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-import java.util.LinkedList;
-
 public class VertexArray {
 	
 	private int vaoHandle;
 	
-	private LinkedList<VertexBuffer> buffers;
-	
 	public VertexArray() {
 		vaoHandle = glGenVertexArrays();
-	
-		buffers = new LinkedList<VertexBuffer>();
 	}
-	
-	public void storeAttributeBuffer(int attributeIndex, VertexBuffer buffer) {
+
+	public void storeBuffer(int attributeIndex, VertexBuffer buffer) {
+		storeBuffer(attributeIndex, buffer, GL_FLOAT, false);
+	}
+
+	public void storeBuffer(int attributeIndex, VertexBuffer buffer, int type, boolean normalized) {
+		storeBuffer(attributeIndex, buffer, type, normalized, buffer.getVertexSize(), 0, 0);
+	}
+
+	public void storeBuffer(int attributeIndex, VertexBuffer buffer, int type, boolean normalized, int size, int stride, int offset) {
 		bind();
 		buffer.bind();
-		glVertexAttribPointer(attributeIndex, buffer.getComponentCount(), GL_FLOAT, false, 0, 0);
+		glVertexAttribPointer(attributeIndex, size, type, normalized, stride, (long)offset);
 		buffer.unbind();
 
 		glEnableVertexAttribArray(attributeIndex);
 		unbind();
-		
-		buffers.add(buffer);
 	}
 	
 	public void bind() {
@@ -46,9 +46,5 @@ public class VertexArray {
 			glDeleteVertexArrays(vaoHandle);
 			vaoHandle = -1;
 		}
-		
-		for (VertexBuffer buffer : buffers)
-			buffer.dispose();
-		buffers.clear();
 	}
 }
