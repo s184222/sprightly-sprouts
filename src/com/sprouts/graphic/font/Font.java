@@ -38,12 +38,15 @@ public class Font {
 			FloatBuffer yptr = memStack.floats(y);
 			
 			for (int i = 0; i < text.length(); i++) {
-				int charIndex = (int)text.charAt(i) - 32;
-				
-				stbtt_GetPackedQuad(cdata, atlasWidth, atlasHeight, charIndex, xptr, yptr, quad, true);
-	            
-				tessellator.drawTexturedQuad(quad.x0(), quad.y0(), quad.s0(), quad.t0(), 
-	                                         quad.x1(), quad.y1(), quad.s1(), quad.t1());
+				char c = text.charAt(i);
+				if (c >= FontData.FIRST_PRINTABLE_CHARACTER && c <= FontData.LAST_PRINTABLE_CHARACTER) {
+					int charIndex = c - FontData.FIRST_PRINTABLE_CHARACTER;
+					
+					stbtt_GetPackedQuad(cdata, atlasWidth, atlasHeight, charIndex, xptr, yptr, quad, true);
+		            
+					tessellator.drawTexturedQuad(quad.x0(), quad.y0(), quad.s0(), quad.t0(), 
+					                             quad.x1(), quad.y1(), quad.s1(), quad.t1());
+				}
 			}
 		}
 	}
