@@ -55,7 +55,8 @@ public class FontLoader {
 		    lineGap = bufLineGap.get(0);
 		}
 		
-		Font font = new Font(ttf, ascent, descent, lineGap, info);
+		
+		Font font = new Font(ascent, descent, lineGap, info, ttf);
 		
 		return font;
 	}
