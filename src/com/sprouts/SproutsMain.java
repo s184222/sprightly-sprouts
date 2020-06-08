@@ -115,8 +115,9 @@ public class SproutsMain {
 		batchedTessellator2D.setColor(VertexColor.ORANGE);
 		batchedTessellator2D.drawQuad(0, 0, 100.0f, 100.0f);
 		
-		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(200, 200), VertexColor.WHITE, new Vec2(200, 600), VertexColor.PURPLE));
-		batchedTessellator2D.drawTexturedQuad(200, 200, 600, 600, spongeBobTexture);
+		batchedTessellator2D.translate(200.0f, 200.0f);
+		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(0.0f, 0.0f), VertexColor.WHITE, new Vec2(0.0f, 400.0f), VertexColor.PURPLE));
+		batchedTessellator2D.drawTexturedQuad(0.0f, 0.0f, 400.0f, 400.0f, spongeBobTexture);
 
 		batchedTessellator2D.endBatch();
 	}
