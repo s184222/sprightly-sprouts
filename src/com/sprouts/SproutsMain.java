@@ -43,9 +43,7 @@ public class SproutsMain {
 	private BatchedTessellator2D batchedTessellator2D;
 	private Texture spongeBobTexture;
 	
-	private Font arial;
-	
-	
+	private Font arialFont;
 	
 	public SproutsMain() {
 		display = new Display();
@@ -63,17 +61,17 @@ public class SproutsMain {
 		
 		tessellator2DShader.dispose();
 		batchedTessellator2D.dispose();
+		spongeBobTexture.dispose();
+		arialFont.dispose();
 	}
 
 	private void loadResources() throws Exception {
 		tessellator2DShader = new BasicTessellator2DShader();
 		batchedTessellator2D = new BatchedTessellator2D(tessellator2DShader);
-		
+		spongeBobTexture = TextureLoader.loadTexture("/textures/spongebob.png");
+
 		FontData arialData = FontLoader.loadFont("/fonts/arial.ttf");
-		
-		arial = arialData.createFont(32);
-		
-		spongeBobTexture = arial.getTextureAtlas();
+		arialFont = arialData.createFont(200);
 	}
 	
 	private void init() {
@@ -86,8 +84,9 @@ public class SproutsMain {
 		try {
 			loadResources();
 		} catch (Exception e) {
-			// TODO: do something else here
+			e.printStackTrace();
 			
+			// TODO: do something else here
 			System.exit(1);
 		}
 	}
@@ -123,15 +122,15 @@ public class SproutsMain {
 	
 	private void render() {
 		batchedTessellator2D.beginBatch();
-		arial.drawString(batchedTessellator2D, 200, 200, "the brown fox");
+		batchedTessellator2D.setColor(VertexColor.WHITE);
+		arialFont.drawString(batchedTessellator2D, 200, 200, "the brown fox");
 		
 		batchedTessellator2D.setColor(VertexColor.ORANGE);
 		batchedTessellator2D.drawQuad(0, 0, 100.0f, 100.0f);
 		
-		
-		//batchedTessellator2D.translate(200.0f, 200.0f);
-		//batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(0.0f, 0.0f), VertexColor.WHITE, new Vec2(0.0f, 400.0f), VertexColor.PURPLE));
-		//batchedTessellator2D.drawTexturedQuad(0.0f, 0.0f, 400.0f, 400.0f, spongeBobTexture);
+		batchedTessellator2D.translate(200.0f, 200.0f);
+		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(0.0f, 0.0f), VertexColor.WHITE, new Vec2(0.0f, 400.0f), VertexColor.PURPLE));
+		batchedTessellator2D.drawTexturedQuad(0.0f, 0.0f, 400.0f, 400.0f, spongeBobTexture);
 		
 		batchedTessellator2D.endBatch();
 

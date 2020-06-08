@@ -1,23 +1,22 @@
 package com.sprouts.graphic.font;
 
-import static org.lwjgl.system.MemoryUtil.memAllocFloat;
+import static org.lwjgl.stb.STBTruetype.stbtt_GetPackedQuad;
 
 import java.nio.FloatBuffer;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.lwjgl.stb.STBTruetype.stbtt_GetPackedQuad;
 
 import org.lwjgl.stb.STBTTAlignedQuad;
 import org.lwjgl.stb.STBTTPackedchar;
+import org.lwjgl.system.MemoryStack;
 
 import com.sprouts.graphic.tessellator2d.ITessellator2D;
 import com.sprouts.graphic.texture.Texture;
 
 public class Font {
+	
 //	private int ascent;
 //	private int descent;
 //	private int lineGap;
+	
 	private final float fontSize;
 	private final Texture textureAtlas;
 	private final STBTTPackedchar.Buffer cdata;
@@ -31,35 +30,35 @@ public class Font {
 	public void drawString (ITessellator2D tessellator, float x, float y, String text) {
 		tessellator.setTexture(textureAtlas);
 		
-		STBTTAlignedQuad quad  = STBTTAlignedQuad.malloc();
+		int atlasWidth = textureAtlas.getWidth();
+		int atlasHeight = textureAtlas.getHeight();
 		
-		FloatBuffer xb = memAllocFloat(1);
-	    FloatBuffer yb = memAllocFloat(1);
-	    
-        xb.put(0, x);
-        yb.put(0, y);
-		
-		Map<Integer, Integer> chardataIndices = new HashMap<>();
-
-        for(int i = 0 ; i < cdata.remaining() ; i++) {
-            chardataIndices.put(i + 32, i);
-        }
-		
-		for (int i = 0; i < text.length(); i++) {
-            stbtt_GetPackedQuad(
-                    cdata,
-                    (int) (6*fontSize), (int) (5*fontSize),
-                    chardataIndices.get((int)text.charAt(i)),
-                    xb, yb,
-                    quad,
-                    true);
-            tessellator.drawTexturedQuad(quad.x0(), quad.y0(), quad.s0(), quad.t0(), quad.x1(), quad.y1(), quad.s1(), quad.t1());
+		try (MemoryStack memStack = MemoryStack.stackPush(); STBTTAlignedQuad quad = STBTTAlignedQuad.malloc()) {
+			FloatBuffer xptr = memStack.floats(x);
+			FloatBuffer yptr = memStack.floats(y);
+			
+			for (int i = 0; i < text.length(); i++) {
+				int charIndex = (int)text.charAt(i) - 32;
+				
+				stbtt_GetPackedQuad(cdata, atlasWidth, atlasHeight, charIndex, xptr, yptr, quad, true);
+	            
+				tessellator.drawTexturedQuad(quad.x0(), quad.y0(), quad.s0(), quad.t0(), 
+	                                         quad.x1(), quad.y1(), quad.s1(), quad.t1());
+			}
 		}
-		
 	}
 
+	public float getFontSize() {
+		return fontSize;
+	}
+	
 	public Texture getTextureAtlas() {
 		return textureAtlas;
+	}
+
+	public void dispose() {
+		textureAtlas.dispose();
+		cdata.close();
 	}
 
 	/*

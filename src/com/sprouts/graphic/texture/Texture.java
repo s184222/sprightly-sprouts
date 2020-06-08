@@ -1,9 +1,9 @@
 package com.sprouts.graphic.texture;
 
 import static org.lwjgl.opengl.GL11.GL_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_RED;
 import static org.lwjgl.opengl.GL11.GL_RGB;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
-import static org.lwjgl.opengl.GL11.GL_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
@@ -11,10 +11,13 @@ import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
 import static org.lwjgl.opengl.GL11.GL_UNPACK_ALIGNMENT;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
 import static org.lwjgl.opengl.GL11.glPixelStorei;
 import static org.lwjgl.opengl.GL11.glTexImage2D;
 import static org.lwjgl.opengl.GL11.glTexParameteri;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
+import static org.lwjgl.opengl.GL30.GL_RG;
 
 import java.nio.ByteBuffer;
 
@@ -23,9 +26,14 @@ import org.lwjgl.opengl.GL11;
 public class Texture implements ITextureRegion {
 	
 	private final int texId;
-
+	
+	private int width;
+	private int height;
+	
 	public Texture() {
 		texId = GL11.glGenTextures();
+		
+		width = height = 0;
 		
 		bind();
 		
@@ -52,45 +60,52 @@ public class Texture implements ITextureRegion {
 	}
 	
 	public void setTextureData(ByteBuffer pixels, int width, int height, int channels) throws InvalidFormatException {
-		int format;
-		int alignment = 4;
-		
-		switch (channels) {
-		case 1:
-			if ((width & 3) != 0) {
-				// Pixel rows are not divisible by 4.
-				alignment = 2 - (width & 1);
-			}
-			
-			format = GL_ALPHA;
-			break;
-		case 3:
-			if ((width & 3) != 0) {
-				// Pixel rows are not divisible by 4.
-				alignment = 2 - (width & 1);
-			}
+		int format = getFormatFromChannels(channels);
 
-			format = GL_RGB;
-			break;
-		case 4:
-			format = GL_RGBA;
-			break;
-		default:
-			throw new InvalidFormatException("Must be either RGB or RGBA.");
+		int alignment = 4;
+		if (format != GL_RGBA && (width & 3) != 0) {
+			// Pixel rows are not divisible by 4.
+			alignment = 2 - (width & 1);
 		}
 		
 		bind();
 		glPixelStorei(GL_UNPACK_ALIGNMENT, alignment);
 		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, pixels);
 		unbind();
+		
+		this.width = width;
+		this.height = height;
+	}
+	
+	private int getFormatFromChannels(int channels) {
+		switch (channels) {
+		case 1:
+			return GL_RED;
+		case 2:
+			return GL_RG;
+		case 3:
+			return GL_RGB;
+		case 4:
+			return GL_RGBA;
+		default:
+			throw new InvalidFormatException("Must be either R, RG, RGB, or RGBA.");
+		}
 	}
 	
 	public void bind() {
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, texId);
+		glBindTexture(GL_TEXTURE_2D, texId);
 	}
 
 	public void unbind() {
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
 	}
 	
 	@Override
@@ -124,6 +139,6 @@ public class Texture implements ITextureRegion {
 	}
 	
 	public void dispose() {
-		GL11.glDeleteTextures(texId);
+		glDeleteTextures(texId);
 	}
 }

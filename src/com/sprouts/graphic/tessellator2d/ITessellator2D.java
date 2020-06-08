@@ -1,6 +1,7 @@
 package com.sprouts.graphic.tessellator2d;
 
 import com.sprouts.graphic.color.VertexColor;
+import com.sprouts.graphic.tessellator2d.clip.ClipShape;
 import com.sprouts.graphic.tessellator2d.color.ColorGradient2D;
 import com.sprouts.graphic.tessellator2d.color.ConstantColorGradient2D;
 import com.sprouts.graphic.texture.ITextureRegion;
@@ -49,5 +50,11 @@ public interface ITessellator2D {
 	public float getZOffset();
 
 	public void setZOffset(float zOffset);
+	
+	public void setClipRect(float x0, float y0, float x1, float y1);
+	
+	public void setClipShape(ClipShape shape);
+
+	public ClipShape getClipShape();
 	
 }
