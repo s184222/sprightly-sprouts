@@ -3,6 +3,7 @@ package com.sprouts.graphic.texture;
 import static org.lwjgl.opengl.GL11.GL_LINEAR;
 import static org.lwjgl.opengl.GL11.GL_RGB;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
+import static org.lwjgl.opengl.GL11.GL_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
 import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
@@ -55,6 +56,14 @@ public class Texture {
 		int alignment = 4;
 		
 		switch (channels) {
+		case 1:
+			if ((width & 3) != 0) {
+				// Pixel rows are not divisible by 4.
+				alignment = 2 - (width & 1);
+			}
+			
+			format = GL_ALPHA;
+			break;
 		case 3:
 			if ((width & 3) != 0) {
 				// Pixel rows are not divisible by 4.
