@@ -1,9 +1,8 @@
 package com.sprouts.graphic.tessellator2d;
 
-import static com.sprouts.graphic.shader.GUIShader.TEX_ID_ATTRIB_INDEX;
+import static org.lwjgl.opengl.GL11.GL_BYTE;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
-import static org.lwjgl.opengl.GL11.GL_BYTE;
 
 import com.sprouts.graphic.buffer.VertexArray;
 import com.sprouts.graphic.buffer.VertexBuffer;
@@ -67,7 +66,7 @@ public class Tessellator2DShader extends ShaderProgram {
 		vertexArray.storeBuffer(POSITION_ATTRIB_INDEX, buffer, GL_FLOAT, false, POSITION_SIZE, VERTEX_BYTE_SIZE, POSITION_OFFSET);
 		vertexArray.storeBuffer(COLOR_ATTRIB_INDEX, buffer, GL_UNSIGNED_BYTE, true, COLOR_SIZE, VERTEX_BYTE_SIZE, COLOR_OFFSET);
 		vertexArray.storeBuffer(TEX_COORD_ATTRIB_INDEX, buffer, GL_FLOAT, false, TEX_COORD_SIZE, VERTEX_BYTE_SIZE, TEX_COORD_OFFSET);
-		vertexArray.storeBuffer(TEX_ID_ATTRIB_INDEX, buffer, GL_BYTE, false, TEX_INDEX_SIZE, VERTEX_BYTE_SIZE, TEX_INDEX_OFFSET);
+		vertexArray.storeBuffer(TEX_INDEX_ATTRIB_INDEX, buffer, GL_BYTE, false, TEX_INDEX_SIZE, VERTEX_BYTE_SIZE, TEX_INDEX_OFFSET);
 	}
 	
 	public int getVertexByteSize() {
