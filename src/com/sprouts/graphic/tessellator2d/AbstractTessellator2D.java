@@ -19,11 +19,11 @@ import org.lwjgl.opengl.GL11;
 
 import com.sprouts.graphic.buffer.VertexArray;
 import com.sprouts.graphic.buffer.VertexBuffer;
+import com.sprouts.graphic.clip.ClipPlane;
+import com.sprouts.graphic.clip.ClipRect;
+import com.sprouts.graphic.clip.ClipShape;
 import com.sprouts.graphic.color.VertexColor;
 import com.sprouts.graphic.tessellator.VertexAttribBuilder;
-import com.sprouts.graphic.tessellator2d.clip.ClipPlane;
-import com.sprouts.graphic.tessellator2d.clip.ClipRect;
-import com.sprouts.graphic.tessellator2d.clip.ClipShape;
 import com.sprouts.graphic.tessellator2d.color.ColorGradient2D;
 import com.sprouts.graphic.tessellator2d.color.ConstantColorGradient2D;
 import com.sprouts.graphic.tessellator2d.shader.Tessellator2DShader;

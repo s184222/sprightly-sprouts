@@ -1,4 +1,4 @@
-package com.sprouts.graphic.tessellator2d.clip;
+package com.sprouts.graphic.clip;
 
 public class ClipShapeBounds {
 
