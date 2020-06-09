@@ -1,4 +1,4 @@
-package com.sprouts.graphic.tessellator2d;
+package com.sprouts.graphic.tessellator2d.shader;
 
 public class BasicTessellator2DShader extends Tessellator2DShader {
 

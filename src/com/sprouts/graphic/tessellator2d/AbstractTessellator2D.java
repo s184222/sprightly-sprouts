@@ -26,6 +26,7 @@ import com.sprouts.graphic.tessellator2d.clip.ClipRect;
 import com.sprouts.graphic.tessellator2d.clip.ClipShape;
 import com.sprouts.graphic.tessellator2d.color.ColorGradient2D;
 import com.sprouts.graphic.tessellator2d.color.ConstantColorGradient2D;
+import com.sprouts.graphic.tessellator2d.shader.Tessellator2DShader;
 import com.sprouts.graphic.texture.Texture;
 import com.sprouts.math.Mat3;
 import com.sprouts.math.Mat4;

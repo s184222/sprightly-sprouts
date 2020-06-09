@@ -17,7 +17,6 @@ public class VertexBuffer {
 	private final int minimumBufferSize;
 	
 	private int bufferSize;
-	private int size;
 
 	/**
 	 * Creates a new empty OpenGL vertex buffer object.
@@ -48,7 +47,6 @@ public class VertexBuffer {
 			bind();
 			glBufferData(GL_ARRAY_BUFFER, minimumBufferSize, GL_DYNAMIC_DRAW);
 			bufferSize = minimumBufferSize;
-			size = 0;
 			unbind();
 		}
 	}
@@ -72,8 +70,6 @@ public class VertexBuffer {
 			bufferSize = numBytes;
 			unbind();
 		}
-
-		size = numBytes;
 	}
 
 	public void bufferSubData(ByteBuffer buffer, int vboOffset) {
@@ -97,12 +93,8 @@ public class VertexBuffer {
 		return vertexSize;
 	}
 
-	public int getSize() {
-		return size;
-	}
-	
-	public int getMinimumBufferSize() {
-		return minimumBufferSize;
+	public int getBufferSize() {
+		return bufferSize;
 	}
 	
 	public void dispose() {

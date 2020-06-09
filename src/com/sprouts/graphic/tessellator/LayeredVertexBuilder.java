@@ -7,6 +7,7 @@ import java.util.Map;
 import org.lwjgl.system.MemoryUtil;
 
 import com.sprouts.graphic.UniqueIDSupplier;
+import com.sprouts.graphic.buffer.VertexBuffer;
 
 public class LayeredVertexBuilder implements AutoCloseable {
 	
@@ -22,6 +23,10 @@ public class LayeredVertexBuilder implements AutoCloseable {
 	private VertexLayerInfo currentLayer;
 
 	private ByteBuffer builtBuffer;
+	
+	private boolean dirty;
+	private int dirtyStartOffset;
+	private int dirtyEndOffset;
 
 	public LayeredVertexBuilder(int vertexSize) {
 		this(vertexSize, DEFAULT_INITIAL_CAPACITY);
@@ -41,6 +46,9 @@ public class LayeredVertexBuilder implements AutoCloseable {
 		currentLayer = null;
 
 		builtBuffer = MemoryUtil.memAlloc(initialCapacity * vertexSize);
+	
+		dirty = false;
+		dirtyStartOffset = dirtyEndOffset = 0;
 	}
 	
 	private void checkNotClosed() throws IllegalStateException {
@@ -68,10 +76,16 @@ public class LayeredVertexBuilder implements AutoCloseable {
 				int deltaOffset = layerInfo.offset - layerInfo.prevSibling.offset;
 				moveBufferBlock(layerInfo.prevSibling.offset, deltaOffset);
 				incrementLeftOffsets(layerInfo, deltaOffset);
+				
+				updateDirtyRange(layerInfo.offset, layerInfo.offset, deltaOffset);
 			} else {
 				// In this case we do not have to worry about moving
 				// the buffer block since there is no trailing data.
+				int deltaOffset = layerInfo.offset - builtBuffer.position();
+				
 				builtBuffer.position(layerInfo.offset);
+
+				updateDirtyRange(layerInfo.offset, layerInfo.offset, deltaOffset);
 			}
 			
 			removeAndDeleteLayerInfo(layerInfo);
@@ -111,8 +125,12 @@ public class LayeredVertexBuilder implements AutoCloseable {
 			incrementLeftOffsets(buildingLayer, deltaOffset);
 			
 			oldPosition = builtBuffer.position();
+
+			updateDirtyRange(buildingLayer.offset, buildingLayer.prevSibling.offset, deltaOffset);
 		} else {
 			ensureCapacity(oldPosition = getBuildingEndOffset());
+			
+			updateDirtyRange(buildingLayer.offset, oldPosition, 0);
 		}
 		
 		builtBuffer.position(buildingLayer.offset);
@@ -171,6 +189,17 @@ public class LayeredVertexBuilder implements AutoCloseable {
 	
 	public int getBuildingEndOffset() {
 		return getBuildingStartOffset() + builder.getPosition();
+	}
+	
+	private void updateDirtyRange(int startOffset, int endOffset, int deltaEndOffset) {
+		if (startOffset < dirtyStartOffset)
+			dirtyStartOffset = startOffset;
+
+		if (dirtyEndOffset >= endOffset - deltaEndOffset) {
+			dirtyEndOffset += deltaEndOffset;
+		} else {
+			dirtyEndOffset = endOffset;
+		}
 	}
 	
 	private void incrementLeftOffsets(VertexLayerInfo layerInfo, int deltaOffset) {
@@ -302,6 +331,44 @@ public class LayeredVertexBuilder implements AutoCloseable {
 		
 		VertexLayerInfo layer = idToLayer.get(layerId);
 		return (layer == null) ? -1 : layer.depth;
+	}
+	
+	public int writeBuffer(VertexBuffer vertexBuffer, int previousVertexCount) {
+		checkNotBuilding();
+		
+		int vertexCount = previousVertexCount;
+		
+		if (dirty) {
+			ByteBuffer readOnlyBuffer = getBuiltBuffer();
+
+			int bytesToWrite = readOnlyBuffer.remaining();
+			if ((bytesToWrite % vertexBuffer.getVertexSize()) != 0)
+				throw new IllegalStateException("Vertices in buffer are not complete!");
+
+			vertexCount = bytesToWrite / vertexBuffer.getVertexSize();
+			
+			if (previousVertexCount == vertexCount) {
+				// The number of vertices is the same, only update the dirty range.
+				readOnlyBuffer.position(dirtyStartOffset).limit(dirtyEndOffset);
+				vertexBuffer.bufferSubData(readOnlyBuffer, dirtyStartOffset);
+			} else if (bytesToWrite <= vertexBuffer.getBufferSize()) {
+				// We can simply do a sub-data call.
+				readOnlyBuffer.position(dirtyStartOffset);
+				vertexBuffer.bufferSubData(readOnlyBuffer, dirtyStartOffset);
+			} else {
+				// We have to expand the vertex buffer, and write the entire buffer.
+				vertexBuffer.bufferData(readOnlyBuffer);
+			}
+			
+			dirtyStartOffset = dirtyEndOffset = 0;
+			dirty = false;
+		}
+		
+		return vertexCount;
+	}
+	
+	public boolean isDirty() {
+		return dirty;
 	}
 	
 	@Override

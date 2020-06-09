@@ -1,4 +1,4 @@
-package com.sprouts.graphic.tessellator2d;
+package com.sprouts.graphic.tessellator2d.shader;
 
 import static org.lwjgl.opengl.GL11.GL_BYTE;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
