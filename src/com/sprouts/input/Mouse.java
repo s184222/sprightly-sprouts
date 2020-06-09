@@ -17,11 +17,11 @@ public class Mouse {
 
 	private final Set<Integer> pressedButtons;
 	
-	private double mouseX;
-	private double mouseY;
+	private float mouseX;
+	private float mouseY;
 	
-	private double dragX;
-	private double dragY;
+	private float dragX;
+	private float dragY;
 	
 	public Mouse(Display display) {
 		this.display = display;
@@ -32,11 +32,11 @@ public class Mouse {
 	}
 	
 	public void glfwCursorPosCallback(long window, double xpos, double ypos) {
-		dragX = xpos - mouseX;
-		dragY = ypos - mouseY;
+		dragX = (float)xpos - mouseX;
+		dragY = (float)ypos - mouseY;
 		
-		mouseX = xpos;
-		mouseY = ypos;
+		mouseX = (float)xpos;
+		mouseY = (float)ypos;
 	
 		dispatchMouseMovedEvent(mouseX, mouseY);
 		
@@ -58,7 +58,7 @@ public class Mouse {
 	}
 
 	public void glfwScrollCallback(long window, double xoffset, double yoffset) {
-		dispatchMouseScrollEvent(mouseX, mouseY, xoffset, yoffset);
+		dispatchMouseScrollEvent(mouseX, mouseY, (float)xoffset, (float)yoffset);
 	}
 	
 	public void addListener(MouseListener listener) {
@@ -69,29 +69,41 @@ public class Mouse {
 		listeners.remove(listener);
 	}
 	
-	private void dispatchMouseMovedEvent(double mouseX, double mouseY) {
+	private void dispatchMouseMovedEvent(float mouseX, float mouseY) {
 		for (MouseListener listener : listeners)
 			listener.mouseMoved(mouseX, mouseY);
 	}	
 	
-	private void dispatchMouseDraggedEvent(int button, double mouseX, double mouseY, double dragX, double dragY) {
+	private void dispatchMouseDraggedEvent(int button, float mouseX, float mouseY, float dragX, float dragY) {
 		for (MouseListener listener : listeners)
 			listener.mouseDragged(button, mouseX, mouseY, dragX, dragY);
 	}
 
-	private void dispatchMouseClickedEvent(int button, double mouseX, double mouseY) {
+	private void dispatchMouseClickedEvent(int button, float mouseX, float mouseY) {
 		for (MouseListener listener : listeners)
 			listener.mouseClicked(button, mouseX, mouseY);
 	}
 
-	private void dispatchMouseReleasedEvent(int button, double mouseX, double mouseY) {
+	private void dispatchMouseReleasedEvent(int button, float mouseX, float mouseY) {
 		for (MouseListener listener : listeners)
 			listener.mouseReleased(button, mouseX, mouseY);
 	}
 
-	private void dispatchMouseScrollEvent(double mouseX, double mouseY, double scrollX, double scrollY) {
+	private void dispatchMouseScrollEvent(float mouseX, float mouseY, float scrollX, float scrollY) {
 		for (MouseListener listener : listeners)
 			listener.mouseScroll(mouseX, mouseY, scrollX, scrollY);
+	}
+
+	public boolean isButtonPressed(int button) {
+		return pressedButtons.contains(button);
+	}
+	
+	public float getMouseX() {
+		return mouseX;
+	}
+
+	public float getMouseY() {
+		return mouseY;
 	}
 	
 	public void init() {
