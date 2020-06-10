@@ -20,8 +20,8 @@ public class LayeredTessellator2D extends AbstractTessellator2D implements ILaye
 	}
 
 	@Override
-	public void rebuildLayer(VertexLayerID layerId) {
-		layeredBuilder.rebuildLayer(layerId);
+	public void rebuildLayer(VertexLayerID layerId, boolean rebuildAscendingLayers) {
+		layeredBuilder.rebuildLayer(layerId, rebuildAscendingLayers);
 	}
 
 	@Override
