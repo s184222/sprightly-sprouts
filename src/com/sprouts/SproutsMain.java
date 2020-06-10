@@ -121,6 +121,8 @@ public class SproutsMain {
 	}
 	
 	private void render() {
+		GL11.glDisable(GL11.GL_DEPTH_TEST);
+
 		batchedTessellator2D.beginBatch();
 		batchedTessellator2D.setColor(VertexColor.WHITE);
 		arialFont.drawString(batchedTessellator2D, 200, 200, "the brown fox");
@@ -133,8 +135,6 @@ public class SproutsMain {
 		batchedTessellator2D.drawTexturedQuad(0.0f, 0.0f, 400.0f, 400.0f, spongeBobTexture);
 		
 		batchedTessellator2D.endBatch();
-
-		
 	}
 	
 	private void checkGLErrors() {
