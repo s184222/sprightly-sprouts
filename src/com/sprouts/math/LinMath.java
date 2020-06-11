@@ -6,6 +6,7 @@ import java.util.List;
 public final class LinMath {
 	
 	public static final float EPSILON = 0.01f;
+	public static final float EPSILON_INTERSECT = 0.0001f;
 	
 	private LinMath() {
 	}
@@ -42,11 +43,11 @@ public final class LinMath {
 	 * source: https://www.youtube.com/watch?v=4bIsntTiKfM
 	 * source: https://www.youtube.com/watch?v=A86COO8KC58
 	 */
-	public static Vec2 intersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3, boolean b, boolean c) {
-		return intersect(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, b, c);
+	public static Vec2 intersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3) {
+		return intersect(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
 	}
 
-	public static Vec2 intersect(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3, boolean startOpen, boolean endOpen) {
+	public static Vec2 intersect(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) {
 		double a1 = y1 - y0;
 		double b1 = x0 - x1;
 		double c1 = a1 * x1 + b1 * y1;
@@ -65,31 +66,16 @@ public final class LinMath {
 		double ratioy1 = (y - y0) / (y1 - y0);
 		double ratiox2 = (x - x2) / (x3 - x2);
 		double ratioy2 = (y - y2) / (y3 - y2);
-		System.out.println(ratiox1 + " " + ratioy1 + " " + ratiox2 + " " + ratioy2 + " " + x + " " + y + " " + x1 + " " + y1 + " " + EPSILON);
-		if (startOpen) {
-			if (endOpen) {
-				if (((ratiox1 > 0-EPSILON && ratiox1 < 1+EPSILON) || (ratioy1 > 0-EPSILON && ratioy1 < 1+EPSILON)) && 
-						((ratiox2 >= 0-EPSILON && ratiox2 <= 1+EPSILON) || (ratioy2 >= 0-EPSILON && ratioy2 <= 1+EPSILON))){
-					return new Vec2((float)x, (float)y);
-				}
-			} else if (((ratiox1 > 0-EPSILON && ratiox1 <= 1+EPSILON) || (ratioy1 > 0-EPSILON && ratioy1 <= 1+EPSILON)) && 
-					((ratiox2 >= 0-EPSILON && ratiox2 <= 1+EPSILON) || (ratioy2 >= 0-EPSILON && ratioy2 <= 1+EPSILON))){
-				return new Vec2((float)x, (float)y);
-			}
-		} else if (endOpen) {
-			if (((ratiox1 >= 0-EPSILON && ratiox1 < 1+EPSILON) || (ratioy1 >= 0-EPSILON && ratioy1 < 1+EPSILON)) && 
-					((ratiox2 >= 0-EPSILON && ratiox2 <= 1+EPSILON) || (ratioy2 >= 0-EPSILON&& ratioy2 <= 1+EPSILON))){
-				return new Vec2((float)x, (float)y);
-			}	
-		} else if (((ratiox1 >= 0-EPSILON && ratiox1 <= 1+EPSILON) || (ratioy1 >= 0-EPSILON && ratioy1 <= 1+EPSILON)) && 
-				((ratiox2 >= 0-EPSILON && ratiox2 <= 1+EPSILON) || (ratioy2 >= 0-EPSILON && ratioy2 <= 1+EPSILON))){
+//		System.out.println(ratiox1 + " " + ratioy1 + " " + ratiox2 + " " + ratioy2 + " " + x + " " + y + " " + x1 + " " + y1 + " " + EPSILON);
+		if (((ratiox1 >= 0-EPSILON_INTERSECT && ratiox1 <= 1+EPSILON_INTERSECT) || (ratioy1 >= 0-EPSILON_INTERSECT && ratioy1 <= 1+EPSILON_INTERSECT)) && 
+				((ratiox2 >= 0-EPSILON_INTERSECT && ratiox2 <= 1+EPSILON_INTERSECT) || (ratioy2 >= 0-EPSILON_INTERSECT && ratioy2 <= 1+EPSILON_INTERSECT))){
 			return new Vec2((float)x, (float)y);
 		}
 		
 		return null;
 	}
 	//this intersect is only used for the function contains 
-	public static Vec2 intersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3) {
+	public static Vec2 intersectContains(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3) {
 		float a1 = p1.y - p0.y;
 		float b1 = p0.x - p1.x;
 		float c1 = a1 * p1.x + b1 * p1.y;
@@ -136,7 +122,7 @@ public final class LinMath {
 		
 		int increment = 0;
 		for (int i = 0; i < poly.size() - 1; i++) {
-			Vec2 p = intersect(poly.get(i), poly.get(i + 1), v, vNew, true, true);
+			Vec2 p = intersectContains(poly.get(i), poly.get(i + 1), v, vNew);
 			
 			if (p != null) {
 				if (p.x==v.x && p.y==v.y) return false;
@@ -166,16 +152,16 @@ public final class LinMath {
 	}
 	
 	
-	public static void main(String[] args) {
-		
-		List<Vec2> list = new ArrayList<Vec2>();
-		list.add(new Vec2(0,0));
-		list.add(new Vec2(3,2));
-		list.add(new Vec2(4,2));
-		list.add(new Vec2(2,6));
-		list.add(new Vec2(5,4));
-		list.add(new Vec2(5,1));
+//	public static void main(String[] args) {
+//		
+//		List<Vec2> list = new ArrayList<Vec2>();
+//		list.add(new Vec2(0,0));
+//		list.add(new Vec2(3,2));
+//		list.add(new Vec2(4,2));
+//		list.add(new Vec2(2,6));
+//		list.add(new Vec2(5,4));
+//		list.add(new Vec2(5,1));
 //		System.out.println(LinMath.contains(list,new Vec2(4,2)));
-		System.out.println(intersect(new Vec2(0,0),new Vec2(3,3),new Vec2(2,3),new Vec2(4,3),false,true));
-	}
+//		System.out.println(intersect(new Vec2(0,0),new Vec2(3,3),new Vec2(2,3),new Vec2(4,3),false,true));
+//	}
 }
