@@ -43,11 +43,11 @@ public final class LinMath {
 	 * source: https://www.youtube.com/watch?v=4bIsntTiKfM
 	 * source: https://www.youtube.com/watch?v=A86COO8KC58
 	 */
-	public static Vec2 intersect(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3) {
-		return intersect(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+	public static boolean intersect(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) {
+		return intersect(x0, y0, x1, y1, x2, y2, x3, y3, null);
 	}
 
-	public static Vec2 intersect(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) {
+	public static boolean intersect(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3, Vec2 intersection) {
 		double a1 = y1 - y0;
 		double b1 = x0 - x1;
 		double c1 = a1 * x1 + b1 * y1;
@@ -57,7 +57,7 @@ public final class LinMath {
 		double divisor = a1 * b2 - a2 * b1;
 
 		if (Math.abs(divisor) < EPSILON * EPSILON) {
-			return null; // if divide == 0 it means the lines are parallel
+			return false; // if divide == 0 it means the lines are parallel
 		}
 
 		double x = (b2 * c1 - b1 * c2) / divisor;
@@ -69,10 +69,12 @@ public final class LinMath {
 //		System.out.println(ratiox1 + " " + ratioy1 + " " + ratiox2 + " " + ratioy2 + " " + x + " " + y + " " + x1 + " " + y1 + " " + EPSILON);
 		if (((ratiox1 >= 0-EPSILON_INTERSECT && ratiox1 <= 1+EPSILON_INTERSECT) || (ratioy1 >= 0-EPSILON_INTERSECT && ratioy1 <= 1+EPSILON_INTERSECT)) && 
 				((ratiox2 >= 0-EPSILON_INTERSECT && ratiox2 <= 1+EPSILON_INTERSECT) || (ratioy2 >= 0-EPSILON_INTERSECT && ratioy2 <= 1+EPSILON_INTERSECT))){
-			return new Vec2((float)x, (float)y);
+			if (intersection != null) intersection.set((float)x, (float)y);
+			return true;
+			
 		}
 		
-		return null;
+		return false;
 	}
 	//this intersect is only used for the function contains 
 	public static Vec2 intersectContains(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3) {
