@@ -9,6 +9,9 @@ import org.lwjgl.system.MemoryUtil;
 import com.sprouts.graphic.UniqueIDSupplier;
 import com.sprouts.graphic.buffer.VertexBuffer;
 
+/**
+ * @author Christian
+ */
 public class LayeredVertexBuilder implements AutoCloseable {
 	
 	private static final int DEFAULT_INITIAL_CAPACITY = 16;
@@ -260,8 +263,10 @@ public class LayeredVertexBuilder implements AutoCloseable {
 		if (currentLayer == null)
 			throw new IllegalStateException("No more layers to pop");
 		
-		// See #checkTightlyPacked(VertexLayerInfo).
-		checkTightlyPacked(currentLayer);
+		if (rebuildAscendingLayers) {
+			// See #checkTightlyPacked(VertexLayerInfo).
+			checkTightlyPacked(currentLayer);
+		}
 		
 		if (currentLayer == buildingLayer) {
 			// The prevLayer of our building layer might not be null.
