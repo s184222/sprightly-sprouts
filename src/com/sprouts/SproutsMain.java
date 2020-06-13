@@ -14,6 +14,7 @@ import com.sprouts.graphic.color.VertexColor;
 import com.sprouts.graphic.font.Font;
 import com.sprouts.graphic.font.FontData;
 import com.sprouts.graphic.font.FontLoader;
+import com.sprouts.graphic.font.TextBounds;
 import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 import com.sprouts.graphic.tessellator2d.color.LinearColorGradient2D;
 import com.sprouts.graphic.tessellator2d.shader.BasicTessellator2DShader;
@@ -124,10 +125,12 @@ public class SproutsMain {
 
 		batchedTessellator2D.beginBatch();
 		batchedTessellator2D.setColor(VertexColor.WHITE);
-		arialFont.drawString(batchedTessellator2D, 200, 200, "the brown fox");
+		TextBounds textBounds = arialFont.getTextBounds("the brown fox");
 		
 		batchedTessellator2D.setColor(VertexColor.ORANGE);
-		batchedTessellator2D.drawQuad(0, 0, 100.0f, 100.0f);
+		batchedTessellator2D.drawQuad(0, 0, textBounds.width, textBounds.height);
+		
+		arialFont.drawString(batchedTessellator2D, textBounds.x, textBounds.y, "the brown fox");
 		
 		batchedTessellator2D.translate(200.0f, 200.0f);
 		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(0.0f, 0.0f), VertexColor.WHITE, new Vec2(0.0f, 400.0f), VertexColor.PURPLE));
