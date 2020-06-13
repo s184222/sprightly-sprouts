@@ -1,5 +1,8 @@
 package com.sprouts.graphic.clip;
 
+/**
+ * @author Christian
+ */
 public class ClipRect extends ClipShape {
 
 	private final ClipShapeBounds bounds;

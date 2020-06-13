@@ -1,5 +1,8 @@
 package com.sprouts.graphic.clip;
 
+/**
+ * @author Christian
+ */
 public class ClipShapeBounds {
 
 	public final float x0;

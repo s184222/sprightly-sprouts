@@ -3,6 +3,9 @@ package com.sprouts.graphic.tessellator2d;
 import com.sprouts.graphic.tessellator.VertexAttribBuilder;
 import com.sprouts.graphic.tessellator2d.shader.Tessellator2DShader;
 
+/**
+ * @author Christian
+ */
 public class BatchedTessellator2D extends AbstractTessellator2D {
 	
 	protected final VertexAttribBuilder builder;

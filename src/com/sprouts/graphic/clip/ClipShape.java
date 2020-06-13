@@ -1,5 +1,8 @@
 package com.sprouts.graphic.clip;
 
+/**
+ * @author Christian
+ */
 public abstract class ClipShape {
 
 	public abstract ClipShapeBounds getClipBounds();

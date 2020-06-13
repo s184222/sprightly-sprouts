@@ -19,10 +19,10 @@ public class Tessellator2DShader extends ShaderProgram {
 	private static final int BYTE_SIZE       = 1;
 	private static final int FLOAT_BYTE_SIZE = 4 * BYTE_SIZE;
 	
-	private static final int POSITION_SIZE  = 3;
+	private static final int POSITION_SIZE  = 2;
 	private static final int COLOR_SIZE     = 4;
 	private static final int TEX_COORD_SIZE = 2;
-	private static final int TEX_INDEX_SIZE    = 1;
+	private static final int TEX_INDEX_SIZE = 1;
 	
 	private static final int POSITION_BYTE_SIZE  = POSITION_SIZE * FLOAT_BYTE_SIZE;
 	private static final int COLOR_BYTE_SIZE     = COLOR_SIZE * BYTE_SIZE;

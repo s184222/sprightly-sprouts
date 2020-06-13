@@ -2,7 +2,10 @@ package com.sprouts.graphic.color;
 
 import com.sprouts.math.LinMath;
 
-public class VertexColor {
+/**
+ * @author Christian
+ */
+public final class VertexColor {
 
 	// Color definitions are from G4mEngine. See the below link for more information:
 	// https://github.com/G4me4u/g4mengine/blob/master/src/com/g4mesoft/graphic/GColor.java
@@ -302,5 +305,21 @@ public class VertexColor {
 
 	public int getBlue() {
 		return blue;
+	}
+	
+	public int getARGB() {
+		return (alpha << 24) | (red << 16) | (green << 8) | blue;
+	}
+
+	@Override
+	public int hashCode() {
+		return getARGB();
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if (!(other instanceof VertexColor))
+			return false;
+		return getARGB() == ((VertexColor)other).getARGB();
 	}
 }

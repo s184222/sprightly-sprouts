@@ -10,6 +10,9 @@ import static org.lwjgl.opengl.GL15.glGenBuffers;
 
 import java.nio.ByteBuffer;
 
+/**
+ * @author Christian
+ */
 public class VertexBuffer {
 
 	private int bufferHandle;

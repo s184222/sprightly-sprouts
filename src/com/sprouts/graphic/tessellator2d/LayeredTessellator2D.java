@@ -5,6 +5,9 @@ import com.sprouts.graphic.tessellator.VertexAttribBuilder;
 import com.sprouts.graphic.tessellator.VertexLayerID;
 import com.sprouts.graphic.tessellator2d.shader.Tessellator2DShader;
 
+/**
+ * @author Christian
+ */
 public class LayeredTessellator2D extends AbstractTessellator2D implements ILayeredTessellator2D {
 
 	protected final LayeredVertexBuilder layeredBuilder;

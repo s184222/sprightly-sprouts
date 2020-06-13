@@ -2,6 +2,9 @@ package com.sprouts.graphic.tessellator2d;
 
 import com.sprouts.graphic.tessellator.VertexLayerID;
 
+/**
+ * @author Christian
+ */
 public interface ILayeredTessellator2D extends ITessellator2D {
 
 	/**

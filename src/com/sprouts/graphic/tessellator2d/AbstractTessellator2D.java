@@ -1,6 +1,7 @@
 package com.sprouts.graphic.tessellator2d;
 
 import static org.lwjgl.opengl.GL11.GL_BLEND;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_SRC_ALPHA;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
@@ -27,18 +28,24 @@ import com.sprouts.graphic.tessellator.VertexAttribBuilder;
 import com.sprouts.graphic.tessellator2d.color.ColorGradient2D;
 import com.sprouts.graphic.tessellator2d.color.ConstantColorGradient2D;
 import com.sprouts.graphic.tessellator2d.shader.Tessellator2DShader;
+import com.sprouts.graphic.texture.ITextureRegion;
 import com.sprouts.graphic.texture.Texture;
+import com.sprouts.math.LinMath;
 import com.sprouts.math.Mat3;
 import com.sprouts.math.Mat4;
 import com.sprouts.math.Vec2;
 
+/**
+ * @author Christian
+ */
 public abstract class AbstractTessellator2D implements ITessellator2D, AutoCloseable {
 
-	private static final int WHITE_TEXTURE_INDEX = Byte.MIN_VALUE;
+	private static final byte WHITE_TEXTURE_INDEX = Byte.MIN_VALUE;
 	private static final int MAX_TEXTURE_COUNT = 32;
 	private static final int BATCH_VERTEX_COUNT = 3 * 200; /* 200 triangles */
 	
 	private static final int MAX_CLIPPED_CACHE_SIZE = 32;
+	private static final float Z_CLIP_OFFSET = 0.0f;
 	
 	private static final float PROJ_NEAR = -100.0f;
 	private static final float PROJ_FAR  =  100.0f;
@@ -54,7 +61,6 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 	protected List<Texture> activeTextures;
 
 	protected final Mat3 transform;
-	protected float zOffset;
 	
 	protected ClipShape clipShape;
 	protected ClippedTriangle[] triangleCache;
@@ -72,7 +78,6 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 		activeTextures = new ArrayList<Texture>();
 
 		transform = new Mat3();
-		zOffset = 0.0f;
 
 		clipShape = null;
 		triangleCache = new ClippedTriangle[0];
@@ -95,10 +100,12 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 		
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glDisable(GL_DEPTH_TEST);
 		
 		vertexArray.bind();
 		glDrawArrays(GL_TRIANGLES, 0, vertexCount);
 		
+		glEnable(GL_DEPTH_TEST);
 		glDisable(GL11.GL_BLEND);
 	}
 	
@@ -121,6 +128,18 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 	public void drawQuad(float x0, float y0, float x1, float y1) {
 		drawTexturedQuadImpl(x0, y0, 0.0f, 0.0f, x1, y1, 0.0f, 0.0f, WHITE_TEXTURE_INDEX);
 	}
+	
+	@Override
+	public void drawTexturedQuad(float x0, float y0, float x1, float y1, ITextureRegion textureRegion) {
+		float u0 = textureRegion.getU0();
+		float v0 = textureRegion.getV0();
+		float u1 = textureRegion.getU1();
+		float v1 = textureRegion.getV1();
+
+		int textureIndex = getOrAddTextureIndex(textureRegion.getTexture());
+		
+		drawTexturedQuadImpl(x0, y0, u0, v0, x1, y1, u1, v1, textureIndex);
+	}
 
 	@Override
 	public void drawTexturedQuad(float x0, float y0, float u0, float v0, float x1, float y1, float u1, float v1) {
@@ -135,6 +154,42 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 		
 		drawTriangleNoTransform(c0.x, c0.y, u0, v0, c1.x, c1.y, u0, v1, c3.x, c3.y, u1, v0, (byte)textureIndex);
 		drawTriangleNoTransform(c2.x, c2.y, u1, v1, c3.x, c3.y, u1, v0, c1.x, c1.y, u0, v1, (byte)textureIndex);
+	}
+
+	@Override
+	public void drawLine(float x0, float y0, float x1, float y1, float lineWidth) {
+		Vec2 p0 = transform.mul(new Vec2(x0, y0));
+		Vec2 p1 = transform.mul(new Vec2(x1, y1));
+		
+		float dx = p1.x - p0.x;
+		float dy = p1.y - p0.y;
+		
+		float distSqr = dx * dx + dy * dy;
+		if (distSqr >= LinMath.EPSILON * LinMath.EPSILON) {
+			float m = 0.5f * lineWidth / ((float)Math.sqrt(distSqr));
+			
+			dx *= m;
+			dy *= m;
+			
+			// Vertical line: Top-left
+			float lx0 = p0.x - dy;
+			float ly0 = p0.y + dx;
+
+			// Vertical line: Bottom-left
+			float lx1 = p1.x - dy;
+			float ly1 = p1.y + dx;
+
+			// Vertical line: Bottom-right
+			float lx2 = p1.x + dy;
+			float ly2 = p1.y - dx;
+
+			// Vertical line: Top-right
+			float lx3 = p0.x + dy;
+			float ly3 = p0.y - dx;
+			
+			drawTriangleNoTransform(lx0, ly0, 0.0f, 0.0f, lx1, ly1, 0.0f, 0.0f, lx3, ly3, 0.0f, 0.0f, WHITE_TEXTURE_INDEX);
+			drawTriangleNoTransform(lx2, ly2, 0.0f, 0.0f, lx3, ly3, 0.0f, 0.0f, lx1, ly1, 0.0f, 0.0f, WHITE_TEXTURE_INDEX);
+		}
 	}
 	
 	private void drawTriangleNoTransform(float x0, float y0, float u0, float v0, 
@@ -181,26 +236,26 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 			                   textureIndex);
 		} else {
 			ClipPlane plane = planes[planeIndex];
-			if (plane.contains(t.x0, t.y0, zOffset)) {
-				if (plane.contains(t.x1, t.y1, zOffset)) {
-					if (plane.contains(t.x2, t.y2, zOffset)) {
+			if (plane.contains(t.x0, t.y0, Z_CLIP_OFFSET)) {
+				if (plane.contains(t.x1, t.y1, Z_CLIP_OFFSET)) {
+					if (plane.contains(t.x2, t.y2, Z_CLIP_OFFSET)) {
 						triangleCache[planeIndex + 1].set(t);
 						clipAndTessellate(planes, planeIndex + 1, textureIndex);
 					} else {
 						// TODO: make this work, I dunno how yet....
 					}
-				} else if (plane.contains(t.x2, t.y2, zOffset)) {
+				} else if (plane.contains(t.x2, t.y2, Z_CLIP_OFFSET)) {
 					
 				} else {
 					
 				}
-			} else if (plane.contains(t.x1, t.y1, zOffset)) {
-				if (plane.contains(t.x2, t.y2, zOffset)) {
+			} else if (plane.contains(t.x1, t.y1, Z_CLIP_OFFSET)) {
+				if (plane.contains(t.x2, t.y2, Z_CLIP_OFFSET)) {
 					
 				} else {
 					
 				}
-			} else if (plane.contains(t.x2, t.y2, zOffset)) {
+			} else if (plane.contains(t.x2, t.y2, Z_CLIP_OFFSET)) {
 				
 			}
 		}
@@ -219,7 +274,7 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 	protected void tessellateVertex(float x, float y, float u, float v, byte textureIndex) {
 		VertexAttribBuilder builder = getBuilder();
 		
-		builder.put(x, y, zOffset);
+		builder.put(x, y);
 		
 		VertexColor color = colorGradient.getColor(x, y, transform);
 		builder.put((byte)color.getRed());
@@ -258,33 +313,35 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 
 	@Override
 	public void setTexture(Texture texture) {
+		currentTextureIndex = getOrAddTextureIndex(texture);
+	}
+	
+	private int getOrAddTextureIndex(Texture texture) {
 		int nextTextureIndex = activeTextures.size();
 		
 		for (int i = 0; i < nextTextureIndex; i++) {
 			Texture activeTexture = activeTextures.get(i);
-			if (activeTexture == texture) {
-				currentTextureIndex = i;
-				return;
-			}
+			
+			if (activeTexture == texture)
+				return i;
 		}
 		
 		if (nextTextureIndex >= MAX_TEXTURE_COUNT)
 			throw new IllegalStateException("Too many textures. Maximum is " + MAX_TEXTURE_COUNT);
 		
 		activeTextures.add(texture);
-		currentTextureIndex = nextTextureIndex;
+	
+		return nextTextureIndex;
 	}
 
 	@Override
 	public void clearTransform() {
 		transform.toIdentity();
-		zOffset = 0.0f;
 	}
 
 	@Override
-	public void translate(float xt, float yt, float zt) {
+	public void translate(float xt, float yt) {
 		transform.translate(xt, yt);
-		zOffset += zt;
 	}
 
 	@Override
@@ -303,13 +360,8 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 	}
 
 	@Override
-	public float getZOffset() {
-		return zOffset;
-	}
-
-	@Override
-	public void setZOffset(float zOffset) {
-		this.zOffset = zOffset;
+	public ClipShape getClipShape() {
+		return clipShape;
 	}
 	
 	@Override
@@ -322,11 +374,6 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 		this.clipShape = shape;
 	}
 
-	@Override
-	public ClipShape getClipShape() {
-		return clipShape;
-	}
-	
 	public void dispose() {
 		vertexArray.dispose();
 		vertexBuffer.dispose();

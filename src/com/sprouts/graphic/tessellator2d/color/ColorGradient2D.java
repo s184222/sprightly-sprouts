@@ -3,6 +3,9 @@ package com.sprouts.graphic.tessellator2d.color;
 import com.sprouts.graphic.color.VertexColor;
 import com.sprouts.math.Mat3;
 
+/**
+ * @author Christian
+ */
 public abstract class ColorGradient2D {
 
 	/**

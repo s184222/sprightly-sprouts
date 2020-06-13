@@ -2,6 +2,9 @@ package com.sprouts.graphic.clip;
 
 import com.sprouts.math.Vec3;
 
+/**
+ * @author Christian
+ */
 public class ClipPlane {
 
 	private static final float EPSILON = 0.001f;

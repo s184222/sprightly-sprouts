@@ -11,6 +11,9 @@ import com.sprouts.math.Vec2;
 import com.sprouts.math.Vec3;
 import com.sprouts.math.Vec4;
 
+/**
+ * @author Christian
+ */
 public class VertexAttribBuilder implements AutoCloseable {
 
 	private static final int DEFAULT_INITIAL_CAPACITY = 64;

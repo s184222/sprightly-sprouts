@@ -5,6 +5,9 @@ import com.sprouts.math.LinMath;
 import com.sprouts.math.Mat3;
 import com.sprouts.math.Vec2;
 
+/**
+ * @author Christian
+ */
 public class LinearColorGradient2D extends ColorGradient2D {
 
 	private static final float EPSILON = 0.01f;

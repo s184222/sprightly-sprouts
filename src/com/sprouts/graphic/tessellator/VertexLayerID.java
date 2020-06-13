@@ -2,6 +2,9 @@ package com.sprouts.graphic.tessellator;
 
 import com.sprouts.graphic.UniqueIntegerID;
 
+/**
+ * @author Christian
+ */
 public final class VertexLayerID implements UniqueIntegerID {
 
 	private final int layerId;
