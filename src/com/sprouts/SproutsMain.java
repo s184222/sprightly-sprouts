@@ -42,9 +42,8 @@ public class SproutsMain {
 	private Tessellator2DShader tessellator2DShader;
 	private BatchedTessellator2D batchedTessellator2D;
 	private Texture spongeBobTexture;
-	
 	private Font arialFont;
-	
+
 	public SproutsMain() {
 		display = new Display();
 		mouse = new Mouse(display);
@@ -133,6 +132,12 @@ public class SproutsMain {
 		batchedTessellator2D.translate(200.0f, 200.0f);
 		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(0.0f, 0.0f), VertexColor.WHITE, new Vec2(0.0f, 400.0f), VertexColor.PURPLE));
 		batchedTessellator2D.drawTexturedQuad(0.0f, 0.0f, 400.0f, 400.0f, spongeBobTexture);
+		batchedTessellator2D.translate(-200.0f, -200.0f);
+		
+		batchedTessellator2D.setColor(VertexColor.BLUE_VIOLET);
+		batchedTessellator2D.drawLine(50.0f, 150.0f, 150.0f, 250.0f, 2.0f);
+		batchedTessellator2D.setColor(VertexColor.CHOCOLATE);
+		batchedTessellator2D.drawLine(150.0f, 150.0f, 50.0f, 250.0f, 2.0f);
 		
 		batchedTessellator2D.endBatch();
 	}
