@@ -121,16 +121,22 @@ public class SproutsMain {
 	}
 	
 	private void render() {
-		GL11.glDisable(GL11.GL_DEPTH_TEST);
-
 		batchedTessellator2D.beginBatch();
-		batchedTessellator2D.setColor(VertexColor.WHITE);
-		TextBounds textBounds = arialFont.getTextBounds("the brown fox");
 		
+		String text = "the brown fox";
+		float tx = 200.0f;
+		float ty = 170.0f;
+		
+		TextBounds textBounds = arialFont.getTextBounds(text);
+		float x0 = tx + textBounds.x;
+		float y0 = ty + textBounds.y;
+		float x1 = x0 + textBounds.width;
+		float y1 = y0 + textBounds.height;
+
 		batchedTessellator2D.setColor(VertexColor.ORANGE);
-		batchedTessellator2D.drawQuad(0, 0, textBounds.width, textBounds.height);
-		
-		arialFont.drawString(batchedTessellator2D, textBounds.x, textBounds.y, "the brown fox");
+		batchedTessellator2D.drawQuad(x0, y0, x1, y1);
+		batchedTessellator2D.setColor(VertexColor.BLACK);
+		arialFont.drawString(batchedTessellator2D, tx, ty, text);
 		
 		batchedTessellator2D.translate(200.0f, 200.0f);
 		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(0.0f, 0.0f), VertexColor.WHITE, new Vec2(0.0f, 400.0f), VertexColor.PURPLE));
