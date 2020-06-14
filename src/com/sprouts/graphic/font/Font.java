@@ -152,7 +152,7 @@ public class Font {
 				stbtt_GetCodepointBox(info, text.charAt(i), x0buf, y0buf, x1buf, y1buf);
 
 				if (i == 0) {
-					x = -x0buf.get(0);
+					x = x0buf.get(0);
 				}
 				
 				float y1 = y1buf.get(0);
@@ -169,7 +169,7 @@ public class Font {
 			float width = getStringWidth(text);
 			float scale = stbtt_ScaleForPixelHeight(info, fontSize);
 
-			return new TextBounds(x * scale, ascent * scale, width, (ascent - descent) * scale);
+			return new TextBounds(x * scale, -ascent * scale, width, (ascent - descent) * scale);
 		}
 	}
 
