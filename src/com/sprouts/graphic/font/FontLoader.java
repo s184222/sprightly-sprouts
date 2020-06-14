@@ -13,26 +13,22 @@ import com.sprouts.util.FileUtil;
 public class FontLoader {
 	
 	public static FontData loadFont(String path) throws IOException {
-		
-	    ByteBuffer ttf;
-
-	    STBTTFontinfo info;
-	    
 	    InputStream is = FontLoader.class.getResourceAsStream(path);
 	    if (is == null)
-			throw new IOException("Unable to find image: " + path);
+			throw new IOException("Unable to find font: " + path);
+	    
+	    ByteBuffer ttf;
 	    
 	    try {
 			ttf = FileUtil.readAllBytes(is);
 		} catch (IOException e) {
-			throw new IOException("Failed to load image.", e);
+			throw new IOException("Failed to load font.", e);
 		}
 	    
-        info = STBTTFontinfo.create();
+	    STBTTFontinfo info = STBTTFontinfo.create();
         
-        if (!stbtt_InitFont(info, ttf)) {
+	    if (!stbtt_InitFont(info, ttf))
             throw new IllegalStateException("Failed to initialize font information.");
-        }
 	
 		return new FontData(ttf, info);
 	}

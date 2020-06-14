@@ -38,10 +38,12 @@ public class BatchedTessellator2D extends AbstractTessellator2D {
 		batching = false;
 		
 		drawBatch();
-		
+
+		clearMaterial();
 		clearTransform();
-		clearColor();
-		clearTextures();
+		clearClipShape();
+		
+		activeTextures.clear();
 	}
 	
 	private void drawBatch() {
@@ -62,10 +64,10 @@ public class BatchedTessellator2D extends AbstractTessellator2D {
 	}
 	
 	@Override
-	public void drawTexturedQuad(float x0, float y0, float u0, float v0, float x1, float y1, float u1, float v1) {
+	public void drawQuadRegion(float x0, float y0, float u0, float v0, float x1, float y1, float u1, float v1) {
 		checkBatching();
 		
-		super.drawTexturedQuad(x0, y0, u0, v0, x1, y1, u1, v1);
+		super.drawQuadRegion(x0, y0, u0, v0, x1, y1, u1, v1);
 	}
 	
 	@Override

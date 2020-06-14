@@ -1,11 +1,12 @@
 package com.sprouts.graphic.font;
 
+import static org.lwjgl.stb.STBTruetype.stbtt_FindGlyphIndex;
+import static org.lwjgl.stb.STBTruetype.stbtt_GetFontVMetrics;
+import static org.lwjgl.stb.STBTruetype.stbtt_GetCodepointBox;
+import static org.lwjgl.stb.STBTruetype.stbtt_GetGlyphBox;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetGlyphHMetrics;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetPackedQuad;
 import static org.lwjgl.stb.STBTruetype.stbtt_ScaleForPixelHeight;
-import static org.lwjgl.stb.STBTruetype.stbtt_GetFontVMetrics;
-import static org.lwjgl.stb.STBTruetype.stbtt_GetGlyphBox;
-import static org.lwjgl.stb.STBTruetype.stbtt_FindGlyphIndex;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -34,7 +35,7 @@ public class Font {
 	}
 
 	public void drawString(ITessellator2D tessellator, float x, float y, String text) {
-		tessellator.setTexture(textureAtlas);
+		tessellator.setTextureRegion(textureAtlas);
 
 		int atlasWidth = textureAtlas.getWidth();
 		int atlasHeight = textureAtlas.getHeight();
@@ -50,15 +51,15 @@ public class Font {
 
 					stbtt_GetPackedQuad(cdata, atlasWidth, atlasHeight, charIndex, xptr, yptr, quad, true);
 
-					tessellator.drawTexturedQuad(quad.x0(), quad.y0(), quad.s0(), quad.t0(), quad.x1(), quad.y1(),
-							quad.s1(), quad.t1());
+					tessellator.drawQuadRegion(quad.x0(), quad.y0(), quad.s0(), quad.t0(),
+					                           quad.x1(), quad.y1(), quad.s1(), quad.t1());
 				}
 			}
 
 		}
 	}
 	
-	public String trimText (String text, float width, String ellipses) {
+	public String trimText(String text, float width, String ellipses) {
 		String output;
 		for (int i = 0; i < text.length(); i++) {
 			output = text.substring(0, i) + ellipses;
@@ -72,7 +73,7 @@ public class Font {
 	
 	
 	public void drawWrappedString(ITessellator2D tessellator, float x, float y, float width, String text) {
-		tessellator.setTexture(textureAtlas);
+		tessellator.setTextureRegion(textureAtlas);
 
 		String[] words = text.split(" ");
 		
@@ -139,10 +140,7 @@ public class Font {
 	}
 	
 	public TextBounds getTextBounds(String text) {
-
 		float x = 0, ascent = 0, descent = 0;
-		float width = getStringWidth(text);
-		float scale = stbtt_ScaleForPixelHeight(info, fontSize);
 
 		try (MemoryStack memStack = MemoryStack.stackPush()) {
 			IntBuffer x0buf = memStack.ints(0);
@@ -151,20 +149,25 @@ public class Font {
 			IntBuffer y1buf = memStack.ints(0);
 
 			for (int i = 0; i < text.length(); i++) {
+				stbtt_GetCodepointBox(info, text.charAt(i), x0buf, y0buf, x1buf, y1buf);
 
-				stbtt_GetGlyphBox(info, stbtt_FindGlyphIndex(info, text.charAt(i)), x0buf, y0buf, x1buf, y1buf);
-
-				if (y1buf.get(0) > ascent) {
-					ascent = y1buf.get(0);
-				}
-
-				if (y0buf.get(0) < descent) {
-					descent = y0buf.get(0);
-				}
 				if (i == 0) {
 					x = -x0buf.get(0);
 				}
+				
+				float y1 = y1buf.get(0);
+				if (y1 > ascent) {
+					ascent = y1;
+				}
+				
+				float y0 = y0buf.get(0);
+				if (y0 < descent) {
+					descent = y0;
+				}
 			}
+
+			float width = getStringWidth(text);
+			float scale = stbtt_ScaleForPixelHeight(info, fontSize);
 
 			return new TextBounds(x * scale, ascent * scale, width, (ascent - descent) * scale);
 		}
@@ -191,21 +194,23 @@ public class Font {
 			IntBuffer pLeftSideBearing = stack.mallocInt(1);
 
 			for (int i = 0; i < text.length(); i++) {
-
-				if (i == text.length() - 1) {
-					width += getCharWidth(text.charAt(i));
-				} else {
-					stbtt_GetGlyphHMetrics(info, stbtt_FindGlyphIndex(info, text.charAt(i)), pAdvancedWidth,
-							pLeftSideBearing);
-
-					width += pAdvancedWidth.get(0);
-
-					if (i == 0) {
-						width -= pLeftSideBearing.get(0);
+				int charIndex = stbtt_FindGlyphIndex(info, text.charAt(i));
+				
+				if (charIndex != 0) {
+					if (i == text.length() - 1) {
+						width += getCharWidth(charIndex);
+					} else {
+						stbtt_GetGlyphHMetrics(info, charIndex, pAdvancedWidth, pLeftSideBearing);
+	
+						width += pAdvancedWidth.get(0);
+	
+						if (i == 0) {
+							width -= pLeftSideBearing.get(0);
+						}
 					}
 				}
-
 			}
+			
 			return width * stbtt_ScaleForPixelHeight(info, fontSize);
 		}
 	}
@@ -217,7 +222,7 @@ public class Font {
 			IntBuffer x0buf = memStack.ints(0);
 			IntBuffer x1buf = memStack.ints(0);
 
-			stbtt_GetGlyphBox(info, stbtt_FindGlyphIndex(info, charIndex), x0buf, null, x1buf, null);
+			stbtt_GetGlyphBox(info, charIndex, x0buf, null, x1buf, null);
 
 			width = x1buf.get(0);
 		}

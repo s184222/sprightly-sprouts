@@ -1,19 +1,15 @@
 package com.sprouts.graphic.font;
 
-import static org.lwjgl.stb.STBTruetype.stbtt_GetFontVMetrics;
 import static org.lwjgl.stb.STBTruetype.stbtt_PackBegin;
 import static org.lwjgl.stb.STBTruetype.stbtt_PackFontRange;
 import static org.lwjgl.stb.STBTruetype.stbtt_PackSetOversampling;
-import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTTPackContext;
 import org.lwjgl.stb.STBTTPackedchar;
-import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import com.sprouts.graphic.texture.Texture;
@@ -34,10 +30,10 @@ public class FontData {
 	
 	public Font createFont(float fontSize) {
 		STBTTPackedchar.Buffer cdata = STBTTPackedchar.malloc(NUM_PRINTABLE_CHARACTERS);
-			
-			Texture textureAtlas = createAtlas(fontSize, cdata);
-			
-			return new Font(fontSize, textureAtlas, cdata, info);
+		
+		Texture textureAtlas = createAtlas(fontSize, cdata);
+		
+		return new Font(fontSize, textureAtlas, cdata, info);
 	}
 	
 	private Texture createAtlas(float fontSize, STBTTPackedchar.Buffer cdata) {
@@ -57,7 +53,6 @@ public class FontData {
 			
 			return textureAtlas;
 		}
-		
 	}
 	/*
 	public int getFontHeight() {
