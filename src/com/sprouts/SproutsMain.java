@@ -133,9 +133,9 @@ public class SproutsMain {
 		float x1 = x0 + textBounds.width;
 		float y1 = y0 + textBounds.height;
 
-		batchedTessellator2D.setColor(VertexColor.ORANGE);
+		batchedTessellator2D.setColor(VertexColor.DARK_CYAN);
 		batchedTessellator2D.drawQuad(x0, y0, x1, y1);
-		batchedTessellator2D.setColor(VertexColor.BLACK);
+		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(x0, y0), VertexColor.BLACK, new Vec2(x1, y1), VertexColor.WHITE));
 		arialFont.drawString(batchedTessellator2D, tx, ty, text);
 		
 		batchedTessellator2D.translate(200.0f, 200.0f);
