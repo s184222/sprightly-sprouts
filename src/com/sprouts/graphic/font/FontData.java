@@ -41,19 +41,40 @@ public class FontData {
 			int bitmapW = (int) (6 * fontSize);
 			int bitmapH = (int) (5 * fontSize);
 			
-			ByteBuffer bitmap = MemoryUtil.memAlloc(bitmapW * bitmapH);
+			// Generate a 4-channel bitmap with ARGB
+			ByteBuffer bitmap = MemoryUtil.memAlloc(4 * bitmapW * bitmapH);
 			
 			stbtt_PackBegin(pc, bitmap, bitmapW, bitmapH, 0, 1, NULL);
 			stbtt_PackSetOversampling(pc, 1, 1);
 			stbtt_PackFontRange(pc, ttfData, 0, fontSize, FIRST_PRINTABLE_CHARACTER, cdata);
+
+			resolveBitmap(bitmap, bitmapW, bitmapH);
 			
-			Texture textureAtlas = new Texture(bitmap, bitmapW, bitmapH, 1);
+			Texture textureAtlas = new Texture(bitmap, bitmapW, bitmapH, 4);
 			
 			MemoryUtil.memFree(bitmap);
 			
 			return textureAtlas;
 		}
 	}
+	
+	private void resolveBitmap(ByteBuffer bitmap, int width, int height) {
+		// Alpha index is 4 times lower, since bitmap is only single
+		// channel. We have to go from high to low indices to ensure
+		// that we do not write pixels before we read them.
+		int ai = 1 * width * height;
+		int pi = 4 * width * height;
+		
+		while (ai != 0) {
+			byte alpha = bitmap.get(--ai);
+			
+			bitmap.put(--pi, alpha);
+			bitmap.put(--pi, (byte)0xFF);
+			bitmap.put(--pi, (byte)0xFF);
+			bitmap.put(--pi, (byte)0xFF);
+		}
+	}
+	
 	/*
 	public int getFontHeight() {
 		try (MemoryStack stack = stackPush()) {
