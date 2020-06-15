@@ -174,9 +174,9 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 			float u1 = textureRegion.getU1();
 			float v1 = textureRegion.getV1();
 			
-			// Default texture region is bottom left part
+			// Default texture region is top left part
 			// of the texture region.
-			drawTriangleImpl(x0, y0, u0, v0, x1, y1, u0, v1, x2, y2, u1, v1);
+			drawTriangleImpl(x0, y0, u0, v0, x1, y1, u1, v0, x2, y2, u0, v1);
 		} else {
 			drawTriangleImpl(x0, y0, 0.0f, 0.0f, x1, y1, 0.0f, 0.0f, x2, y2, 0.0f, 0.0f);
 		}
@@ -200,8 +200,6 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 			float nu2 = textureRegion.getU0() + du * u2;
 			float nv2 = textureRegion.getV0() + dv * v2;
 			
-			// Default texture region is bottom left part
-			// of the texture region.
 			drawTriangleImpl(x0, y0, nu0, nv0, x1, y1, nu1, nv1, x2, y2, nu2, nv2);
 		} else {
 			drawTriangleImpl(x0, y0, 0.0f, 0.0f, x1, y1, 0.0f, 0.0f, x2, y2, 0.0f, 0.0f);
