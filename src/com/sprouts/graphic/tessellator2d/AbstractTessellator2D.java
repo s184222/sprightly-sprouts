@@ -248,8 +248,18 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 			float lx3 = p0.x + dy;
 			float ly3 = p0.y - dx;
 			
-			drawTriangleNoTransform(lx0, ly0, 0.0f, 0.0f, lx1, ly1, 0.0f, 0.0f, lx3, ly3, 0.0f, 0.0f);
-			drawTriangleNoTransform(lx2, ly2, 0.0f, 0.0f, lx3, ly3, 0.0f, 0.0f, lx1, ly1, 0.0f, 0.0f);
+			if (textureRegion != null) {
+				float u0 = textureRegion.getU0();
+				float v0 = textureRegion.getV0();
+				float u1 = textureRegion.getU1();
+				float v1 = textureRegion.getV1();
+				
+				drawTriangleNoTransform(lx0, ly0, u0, v0, lx1, ly1, u0, v1, lx3, ly3, u1, v0);
+				drawTriangleNoTransform(lx2, ly2, u1, v1, lx3, ly3, u1, v0, lx1, ly1, u0, v1);
+			} else {
+				drawTriangleNoTransform(lx0, ly0, 0.0f, 0.0f, lx1, ly1, 0.0f, 0.0f, lx3, ly3, 0.0f, 0.0f);
+				drawTriangleNoTransform(lx2, ly2, 0.0f, 0.0f, lx3, ly3, 0.0f, 0.0f, lx1, ly1, 0.0f, 0.0f);
+			}
 		}
 	}
 	
