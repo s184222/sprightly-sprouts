@@ -25,10 +25,15 @@ public class TextureRegion implements ITextureRegion {
 
 	@Override
 	public ITextureRegion getRegion(float u0, float v0, float u1, float v1) {
-		float nu0 = this.u0 + (this.u1 - this.u0) * u0;
-		float nv0 = this.v0 + (this.v1 - this.v0) * v0;
-		float nu1 = this.u1 + (this.u1 - this.u0) * u1;
-		float nv1 = this.v1 + (this.v1 - this.v0) * v1;
+		float du = this.u1 - this.u0;
+		float dv = this.v1 - this.v0;
+		
+		float nu0 = this.u0 + du * u0;
+		float nv0 = this.v0 + dv * v0;
+		
+		float nu1 = this.u0 + du * u1;
+		float nv1 = this.v0 + dv * v1;
+		
 		return new TextureRegion(texture, nu0, nv0, nu1, nv1);
 	}
 

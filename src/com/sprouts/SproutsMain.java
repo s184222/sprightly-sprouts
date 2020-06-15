@@ -142,13 +142,16 @@ public class SproutsMain {
 		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(0.0f, 0.0f), VertexColor.WHITE, new Vec2(0.0f, 400.0f), VertexColor.PURPLE));
 		batchedTessellator2D.setTextureRegion(spongeBobTexture);
 		batchedTessellator2D.drawQuad(0.0f, 0.0f, 400.0f, 400.0f);
-		batchedTessellator2D.translate(-200.0f, -200.0f);
-		
+		batchedTessellator2D.clearTransform();
+
 		batchedTessellator2D.clearMaterial();
 		batchedTessellator2D.setColor(VertexColor.BLUE_VIOLET);
 		batchedTessellator2D.drawLine(50.0f, 150.0f, 150.0f, 250.0f, 2.0f);
 		batchedTessellator2D.setColor(VertexColor.CHOCOLATE);
 		batchedTessellator2D.drawLine(150.0f, 150.0f, 50.0f, 250.0f, 2.0f);
+		
+		batchedTessellator2D.setColor(VertexColor.DARK_GOLDENROD);
+		batchedTessellator2D.drawTriangle(50.0f, 50.0f, 100.0f, 100.0f, 100.0f, 10.0f);
 		
 		batchedTessellator2D.endBatch();
 	}

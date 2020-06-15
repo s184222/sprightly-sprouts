@@ -28,6 +28,23 @@ public interface ITessellator2D extends IResource {
 	
 	public void drawQuadRegion(float x0, float y0, float u0, float v0, float x1, float y1, float u1, float v1);
 
+	default public void drawTriangle(Vec2 p0, Vec2 p1, Vec2 p2) {
+		drawTriangle(p0.x, p0.y, p1.x, p1.y, p2.x, p2.y);
+	}
+
+	public void drawTriangle(float x0, float y0, float x1, float y1, float x2, float y2);
+
+	default public void drawTriangleRegion(Vec2 p0, float u0, float v0, 
+	                                       Vec2 p1, float u1, float v1, 
+	                                       Vec2 p2, float u2, float v2) {
+		
+		drawTriangleRegion(p0.x, p0.y, u0, v0, p1.x, p1.y, u1, v1, p2.x, p2.y, u2, v2);
+	}
+
+	public void drawTriangleRegion(float x0, float y0, float u0, float v0, 
+	                               float x1, float y1, float u1, float v1,
+	                               float x2, float y2, float u2, float v2);
+	
 	default public void drawLine(Vec2 p0, Vec2 p1) {
 		drawLine(p0.x, p0.y, p1.x, p1.y);
 	}

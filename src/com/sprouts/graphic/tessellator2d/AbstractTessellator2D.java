@@ -165,6 +165,59 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 		drawTriangleNoTransform(c0.x, c0.y, u0, v0, c1.x, c1.y, u0, v1, c3.x, c3.y, u1, v0);
 		drawTriangleNoTransform(c2.x, c2.y, u1, v1, c3.x, c3.y, u1, v0, c1.x, c1.y, u0, v1);
 	}
+	
+	@Override
+	public void drawTriangle(float x0, float y0, float x1, float y1, float x2, float y2) {
+		if (textureRegion != null) {
+			float u0 = textureRegion.getU0();
+			float v0 = textureRegion.getV0();
+			float u1 = textureRegion.getU1();
+			float v1 = textureRegion.getV1();
+			
+			// Default texture region is bottom left part
+			// of the texture region.
+			drawTriangleImpl(x0, y0, u0, v0, x1, y1, u0, v1, x2, y2, u1, v1);
+		} else {
+			drawTriangleImpl(x0, y0, 0.0f, 0.0f, x1, y1, 0.0f, 0.0f, x2, y2, 0.0f, 0.0f);
+		}
+	}
+	
+	@Override
+	public void drawTriangleRegion(float x0, float y0, float u0, float v0, 
+	                               float x1, float y1, float u1, float v1,
+	                               float x2, float y2, float u2, float v2) {
+		
+		if (textureRegion != null) {
+			float du = textureRegion.getU1() - textureRegion.getU0();
+			float dv = textureRegion.getV1() - textureRegion.getV0();
+			
+			float nu0 = textureRegion.getU0() + du * u0;
+			float nv0 = textureRegion.getV0() + dv * v0;
+			
+			float nu1 = textureRegion.getU0() + du * u1;
+			float nv1 = textureRegion.getV0() + dv * v1;
+
+			float nu2 = textureRegion.getU0() + du * u2;
+			float nv2 = textureRegion.getV0() + dv * v2;
+			
+			// Default texture region is bottom left part
+			// of the texture region.
+			drawTriangleImpl(x0, y0, nu0, nv0, x1, y1, nu1, nv1, x2, y2, nu2, nv2);
+		} else {
+			drawTriangleImpl(x0, y0, 0.0f, 0.0f, x1, y1, 0.0f, 0.0f, x2, y2, 0.0f, 0.0f);
+		}
+	}
+	
+	private void drawTriangleImpl(float x0, float y0, float u0, float v0, 
+	                              float x1, float y1, float u1, float v1, 
+	                              float x2, float y2, float u2, float v2) {
+
+		Vec2 p0 = transform.mul(new Vec2(x0, y0));
+		Vec2 p1 = transform.mul(new Vec2(x1, y1));
+		Vec2 p2 = transform.mul(new Vec2(x2, y2));
+	
+		drawTriangleNoTransform(p0.x, p0.y, u0, v0, p1.x, p1.y, u1, v1, p2.x, p2.y, u2, v2);
+	}
 
 	@Override
 	public void drawLine(float x0, float y0, float x1, float y1, float lineWidth) {

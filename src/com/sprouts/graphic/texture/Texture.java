@@ -23,7 +23,9 @@ import java.nio.ByteBuffer;
 
 import org.lwjgl.opengl.GL11;
 
-public class Texture implements ITextureRegion {
+import com.sprouts.IResource;
+
+public class Texture implements ITextureRegion, IResource {
 	
 	private final int texId;
 	
@@ -138,6 +140,7 @@ public class Texture implements ITextureRegion {
 		return 1.0f;
 	}
 	
+	@Override
 	public void dispose() {
 		glDeleteTextures(texId);
 	}

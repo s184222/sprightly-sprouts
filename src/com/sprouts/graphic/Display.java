@@ -46,7 +46,9 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 
-public class Display {
+import com.sprouts.IResource;
+
+public class Display implements IResource {
 
 	private long windowHandle;
 	
@@ -163,6 +165,7 @@ public class Display {
 		return glfwWindowShouldClose(windowHandle);
 	}
 
+	@Override
 	public void dispose() {
 		// Free the window callbacks and destroy the window
 		glfwFreeCallbacks(windowHandle);
