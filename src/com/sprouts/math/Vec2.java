@@ -63,6 +63,13 @@ public class Vec2 {
 
 		return this;
 	}
+	
+	public Vec2 add(float x1, float y1) {
+		x += x1;
+		y += y1;
+		
+		return this;
+	}
 
 	public Vec2 add(float c) {
 		x += c;
@@ -125,7 +132,8 @@ public class Vec2 {
 	}
 	
 	public Vec2 setAngle(float degrees) {
-		rotateRad((float)Math.toRadians(degrees));
+		setAngleRad((float)Math.toRadians(degrees));
+		
 		return this;
 	}
 	
@@ -140,7 +148,13 @@ public class Vec2 {
 		this.y = newY;
 
 		return this;
+	}
+	
+
+	public Vec2 rotate(float degrees) {
+		rotateRad((float)Math.toRadians(degrees));
 		
+		return this;
 	}
 	
 	public float angle() {
