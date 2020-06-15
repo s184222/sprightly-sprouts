@@ -312,7 +312,7 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 	@Override
 	public void setColorGradient(ColorGradient2D colorGradient) {
 		if (colorGradient == null)
-			throw new NullPointerException("colorGradient is null!");
+			throw new IllegalArgumentException("colorGradient is null!");
 
 		this.colorGradient = colorGradient;
 	}
@@ -370,6 +370,11 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 	public void translate(float xt, float yt) {
 		transform.translate(xt, yt);
 	}
+	
+	@Override
+	public void scale(float xs, float ys) {
+		transform.scale(xs, ys);
+	}
 
 	@Override
 	public void rotateZ(float radians) {
@@ -398,6 +403,7 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 		this.clipShape = shape;
 	}
 
+	@Override
 	public void dispose() {
 		vertexArray.dispose();
 		vertexBuffer.dispose();

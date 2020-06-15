@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 
 import org.lwjgl.system.MemoryUtil;
 
+import com.sprouts.IResource;
 import com.sprouts.graphic.buffer.VertexBuffer;
 import com.sprouts.math.Mat4;
 import com.sprouts.math.Vec2;
@@ -14,7 +15,7 @@ import com.sprouts.math.Vec4;
 /**
  * @author Christian
  */
-public class VertexAttribBuilder implements AutoCloseable {
+public class VertexAttribBuilder implements AutoCloseable, IResource {
 
 	private static final int DEFAULT_INITIAL_CAPACITY = 64;
 	
@@ -185,10 +186,15 @@ public class VertexAttribBuilder implements AutoCloseable {
 	}
 	
 	@Override
-	public void close() {
+	public void dispose() {
 		if (attribData != null) {
 			MemoryUtil.memFree(attribData);
 			attribData = null;
 		}
+	}
+	
+	@Override
+	public void close() {
+		dispose();
 	}
 }

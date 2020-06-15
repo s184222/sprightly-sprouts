@@ -1,5 +1,6 @@
 package com.sprouts.graphic.tessellator2d;
 
+import com.sprouts.IResource;
 import com.sprouts.graphic.clip.ClipShape;
 import com.sprouts.graphic.color.VertexColor;
 import com.sprouts.graphic.tessellator2d.color.ColorGradient2D;
@@ -11,7 +12,7 @@ import com.sprouts.math.Vec2;
 /**
  * @author Christian
  */
-public interface ITessellator2D {
+public interface ITessellator2D extends IResource {
 
 	public void setViewport(float x0, float y0, float x1, float y1);
 
@@ -62,6 +63,8 @@ public interface ITessellator2D {
 	public void setTransform(Mat3 transform);
 	
 	public void translate(float tx, float ty);
+	
+	public void scale(float xs, float ys);
 
 	public void rotateZ(float radians);
 

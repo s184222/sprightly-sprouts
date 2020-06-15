@@ -6,13 +6,14 @@ import java.util.Map;
 
 import org.lwjgl.system.MemoryUtil;
 
+import com.sprouts.IResource;
 import com.sprouts.graphic.UniqueIDSupplier;
 import com.sprouts.graphic.buffer.VertexBuffer;
 
 /**
  * @author Christian
  */
-public class LayeredVertexBuilder implements AutoCloseable {
+public class LayeredVertexBuilder implements AutoCloseable, IResource {
 	
 	private static final int DEFAULT_INITIAL_CAPACITY = 16;
 
@@ -713,18 +714,23 @@ public class LayeredVertexBuilder implements AutoCloseable {
 	}
 	
 	@Override
-	public void close() {
+	public void dispose() {
 		idToLayer.clear();
-
-		builder.close();
+		
+		builder.dispose();
 		
 		buildingLayer = null;
 		currentLayer = null;
-
+		
 		if (builtBuffer != null) {
 			MemoryUtil.memFree(builtBuffer);
 			builtBuffer = null;
 		}
+	}
+	
+	@Override
+	public void close() {
+		dispose();
 	}
 
 	private class VertexLayerInfo {

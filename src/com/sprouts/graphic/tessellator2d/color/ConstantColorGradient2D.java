@@ -12,7 +12,7 @@ public class ConstantColorGradient2D extends ColorGradient2D {
 	
 	public ConstantColorGradient2D(VertexColor color) {
 		if (color == null)
-			throw new NullPointerException("color is null");
+			throw new IllegalArgumentException("color is null");
 		
 		this.color = color;
 	}
