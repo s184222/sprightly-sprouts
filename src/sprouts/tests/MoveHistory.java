@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import sprouts.mvc.game.model.Vertex;
+import sprouts.game.model.Vertex;
 
 public class MoveHistory {
 	

@@ -18,7 +18,6 @@ import com.sprouts.graphic.color.VertexColor;
 import com.sprouts.graphic.font.Font;
 import com.sprouts.graphic.font.FontData;
 import com.sprouts.graphic.font.FontLoader;
-import com.sprouts.graphic.font.TextBounds;
 import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 import com.sprouts.graphic.tessellator2d.color.LinearColorGradient2D;
 import com.sprouts.graphic.tessellator2d.shader.BasicTessellator2DShader;
@@ -32,19 +31,19 @@ import com.sprouts.input.Mouse;
 import com.sprouts.math.Vec2;
 import com.sprouts.util.LibUtil;
 
-import sprouts.mvc.game.model.Console;
-import sprouts.mvc.game.model.Edge;
-import sprouts.mvc.game.model.GraphicalFacade;
-import sprouts.mvc.game.model.Line;
-import sprouts.mvc.game.model.LineSegment;
-import sprouts.mvc.game.model.Position;
-import sprouts.mvc.game.model.Region;
-import sprouts.mvc.game.model.Sprout;
-import sprouts.mvc.game.model.Vertex;
-import sprouts.mvc.game.model.move.MovePathResult;
-import sprouts.mvc.game.model.move.Triangle;
-import sprouts.mvc.game.model.move.generators.one.OneBoundaryMoveGeneratorData;
-import sprouts.mvc.game.model.move.two.TwoBoundaryMoveGeneratorData;
+import sprouts.game.model.Console;
+import sprouts.game.model.Edge;
+import sprouts.game.model.GameFacade;
+import sprouts.game.model.Line;
+import sprouts.game.model.LineSegment;
+import sprouts.game.model.Position;
+import sprouts.game.model.Region;
+import sprouts.game.model.Sprout;
+import sprouts.game.model.Vertex;
+import sprouts.game.model.move.Triangle;
+import sprouts.game.model.move.generators.MovePathResult;
+import sprouts.game.model.move.generators.one.OneBoundaryMoveGeneratorData;
+import sprouts.game.model.move.two.TwoBoundaryMoveGeneratorData;
 
 public class SproutsMain2 {
 
@@ -65,7 +64,7 @@ public class SproutsMain2 {
 	private Texture spongeBobTexture;
 	private Font arialFont;
 	
-	private GraphicalFacade facade;
+	private GameFacade facade;
 	
 	private List<Triangle> triangles;
 	private Map<Vertex, List<Vertex>> twoBoundaryGraph;
@@ -75,11 +74,12 @@ public class SproutsMain2 {
 	private Line path;
 	private List<Triangle> condense;
 	
-	private boolean drawEdgeIndices = true;
-	private boolean drawTriangles = true;
-	private boolean showLineOrientation = true;
-	private boolean drawPath = true;
-	private boolean drawOneGraph = true;
+	private boolean drawEdgeIndices = false;
+	private boolean drawTriangles = false;
+	private boolean showLineOrientation = false;
+	private boolean drawPath = false;
+	private boolean drawOneGraph = false;
+	private boolean drawTwoGraph = false;
 	
 	public SproutsMain2() {
 		display = new Display();
@@ -169,7 +169,7 @@ public class SproutsMain2 {
 				
 				switch (key) {
 				case GLFW.GLFW_KEY_R: {
-					facade = new GraphicalFacade();
+					facade = new GameFacade();
 					break;
 				}
 				
@@ -195,7 +195,7 @@ public class SproutsMain2 {
 			}
 		});
 		
-		facade = new GraphicalFacade();
+		facade = new GameFacade();
 		
 		Console console = new Console() {
 			
@@ -317,16 +317,16 @@ public class SproutsMain2 {
 		
 		if (drawTriangles) {
 			if (triangles != null) {
-				batchedTessellator2D.setColor(new VertexColor(.4f, 1f, .4f));
+				batchedTessellator2D.setColor(VertexColor.LIGHT_GREEN);
 				for (Triangle triangle : triangles) {
 					Vertex p1 = triangle.getP1();
 					Vertex p2 = triangle.getP2();
 					Vertex p3 = triangle.getP3();
 				
-					//batchedTessellator2D.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+					batchedTessellator2D.drawTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
 				}
 				
-				batchedTessellator2D.setColor(new VertexColor(.3f, .3f, .3f));
+				batchedTessellator2D.setColor(VertexColor.GREEN);
 				for (Triangle triangle : triangles) {
 					Vertex p1 = triangle.getP1();
 					Vertex p2 = triangle.getP2();
@@ -339,29 +339,26 @@ public class SproutsMain2 {
 					batchedTessellator2D.drawLine(p3.x, p3.y, p1.x, p1.y, width);
 				}
 				
-				/*
 				Triangle selected = null;
 				for (Triangle triangle : triangles) {
-					Vertex p1 = triangle.getP1();
-					Vertex p2 = triangle.getP2();
-					Vertex p3 = triangle.getP3();
+					Vertex mouseVertex = new Vertex();
+					mouseVertex.x = mouse.getMouseX();
+					mouseVertex.y = mouse.getMouseY();
 					
-					
-					if (Intersector.isPointInTriangle(world.x, world.y, p1.x, p1.y, p2.x, p2.y, p3.x, p3.y)) {
+					if (GameFacade.isPointInPolygon(mouseVertex, triangle.getCorners())) {
 						selected = triangle;
 						break;
 					}
 				}
 				
 				if (selected != null) {
-					batchedTessellator2D.setColor(Color.FOREST);
+					batchedTessellator2D.setColor(VertexColor.GREEN_YELLOW);
 					
 					Vertex p1 = selected.getP1();
 					Vertex p2 = selected.getP2();
 					Vertex p3 = selected.getP3();
-					batchedTessellator2D.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+					batchedTessellator2D.drawTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
 				}
-				 */
 			}
 		}
 		
@@ -369,23 +366,35 @@ public class SproutsMain2 {
 			
 			if (oneBoundaryGraph != null) {
 				
-				batchedTessellator2D.setColor(VertexColor.BLUE);
+				batchedTessellator2D.setColor(VertexColor.DARK_GREEN);
 				
 				for (Entry<Triangle, List<Triangle>> entry : oneBoundaryGraph.entrySet()) {
 					Triangle source = entry.getKey();
 					
 					{
+						float width = 2;
+
 						Vertex p1 = source.getP1();
 						Vertex p2 = source.getP2();
 						Vertex p3 = source.getP3();
-						//batchedTessellator2D.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+
+						batchedTessellator2D.drawLine(p1.x, p1.y, p2.x, p2.y, width);
+						batchedTessellator2D.drawLine(p2.x, p2.y, p3.x, p3.y, width);
+						batchedTessellator2D.drawLine(p3.x, p3.y, p1.x, p1.y, width);
+						
 					}
 					
 					for (Triangle target : entry.getValue()) {
+						
+						float width = 2;
+
 						Vertex p1 = target.getP1();
 						Vertex p2 = target.getP2();
 						Vertex p3 = target.getP3();
-						//batchedTessellator2D.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+						
+						batchedTessellator2D.drawLine(p1.x, p1.y, p2.x, p2.y, width);
+						batchedTessellator2D.drawLine(p2.x, p2.y, p3.x, p3.y, width);
+						batchedTessellator2D.drawLine(p3.x, p3.y, p1.x, p1.y, width);
 					}
 				}
 				
@@ -395,25 +404,32 @@ public class SproutsMain2 {
 					Triangle source = entry.getKey();
 					Vertex s = source.getCenter();
 					
+					float width = 2;
+
 					for (Triangle target : entry.getValue()) {
 						Vertex t = target.getCenter();
-						batchedTessellator2D.drawLine(s.x, s.y, t.x, t.y);
+						batchedTessellator2D.drawLine(s.x, s.y, t.x, t.y, width);
 					}
 				}
 			}
 
-			
-			batchedTessellator2D.setColor(VertexColor.ORANGE);
-
 			if (slither != null) {
+
+				batchedTessellator2D.setColor(VertexColor.ORANGE);
 				for (Triangle triangle : slither) {
+					
+					float width = 2;
+					
 					Vertex p1 = triangle.getP1();
 					Vertex p2 = triangle.getP2();
 					Vertex p3 = triangle.getP3();
-					//batchedTessellator2D.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+					
+					batchedTessellator2D.drawLine(p1.x, p1.y, p2.x, p2.y, width);
+					batchedTessellator2D.drawLine(p2.x, p2.y, p3.x, p3.y, width);
+					batchedTessellator2D.drawLine(p3.x, p3.y, p1.x, p1.y, width);
 				}
 				
-				batchedTessellator2D.setColor(VertexColor.PURPLE);
+				batchedTessellator2D.setColor(VertexColor.DARK_ORANGE);
 				for (int i = 0; i < slither.size() - 1; i++) {
 					Triangle t1 = slither.get(i);
 					Triangle t2 = slither.get(i+1);
@@ -433,7 +449,7 @@ public class SproutsMain2 {
 					Vertex p1 = triangle.getP1();
 					Vertex p2 = triangle.getP2();
 					Vertex p3 = triangle.getP3();
-					//batchedTessellator2D.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+					batchedTessellator2D.drawTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
 				}
 				
 				batchedTessellator2D.setColor(VertexColor.DARK_GRAY);
@@ -456,7 +472,7 @@ public class SproutsMain2 {
 					Vertex p1 = triangle.getP1();
 					Vertex p2 = triangle.getP2();
 					Vertex p3 = triangle.getP3();
-					//batchedTessellator2D.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+					batchedTessellator2D.drawTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
 				}
 				
 				batchedTessellator2D.setColor(VertexColor.WHITE);
@@ -464,7 +480,7 @@ public class SproutsMain2 {
 				Vertex p1 = first.getP1();
 				Vertex p2 = first.getP2();
 				Vertex p3 = first.getP3();
-				//batchedTessellator2D.triangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+				batchedTessellator2D.drawTriangle(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
 				
 				batchedTessellator2D.setColor(VertexColor.DARK_GRAY);
 				for (int i = 0; i < condense.size() - 1; i++) {
@@ -482,16 +498,18 @@ public class SproutsMain2 {
 			}
 		}
 		
-		if (twoBoundaryGraph != null) {
-			batchedTessellator2D.setColor(VertexColor.BROWN);
-			
-			for (Entry<Vertex, List<Vertex>> entry : twoBoundaryGraph.entrySet()) {
-				Vertex source = entry.getKey();
+		if (drawTwoGraph) {
+			if (twoBoundaryGraph != null) {
+				batchedTessellator2D.setColor(VertexColor.BROWN);
 				
-				float width = 2;
-				
-				for (Vertex target : entry.getValue()) {
-					batchedTessellator2D.drawLine(source.x, source.y, target.x, target.y, width);
+				for (Entry<Vertex, List<Vertex>> entry : twoBoundaryGraph.entrySet()) {
+					Vertex source = entry.getKey();
+					
+					float width = 2;
+					
+					for (Vertex target : entry.getValue()) {
+						batchedTessellator2D.drawLine(source.x, source.y, target.x, target.y, width);
+					}
 				}
 			}
 		}
@@ -546,7 +564,7 @@ public class SproutsMain2 {
 				Vec2 a = rotater.copy().add(segment.from.x, segment.from.y);
 				Vec2 b = rotater.copy().add(segment.to.x, segment.to.y);
 				
-				float width = 5f;
+				float width = 4f;
 				batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(a.x, a.y), VertexColor.RED, new Vec2(b.x, b.y), VertexColor.BLUE));
 				
 				batchedTessellator2D.drawLine(a.x, a.y, b.x, b.y, width);

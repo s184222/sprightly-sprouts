@@ -1,14 +1,14 @@
 package sprouts.tests;
 
 import junit.framework.TestCase;
-import sprouts.mvc.game.model.GraphicalFacade;
-import sprouts.mvc.game.model.Line;
-import sprouts.mvc.game.model.Vertex;
+import sprouts.game.model.GameFacade;
+import sprouts.game.model.Line;
+import sprouts.game.model.Vertex;
 
 public class Test extends TestCase {
 	
 	public void test1() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		
 		String move0 = facade.executeMove("1<,2<");
 		assertEquals("1<,2<,[]", move0);
@@ -60,7 +60,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test2() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		
 		String move0 = facade.executeMove("1<,2<");
 		assertEquals("1<,2<,[]", move0);
@@ -109,7 +109,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test3() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 
 		String move0 = facade.executeMove("1<,2<");
 		assertEquals("1<,2<,[]", move0);
@@ -145,7 +145,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test4() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		
 		String move0 = facade.executeMove("1<,2<");
 		assertEquals("1<,2<,[]", move0);
@@ -179,7 +179,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test5() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		
 		Line line0 = new Line();
 		line0.add(new Vertex(213.93399f,346.066f));
@@ -201,8 +201,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test6() {
-
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 
 		Line line0 = new Line();
 		line0.add(new Vertex(213.93399f,346.066f));
@@ -240,7 +239,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test7() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		
 		Line line0 = new Line();
 		line0.add(new Vertex(320.0f,390.0f));
@@ -259,7 +258,7 @@ public class Test extends TestCase {
 	
 	public void test8() {
 
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 
 		Line line0 = new Line();
 		line0.add(new Vertex(213.93399f,346.066f));
@@ -318,7 +317,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test9() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		
 		Line line0 = new Line();
 		line0.add(new Vertex(320.0f,390.0f));
@@ -366,7 +365,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test10() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 
 		Line line0 = new Line();
 		line0.add(new Vertex(213.93398f,133.93399f));
@@ -424,56 +423,56 @@ public class Test extends TestCase {
 	}
 	
 	public void test11() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		facade.executeMove("0<,0<,[1,2]");
 
 		facade.executeMove("0<,8<,[1,2]!");
 	}
 	
 	public void test12() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		facade.executeMove("0<,0<,[1,2]");
 
 		facade.executeMove("0<,8<,[3,4,5,6,7]!");
 	}
 	
 	public void test13() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		facade.executeMove("0<,0<,[1,2]");
 
 		facade.executeMove("0<,8<,[3]!");
 	}
 	
 	public void test14() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		facade.executeMove("0<,0<");
 
 		facade.executeMove("8<,0<,[]!");
 	}
 	
 	public void test15() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		facade.executeMove("0<,0<");
 
 		facade.executeMove("8<,0<,[1]!");
 	}
 	
 	public void test16() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		facade.executeMove("0<,0<,[1,2,3,4,5,6,7]");
 
 		facade.executeMove("0<,8<,[1]!");
 	}
 	
 	public void test17() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		facade.executeMove("0<,0<,[1,2,3,4,5,6,7]");
 
 		facade.executeMove("0<,8<,[]!");
 	}
 	
 	public void test18() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 
 		Line line0 = new Line();
 		line0.add(new Vertex(320.0f,390.0f));
@@ -610,7 +609,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test19() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		
 		facade.executeMove("2<,2<,[3,4]");
 		facade.executeMove("8<,6<,[]");
@@ -622,7 +621,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test20() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 
 		Line line0 = new Line();
 		line0.add(new Vertex(426.066f,346.066f));
@@ -692,7 +691,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test21() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		
 		Line line0 = new Line();
 		line0.add(new Vertex(213.93399f,346.066f));
@@ -754,7 +753,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test22() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 
 		String move0 = facade.executeMove("2<,3<");
 		assertEquals("2<,3<,[]", move0);
@@ -795,7 +794,7 @@ public class Test extends TestCase {
 	}
 	
 	public void test23() {
-		GraphicalFacade facade = new GraphicalFacade();
+		GameFacade facade = new GameFacade();
 		
 		Line line0 = new Line();
 		line0.add(new Vertex(320.0f,390.0f));
