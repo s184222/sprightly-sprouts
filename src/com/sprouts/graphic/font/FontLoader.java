@@ -1,12 +1,8 @@
 package com.sprouts.graphic.font;
 
-import static org.lwjgl.stb.STBTruetype.stbtt_InitFont;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-
-import org.lwjgl.stb.STBTTFontinfo;
 
 import com.sprouts.util.FileUtil;
 
@@ -24,12 +20,7 @@ public class FontLoader {
 		} catch (IOException e) {
 			throw new IOException("Failed to load font.", e);
 		}
-	    
-	    STBTTFontinfo info = STBTTFontinfo.create();
-        
-	    if (!stbtt_InitFont(info, ttf))
-            throw new IllegalStateException("Failed to initialize font information.");
 	
-		return new FontData(ttf, info);
+		return new FontData(ttf);
 	}
 }

@@ -1,18 +1,12 @@
 package com.sprouts.graphic.font;
 
-import static org.lwjgl.stb.STBTruetype.stbtt_GetFontVMetrics;
-import static org.lwjgl.stb.STBTruetype.stbtt_GetCodepointBox;
-import static org.lwjgl.stb.STBTruetype.stbtt_GetCodepointHMetrics;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetPackedQuad;
-import static org.lwjgl.stb.STBTruetype.stbtt_ScaleForPixelHeight;
 
 import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.stb.STBTTAlignedQuad;
-import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTTPackedchar;
 import org.lwjgl.system.MemoryStack;
 
@@ -25,13 +19,11 @@ public class Font implements IResource {
 	private final float fontSize;
 	private final Texture textureAtlas;
 	private final STBTTPackedchar.Buffer cdata;
-	private final STBTTFontinfo info;
 
-	public Font(float fontSize, Texture textureAtlas, STBTTPackedchar.Buffer cdata, STBTTFontinfo info) {
+	public Font(float fontSize, Texture textureAtlas, STBTTPackedchar.Buffer cdata) {
 		this.fontSize = fontSize;
 		this.textureAtlas = textureAtlas;
 		this.cdata = cdata;
-		this.info = info;
 	}
 
 	public void drawString(ITessellator2D tessellator, float x, float y, String text) {

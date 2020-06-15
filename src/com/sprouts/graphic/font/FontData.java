@@ -7,7 +7,6 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.nio.ByteBuffer;
 
-import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTTPackContext;
 import org.lwjgl.stb.STBTTPackedchar;
 import org.lwjgl.system.MemoryUtil;
@@ -21,11 +20,9 @@ public class FontData {
 	public static final int NUM_PRINTABLE_CHARACTERS = LAST_PRINTABLE_CHARACTER - FIRST_PRINTABLE_CHARACTER + 1;
 	
 	private final ByteBuffer ttfData;
-    private final STBTTFontinfo info;
 	
-	public FontData(ByteBuffer ttfData, STBTTFontinfo info) {
+	public FontData(ByteBuffer ttfData) {
 		this.ttfData = ttfData;
-		this.info = info;
 	}
 	
 	public Font createFont(float fontSize) {
@@ -33,7 +30,7 @@ public class FontData {
 		
 		Texture textureAtlas = createAtlas(fontSize, cdata);
 		
-		return new Font(fontSize, textureAtlas, cdata, info);
+		return new Font(fontSize, textureAtlas, cdata);
 	}
 	
 	private Texture createAtlas(float fontSize, STBTTPackedchar.Buffer cdata) {
