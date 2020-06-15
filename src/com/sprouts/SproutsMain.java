@@ -123,7 +123,7 @@ public class SproutsMain {
 	private void render() {
 		batchedTessellator2D.beginBatch();
 		
-		String text = "the brown fox";
+		String text = "The quick brown fox";
 		float tx = 200.0f;
 		float ty = 170.0f;
 		
@@ -138,7 +138,7 @@ public class SproutsMain {
 		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(x0, y0), VertexColor.BLACK, new Vec2(x1, y1), VertexColor.WHITE));
 		arialFont.drawString(batchedTessellator2D, tx, ty, text);
 		
-		batchedTessellator2D.translate(200.0f, 200.0f);
+		batchedTessellator2D.translate(200.0f, 250.0f);
 		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(0.0f, 0.0f), VertexColor.WHITE, new Vec2(0.0f, 400.0f), VertexColor.PURPLE));
 		batchedTessellator2D.setTextureRegion(spongeBobTexture);
 		batchedTessellator2D.drawQuad(0.0f, 0.0f, 400.0f, 400.0f);
