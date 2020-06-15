@@ -1,26 +1,26 @@
 package com.sprouts.graphic.font;
 
-import static org.lwjgl.stb.STBTruetype.stbtt_FindGlyphIndex;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetFontVMetrics;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetCodepointBox;
-import static org.lwjgl.stb.STBTruetype.stbtt_GetGlyphBox;
-import static org.lwjgl.stb.STBTruetype.stbtt_GetGlyphHMetrics;
+import static org.lwjgl.stb.STBTruetype.stbtt_GetCodepointHMetrics;
 import static org.lwjgl.stb.STBTruetype.stbtt_GetPackedQuad;
 import static org.lwjgl.stb.STBTruetype.stbtt_ScaleForPixelHeight;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.lwjgl.stb.STBTTAlignedQuad;
 import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTTPackedchar;
 import org.lwjgl.system.MemoryStack;
 
+import com.sprouts.IResource;
 import com.sprouts.graphic.tessellator2d.ITessellator2D;
 import com.sprouts.graphic.texture.Texture;
 
-public class Font {
+public class Font implements IResource {
 
 	private final float fontSize;
 	private final Texture textureAtlas;
@@ -40,39 +40,47 @@ public class Font {
 		int atlasWidth = textureAtlas.getWidth();
 		int atlasHeight = textureAtlas.getHeight();
 
+		int charIndex;
+		
 		try (MemoryStack memStack = MemoryStack.stackPush(); STBTTAlignedQuad quad = STBTTAlignedQuad.malloc()) {
 			FloatBuffer xptr = memStack.floats(x);
 			FloatBuffer yptr = memStack.floats(y);
 
 			for (int i = 0; i < text.length(); i++) {
-				char c = text.charAt(i);
-				if (c >= FontData.FIRST_PRINTABLE_CHARACTER && c <= FontData.LAST_PRINTABLE_CHARACTER) {
-					int charIndex = c - FontData.FIRST_PRINTABLE_CHARACTER;
-
+					
+				if ((charIndex = getCharIndex(text.charAt(i))) != -1) {
+					
 					stbtt_GetPackedQuad(cdata, atlasWidth, atlasHeight, charIndex, xptr, yptr, quad, true);
-
+					
 					tessellator.drawQuadRegion(quad.x0(), quad.y0(), quad.s0(), quad.t0(),
-					                           quad.x1(), quad.y1(), quad.s1(), quad.t1());
+							quad.x1(), quad.y1(), quad.s1(), quad.t1());
 				}
+
 			}
 
 		}
 	}
 	
 	public String trimText(String text, float width, String ellipses) {
-		String output;
+		if(text.isEmpty() || getStringWidth(text) <= width) {
+			return text;
+		}
+		
+		String output = ellipses;
+		
+		String nextOutput;
+		
 		for (int i = 0; i < text.length(); i++) {
-			output = text.substring(0, i) + ellipses;
-			if (getStringWidth(text.substring(0, i+1) + ellipses) > width) {
+			nextOutput = text.substring(0, i) + ellipses;
+			if (getStringWidth(nextOutput) > width) {
 				return output;
 			}
+			output = nextOutput;
 		}
-		return "";
+		return text;
 	}
-	//TODO: Fix the error
 	
-	
-	public void drawWrappedString(ITessellator2D tessellator, float x, float y, float width, String text) {
+	public List<String> getWrappedString(ITessellator2D tessellator, float x, float y, float width, String text) {
 		tessellator.setTextureRegion(textureAtlas);
 
 		String[] words = text.split(" ");
@@ -103,22 +111,10 @@ public class Font {
 		}
 		
 		strings.add(temp);
+		
+		return strings;
 
-		try (MemoryStack memStack = MemoryStack.stackPush(); STBTTAlignedQuad quad = STBTTAlignedQuad.malloc()) {
-			IntBuffer bufAscent = memStack.ints(0);
-			IntBuffer bufDescent = memStack.ints(0);
-			IntBuffer bufLineGap = memStack.ints(0);
 
-			stbtt_GetFontVMetrics(info, bufAscent, bufDescent, bufLineGap);
-
-			int lineJump = (int) ((bufAscent.get(0) - bufDescent.get(0) + bufLineGap.get(0))
-					* stbtt_ScaleForPixelHeight(info, fontSize));
-			int lineNumber = 0;
-			for(String s : strings) {
-				drawString(tessellator, x, y + (lineJump * lineNumber), s);
-				lineNumber++;
-			}
-		}
 
 	}
 	
@@ -135,42 +131,43 @@ public class Font {
 			}
 			temp += word.charAt(i);
 		}
+		
 		wordSplit.add(temp);
+		
 		return wordSplit;
 	}
 	
 	public TextBounds getTextBounds(String text) {
 		float x = 0, ascent = 0, descent = 0;
-
-		try (MemoryStack memStack = MemoryStack.stackPush()) {
-			IntBuffer x0buf = memStack.ints(0);
-			IntBuffer y0buf = memStack.ints(0);
-			IntBuffer x1buf = memStack.ints(0);
-			IntBuffer y1buf = memStack.ints(0);
-
-			for (int i = 0; i < text.length(); i++) {
-				stbtt_GetCodepointBox(info, text.charAt(i), x0buf, y0buf, x1buf, y1buf);
-
+		
+		int charIndex;
+		
+		for (int i = 0; i < text.length(); i++) {
+			
+			if ((charIndex = getCharIndex(text.charAt(i))) != -1) {
+				
+				STBTTPackedchar c = cdata.get(charIndex);
+				
 				if (i == 0) {
-					x = x0buf.get(0);
+					x = c.xoff();
 				}
 				
-				float y1 = y1buf.get(0);
+				float y1 = -c.yoff();
 				if (y1 > ascent) {
 					ascent = y1;
 				}
 				
-				float y0 = y0buf.get(0);
+				float y0 = -c.yoff2();
 				if (y0 < descent) {
 					descent = y0;
 				}
-			}
-
-			float width = getStringWidth(text);
-			float scale = stbtt_ScaleForPixelHeight(info, fontSize);
-
-			return new TextBounds(x * scale, -ascent * scale, width, (ascent - descent) * scale);
+			}			
 		}
+		
+		
+		float width = getStringWidth(text);
+		
+		return new TextBounds(x, -ascent, width, (ascent - descent));
 	}
 
 	public float getFontSize() {
@@ -181,52 +178,66 @@ public class Font {
 		return textureAtlas;
 	}
 
-	public void dispose() {
-		textureAtlas.dispose();
-		cdata.close();
-	}
-
 	public float getStringWidth(String text) {
-		int width = 0;
+		float width = 0;
 		
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			IntBuffer pAdvancedWidth = stack.mallocInt(1);
-			IntBuffer pLeftSideBearing = stack.mallocInt(1);
+		int charIndex;
+		
+		for (int i = 0; i < text.length(); i++) {
 
-			for (int i = 0; i < text.length(); i++) {
-				int charIndex = stbtt_FindGlyphIndex(info, text.charAt(i));
+			if ((charIndex = getCharIndex(text.charAt(i))) != -1) {
 				
-				if (charIndex != 0) {
-					if (i == text.length() - 1) {
-						width += getCharWidth(charIndex);
-					} else {
-						stbtt_GetGlyphHMetrics(info, charIndex, pAdvancedWidth, pLeftSideBearing);
-	
-						width += pAdvancedWidth.get(0);
-	
-						if (i == 0) {
-							width -= pLeftSideBearing.get(0);
-						}
+				STBTTPackedchar c = cdata.get(charIndex);
+			
+				if (text.length() == 1) {
+					// length of char without bearings
+					return getCharWidth(text.charAt(i));
+				} 
+				else {
+					// length of char with left- and right-side bearing
+					width += c.xadvance();
+					
+					if(i == 0) {
+						// length of left-side bearing
+						width -= c.xoff();
+					}
+					
+					if(i == text.length()-1) {
+						// length of right-side bearing
+						width -= c.xadvance() - c.xoff2();
 					}
 				}
 			}
-			
-			return width * stbtt_ScaleForPixelHeight(info, fontSize);
 		}
+		
+		return width;
 	}
 
-	private float getCharWidth(int charIndex) {
-		float width = 0;
-
-		try (MemoryStack memStack = MemoryStack.stackPush()) {
-			IntBuffer x0buf = memStack.ints(0);
-			IntBuffer x1buf = memStack.ints(0);
-
-			stbtt_GetGlyphBox(info, charIndex, x0buf, null, x1buf, null);
-
-			width = x1buf.get(0);
+	public float getCharWidth(char c) {
+		
+		int charIndex;
+		
+		if ((charIndex = getCharIndex(c)) != -1) {
+			
+			STBTTPackedchar pChar = cdata.get(charIndex);
+			
+			return pChar.xoff2() - pChar.xoff();
 		}
-
-		return width;
+		
+		return -1;
+	}
+	
+	private int getCharIndex(char c) {
+		if (c >= FontData.FIRST_PRINTABLE_CHARACTER && c <= FontData.LAST_PRINTABLE_CHARACTER) {
+			return c - FontData.FIRST_PRINTABLE_CHARACTER;
+		}
+		return -1;
+	}
+	
+	@Override
+	public void dispose() {
+		textureAtlas.dispose();
+		
+		cdata.close();
 	}
 }
