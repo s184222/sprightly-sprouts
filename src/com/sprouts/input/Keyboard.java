@@ -11,12 +11,12 @@ public class Keyboard {
 
 	private final Display display;
 	
-	private final List<KeyboardListener> listeners;
+	private final List<IKeyboardListener> listeners;
 	
 	public Keyboard(Display display) {
 		this.display = display;
 		
-		listeners = new ArrayList<KeyboardListener>();
+		listeners = new ArrayList<IKeyboardListener>();
 	}
 	
 	private void glfwKeyCallback(long window, int key, int scancode, int action, int mods) {
@@ -34,36 +34,35 @@ public class Keyboard {
 	}
 
 	private void glfwCharCallback(long window, int codepoint) {
-		if (Character.isBmpCodePoint(codepoint))
-			dispatchKeyTypedEvent((char)codepoint);
+		dispatchKeyTypedEvent(codepoint);
 	}
 	
-	public void addListener(KeyboardListener listener) {
+	public void addListener(IKeyboardListener listener) {
 		listeners.add(listener);
 	}
 
-	public void removeListener(KeyboardListener listener) {
+	public void removeListener(IKeyboardListener listener) {
 		listeners.remove(listener);
 	}
 	
 	private void dispatchKeyPressedEvent(int key, int mods) {
-		for (KeyboardListener listener : listeners)
+		for (IKeyboardListener listener : listeners)
 			listener.keyPressed(key, mods);
 	}
 
 	private void dispatchKeyRepeatedEvent(int key, int mods) {
-		for (KeyboardListener listener : listeners)
+		for (IKeyboardListener listener : listeners)
 			listener.keyRepeated(key, mods);
 	}
 
 	private void dispatchKeyReleasedEvent(int key, int mods) {
-		for (KeyboardListener listener : listeners)
+		for (IKeyboardListener listener : listeners)
 			listener.keyReleased(key, mods);
 	}
 
-	private void dispatchKeyTypedEvent(char keyChar) {
-		for (KeyboardListener listener : listeners)
-			listener.keyTyped(keyChar);
+	private void dispatchKeyTypedEvent(int codePoint) {
+		for (IKeyboardListener listener : listeners)
+			listener.keyTyped(codePoint);
 	}
 	
 	public void init() {

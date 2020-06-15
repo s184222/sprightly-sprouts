@@ -1,6 +1,6 @@
 package com.sprouts.input;
 
-public interface KeyboardListener {
+public interface IKeyboardListener {
 
 	public void keyPressed(int key, int mods);
 
@@ -8,6 +8,6 @@ public interface KeyboardListener {
 
 	public void keyReleased(int key, int mods);
 	
-	public void keyTyped(char keyChar);
+	public void keyTyped(int codePoint);
 	
 }
