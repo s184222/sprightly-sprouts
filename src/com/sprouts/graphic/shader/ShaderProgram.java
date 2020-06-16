@@ -9,12 +9,13 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
+import com.sprouts.IResource;
 import com.sprouts.math.Mat4;
 import com.sprouts.math.Vec2;
 import com.sprouts.math.Vec3;
 import com.sprouts.math.Vec4;
 
-public abstract class ShaderProgram {
+public abstract class ShaderProgram implements IResource {
 
 	private static FloatBuffer mat4Buffer;
 	
@@ -97,16 +98,21 @@ public abstract class ShaderProgram {
 		GL30.glDisableVertexAttribArray(attribIndex);
 	}
 
+	@Override
 	public void dispose() {
 		disable();
 		
-		GL30.glDetachShader(programID, vertexShaderID);
-		GL30.glDetachShader(programID, fragmentShaderID);
+		if (programID != -1) {
+			GL30.glDetachShader(programID, vertexShaderID);
+			GL30.glDetachShader(programID, fragmentShaderID);
+			
+			GL30.glDeleteShader(vertexShaderID);
+			GL30.glDeleteShader(fragmentShaderID);
+			
+			GL30.glDeleteProgram(programID);
 		
-		GL30.glDeleteShader(vertexShaderID);
-		GL30.glDeleteShader(fragmentShaderID);
-		
-		GL30.glDeleteProgram(programID);
+			programID = -1;
+		}
 	}
 
 	private static int loadShader(String path, int type) {

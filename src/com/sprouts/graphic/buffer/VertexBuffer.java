@@ -10,10 +10,12 @@ import static org.lwjgl.opengl.GL15.glGenBuffers;
 
 import java.nio.ByteBuffer;
 
+import com.sprouts.IResource;
+
 /**
  * @author Christian
  */
-public class VertexBuffer {
+public class VertexBuffer implements IResource {
 
 	private int bufferHandle;
 	private final int vertexSize;
@@ -100,6 +102,7 @@ public class VertexBuffer {
 		return bufferSize;
 	}
 	
+	@Override
 	public void dispose() {
 		if (bufferHandle != -1) {
 			glDeleteBuffers(bufferHandle);

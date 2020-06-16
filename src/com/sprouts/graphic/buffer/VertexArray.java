@@ -7,7 +7,9 @@ import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-public class VertexArray {
+import com.sprouts.IResource;
+
+public class VertexArray implements IResource {
 	
 	private int vaoHandle;
 	
@@ -41,6 +43,7 @@ public class VertexArray {
 		glBindVertexArray(0);
 	}
 	
+	@Override
 	public void dispose() {
 		if (vaoHandle != -1) {
 			glDeleteVertexArrays(vaoHandle);

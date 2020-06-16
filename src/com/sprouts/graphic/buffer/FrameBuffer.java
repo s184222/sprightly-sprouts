@@ -29,7 +29,9 @@ import static org.lwjgl.opengl.GL32.glFramebufferTexture;
 
 import java.nio.ByteBuffer;
 
-public class FrameBuffer {
+import com.sprouts.IResource;
+
+public class FrameBuffer implements IResource {
 	
 	private final FrameBufferType type;
 	private int width;
@@ -122,6 +124,7 @@ public class FrameBuffer {
 		return height;
 	}
 	
+	@Override
 	public void dispose() {
 		if (textureID != -1) {
 			glDeleteTextures(textureID);
