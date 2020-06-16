@@ -56,7 +56,7 @@ public class FontData {
 			float scale = stbtt_ScaleForPixelHeight(info, fontSize);
 			
 			ascent = scale * bufAscent.get(0);
-		    descent = scale * bufDescent.get(0);
+		    descent = scale * -bufDescent.get(0);
 		    lineGap = scale * bufLineGap.get(0);
 		}
 		

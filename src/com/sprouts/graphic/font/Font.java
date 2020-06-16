@@ -193,6 +193,10 @@ public class Font implements IResource {
 		return getFontSize();
 	}
 	
+	public float getLineHeight() {
+		return (ascent + descent + lineGap);
+	}
+	
 	public float getAscent() {
 		return ascent;
 	}
