@@ -22,10 +22,11 @@ public abstract class Console {
 	}
 	
 	public void start() {
-		ExecutorService threadPool = Executors.newSingleThreadExecutor();
-
 		running = true;
-		threadPool.execute(() -> mainLoop());
+		
+		Thread thread = new Thread(this::mainLoop);
+		thread.setDaemon(true);
+		thread.start();
 	}
 	
 	public String prompt(String message) {
