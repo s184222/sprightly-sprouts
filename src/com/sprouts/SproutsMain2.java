@@ -18,6 +18,7 @@ import com.sprouts.graphic.color.VertexColor;
 import com.sprouts.graphic.font.Font;
 import com.sprouts.graphic.font.FontData;
 import com.sprouts.graphic.font.FontLoader;
+import com.sprouts.graphic.font.TextBounds;
 import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 import com.sprouts.graphic.tessellator2d.color.LinearColorGradient2D;
 import com.sprouts.graphic.tessellator2d.shader.BasicTessellator2DShader;
@@ -105,7 +106,7 @@ public class SproutsMain2 {
 		spongeBobTexture = TextureLoader.loadTexture("/textures/spongebob.png");
 
 		FontData arialData = FontLoader.loadFont("/fonts/arial.ttf");
-		arialFont = arialData.createFont(200);
+		arialFont = arialData.createFont(20);
 	}
 	
 	private void init() {
@@ -519,7 +520,7 @@ public class SproutsMain2 {
 		List<Sprout> sprouts = position.getSprouts();
 		
 		for (Sprout sprout : sprouts) {
-			float size = facade.sproutRadius;
+			float size = facade.sproutRadius * 2f;
 
 			float x0 = sprout.position.x - size / 2f;
 			float y0 = sprout.position.y - size / 2f;
@@ -565,7 +566,7 @@ public class SproutsMain2 {
 				Vec2 b = rotater.copy().add(segment.to.x, segment.to.y);
 				
 				float width = 4f;
-				batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(a.x, a.y), VertexColor.RED, new Vec2(b.x, b.y), VertexColor.BLUE));
+				batchedTessellator2D.setColorGradient(new LinearColorGradient2D(a, VertexColor.RED, b, VertexColor.BLUE));
 				
 				batchedTessellator2D.drawLine(a.x, a.y, b.x, b.y, width);
 			}
@@ -577,9 +578,9 @@ public class SproutsMain2 {
 				
 				for (int i = 0; i < path.size() - 1; i++) {
 					float width = 3;
-					Vertex v1 = path.get(i);
-					Vertex v2 = path.get(i+1);
-					batchedTessellator2D.drawLine(v1.x, v1.y, v2.x, v2.y, width);
+					Vertex v0 = path.get(i);
+					Vertex v1 = path.get(i+1);
+					batchedTessellator2D.drawLine(v0.x, v0.y, v1.x, v1.y, width);
 				}
 			}
 		}
@@ -646,20 +647,22 @@ public class SproutsMain2 {
 		}
 		*/
 		
-		/*
-		batchedTessellator2D.setColor(VertexColor.GREEN);
+		batchedTessellator2D.setColor(VertexColor.BLACK);
 
 		for (Sprout sprout : sprouts) {
 			String id = String.format("%d", sprout.id);
 			
 			TextBounds textBounds = arialFont.getTextBounds(id);
+			
+			System.out.printf("%f %f %f %f\n", textBounds.x, textBounds.y, textBounds.width, textBounds.height);
 
-			float x = sprout.position.x - textBounds.width / 2f;
-			float y = sprout.position.y + textBounds.height / 2f;
-
-			arialFont.drawString(batchedTessellator2D, x, y, id);
+			float x = sprout.position.x - (textBounds.width - textBounds.x) / 2f;
+			float y = sprout.position.y + (textBounds.height - textBounds.y) / 2f;
+			
+			arialFont.drawString(batchedTessellator2D, id, x, y);
+			
+			break;
 		}
-		*/
 		
 		batchedTessellator2D.endBatch();
 	}
