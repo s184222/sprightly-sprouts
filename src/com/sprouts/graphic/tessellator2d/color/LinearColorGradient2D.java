@@ -18,9 +18,14 @@ public class LinearColorGradient2D extends ColorGradient2D {
 	private final VertexColor endColor;
 	
 	public LinearColorGradient2D(Vec2 startPoint, VertexColor startColor, Vec2 endPoint, VertexColor endColor) {
-		this.startPoint = startPoint;
+		if (startColor == null)
+			throw new IllegalArgumentException("startColor is null!");
+		if (endColor == null)
+			throw new IllegalArgumentException("endColor is null!");
+		
+		this.startPoint = startPoint.copy();
 		this.startColor = startColor;
-		this.endPoint = endPoint;
+		this.endPoint = endPoint.copy();
 		this.endColor = endColor;
 	}
 
