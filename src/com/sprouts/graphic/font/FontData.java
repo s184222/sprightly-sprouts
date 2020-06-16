@@ -3,12 +3,19 @@ package com.sprouts.graphic.font;
 import static org.lwjgl.stb.STBTruetype.stbtt_PackBegin;
 import static org.lwjgl.stb.STBTruetype.stbtt_PackFontRange;
 import static org.lwjgl.stb.STBTruetype.stbtt_PackSetOversampling;
+import static org.lwjgl.stb.STBTruetype.stbtt_GetFontVMetrics;
+import static org.lwjgl.stb.STBTruetype.stbtt_InitFont;
+import static org.lwjgl.stb.STBTruetype.stbtt_ScaleForPixelHeight;
+import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
+import org.lwjgl.stb.STBTTFontinfo;
 import org.lwjgl.stb.STBTTPackContext;
 import org.lwjgl.stb.STBTTPackedchar;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import com.sprouts.graphic.texture.Texture;
@@ -29,11 +36,31 @@ public class FontData {
 		STBTTPackedchar.Buffer cdata = STBTTPackedchar.malloc(NUM_PRINTABLE_CHARACTERS);
 		
 		Texture textureAtlas = createAtlas(fontSize, cdata);
+
+		float ascent;
+		float descent;
+		float lineGap;
 		
-		float ascent = getMaxAscent(cdata);
-		float descent = getMaxDescent(cdata);
+		try (MemoryStack stack = stackPush()) {
+			IntBuffer bufAscent = stack.ints(0);
+			IntBuffer bufDescent = stack.ints(0);
+			IntBuffer bufLineGap = stack.ints(0);
+			
+			STBTTFontinfo info = STBTTFontinfo.mallocStack(stack);
+			
+			if (!stbtt_InitFont(info, ttfData))
+				throw new IllegalStateException("Font data corrupted!");
+			
+			stbtt_GetFontVMetrics(info, bufAscent, bufDescent, bufLineGap);
+			
+			float scale = stbtt_ScaleForPixelHeight(info, fontSize);
+			
+			ascent = scale * bufAscent.get(0);
+		    descent = scale * bufDescent.get(0);
+		    lineGap = scale * bufLineGap.get(0);
+		}
 		
-		return new Font(fontSize, ascent, descent, textureAtlas, cdata);
+		return new Font(fontSize, ascent, descent, lineGap, textureAtlas, cdata);
 	}
 	
 	private Texture createAtlas(float fontSize, STBTTPackedchar.Buffer cdata) {
@@ -74,47 +101,4 @@ public class FontData {
 			bitmap.put(--pi, (byte)0xFF);
 		}
 	}
-	
-	private float getMaxAscent(STBTTPackedchar.Buffer cdata) {
-		float ascent = 0;
-		for(int i = 0; i < NUM_PRINTABLE_CHARACTERS; i++) {
-			STBTTPackedchar c = cdata.get(i);
-			
-			if (c.yoff() < ascent) {
-				ascent = c.yoff();
-			}
-		}
-		return ascent;
-	}
-
-	private float getMaxDescent(STBTTPackedchar.Buffer cdata) {
-		float descent = 0;
-		for(int i = 0; i < NUM_PRINTABLE_CHARACTERS; i++) {
-			STBTTPackedchar c = cdata.get(i);
-			
-			if (c.yoff2() > descent) {
-				descent = c.yoff2();
-			}
-		}
-		return descent;
-	}
-	
-	/*
-	public int getFontHeight() {
-		try (MemoryStack stack = stackPush()) {
-			IntBuffer bufAscent = stack.ints(0);
-			IntBuffer bufDescent = stack.ints(0);
-			IntBuffer bufLineGap = stack.ints(0);
-			
-			stbtt_GetFontVMetrics(info, bufAscent, bufDescent, bufLineGap);
-			
-			int ascent = bufAscent.get(0);
-		    int descent = bufDescent.get(0);
-		    int lineGap = bufLineGap.get(0);
-		    
-		    return ascent - descent + lineGap;
-		}
-		
-	}
-	*/
 }

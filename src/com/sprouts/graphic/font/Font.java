@@ -16,14 +16,22 @@ import com.sprouts.graphic.texture.Texture;
 
 public class Font implements IResource {
 
-	private final float fontSize, ascent, descent;
+	private final float fontSize;
+	
+	private final float ascent;
+	private final float descent;
+	private final float lineGap;
+	
 	private final Texture textureAtlas;
 	private final STBTTPackedchar.Buffer cdata;
 
-	public Font(float fontSize, float ascent, float descent, Texture textureAtlas, STBTTPackedchar.Buffer cdata) {
+	public Font(float fontSize, float ascent, float descent, float lineGap, Texture textureAtlas, STBTTPackedchar.Buffer cdata) {
 		this.fontSize = fontSize;
+	
 		this.ascent = ascent;
 		this.descent = descent;
+		this.lineGap = lineGap;
+		
 		this.textureAtlas = textureAtlas;
 		this.cdata = cdata;
 	}
@@ -132,22 +140,9 @@ public class Font implements IResource {
 	}
 	
 	public TextBounds getTextBounds(String text) {
-		
 		float width = getStringWidth(text);
 		
-		return new TextBounds(0, ascent, width, getFontHeight());
-	}
-
-	public float getFontSize() {
-		return fontSize;
-	}
-	
-	public float getFontHeight() {
-		return getFontSize();
-	}
-
-	public Texture getTextureAtlas() {
-		return textureAtlas;
+		return new TextBounds(0, -ascent, width, getFontHeight());
 	}
 
 	public float getStringWidth(String text) {
@@ -188,6 +183,30 @@ public class Font implements IResource {
 			return c - FontData.FIRST_PRINTABLE_CHARACTER;
 		}
 		return -1;
+	}
+	
+	public float getFontSize() {
+		return fontSize;
+	}
+	
+	public float getFontHeight() {
+		return getFontSize();
+	}
+	
+	public float getAscent() {
+		return ascent;
+	}
+
+	public float getDescent() {
+		return descent;
+	}
+	
+	public float getLineGap() {
+		return lineGap;
+	}
+
+	public Texture getTextureAtlas() {
+		return textureAtlas;
 	}
 	
 	@Override
