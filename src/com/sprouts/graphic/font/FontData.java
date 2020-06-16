@@ -30,7 +30,10 @@ public class FontData {
 		
 		Texture textureAtlas = createAtlas(fontSize, cdata);
 		
-		return new Font(fontSize, textureAtlas, cdata);
+		float ascent = getMaxAscent(cdata);
+		float descent = getMaxDescent(cdata);
+		
+		return new Font(fontSize, ascent, descent, textureAtlas, cdata);
 	}
 	
 	private Texture createAtlas(float fontSize, STBTTPackedchar.Buffer cdata) {
@@ -70,6 +73,30 @@ public class FontData {
 			bitmap.put(--pi, (byte)0xFF);
 			bitmap.put(--pi, (byte)0xFF);
 		}
+	}
+	
+	private float getMaxAscent(STBTTPackedchar.Buffer cdata) {
+		float ascent = 0;
+		for(int i = 0; i < NUM_PRINTABLE_CHARACTERS; i++) {
+			STBTTPackedchar c = cdata.get(i);
+			
+			if (c.yoff() < ascent) {
+				ascent = c.yoff();
+			}
+		}
+		return ascent;
+	}
+
+	private float getMaxDescent(STBTTPackedchar.Buffer cdata) {
+		float descent = 0;
+		for(int i = 0; i < NUM_PRINTABLE_CHARACTERS; i++) {
+			STBTTPackedchar c = cdata.get(i);
+			
+			if (c.yoff2() > descent) {
+				descent = c.yoff2();
+			}
+		}
+		return descent;
 	}
 	
 	/*

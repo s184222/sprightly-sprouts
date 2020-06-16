@@ -16,17 +16,19 @@ import com.sprouts.graphic.texture.Texture;
 
 public class Font implements IResource {
 
-	private final float fontSize;
+	private final float fontSize, ascent, descent;
 	private final Texture textureAtlas;
 	private final STBTTPackedchar.Buffer cdata;
 
-	public Font(float fontSize, Texture textureAtlas, STBTTPackedchar.Buffer cdata) {
+	public Font(float fontSize, float ascent, float descent, Texture textureAtlas, STBTTPackedchar.Buffer cdata) {
 		this.fontSize = fontSize;
+		this.ascent = ascent;
+		this.descent = descent;
 		this.textureAtlas = textureAtlas;
 		this.cdata = cdata;
 	}
 
-	public void drawString(ITessellator2D tessellator, float x, float y, String text) {
+	public void drawString(ITessellator2D tessellator, String text, float x, float y) {
 		tessellator.setTextureRegion(textureAtlas);
 
 		int atlasWidth = textureAtlas.getWidth();
@@ -130,40 +132,18 @@ public class Font implements IResource {
 	}
 	
 	public TextBounds getTextBounds(String text) {
-		float x = 0, ascent = 0, descent = 0;
-		
-		int charIndex;
-		
-		for (int i = 0; i < text.length(); i++) {
-			
-			if ((charIndex = getCharIndex(text.charAt(i))) != -1) {
-				
-				STBTTPackedchar c = cdata.get(charIndex);
-				
-				if (i == 0) {
-					x = c.xoff();
-				}
-				
-				float y1 = -c.yoff();
-				if (y1 > ascent) {
-					ascent = y1;
-				}
-				
-				float y0 = -c.yoff2();
-				if (y0 < descent) {
-					descent = y0;
-				}
-			}			
-		}
-		
 		
 		float width = getStringWidth(text);
 		
-		return new TextBounds(x, -ascent, width, (ascent - descent));
+		return new TextBounds(0, ascent, width, getFontHeight());
 	}
 
 	public float getFontSize() {
 		return fontSize;
+	}
+	
+	public float getFontHeight() {
+		return getFontSize();
 	}
 
 	public Texture getTextureAtlas() {
@@ -180,25 +160,9 @@ public class Font implements IResource {
 			if ((charIndex = getCharIndex(text.charAt(i))) != -1) {
 				
 				STBTTPackedchar c = cdata.get(charIndex);
-			
-				if (text.length() == 1) {
-					// length of char without bearings
-					return getCharWidth(text.charAt(i));
-				} 
-				else {
-					// length of char with left- and right-side bearing
-					width += c.xadvance();
-					
-					if(i == 0) {
-						// length of left-side bearing
-						width -= c.xoff();
-					}
-					
-					if(i == text.length()-1) {
-						// length of right-side bearing
-						width -= c.xadvance() - c.xoff2();
-					}
-				}
+				
+				width += c.xadvance();
+				
 			}
 		}
 		
@@ -213,7 +177,7 @@ public class Font implements IResource {
 			
 			STBTTPackedchar pChar = cdata.get(charIndex);
 			
-			return pChar.xoff2() - pChar.xoff();
+			return pChar.xadvance();
 		}
 		
 		return -1;
