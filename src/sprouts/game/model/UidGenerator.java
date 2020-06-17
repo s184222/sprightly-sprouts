@@ -2,15 +2,23 @@ package sprouts.game.model;
 
 public class UidGenerator {
 	
-	public int nextId;
+	private int nextUid;
 	
-	public void reset() {
-		nextId = 0;
+	public UidGenerator() {
+		nextUid = 0;
 	}
 	
 	public int generate() {
-		int id = nextId;
-		nextId += 1;
-		return id;
+		int uid = nextUid;
+		nextUid += 1;
+		return uid;
+	}
+	
+	public void reset() {
+		nextUid = 0;
+	}
+
+	public void update(int id) {
+		if (id >= nextUid) nextUid = id + 1;
 	}
 }

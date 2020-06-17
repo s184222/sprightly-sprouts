@@ -81,7 +81,7 @@ public class Region {
 			lives += innerSprout.getLives();
 		}
 		
-		if (outerBoundary != null) {
+		if (!isOuterRegion()) {
 			int outerBoundaryLives = outerBoundary.getBoundaryLives();
 			lives += outerBoundaryLives;
 		}

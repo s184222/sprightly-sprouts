@@ -1,4 +1,4 @@
-package sprouts.game.model.move.two;
+package sprouts.game.model.move.generators.two;
 
 import java.util.List;
 import java.util.Map;

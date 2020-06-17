@@ -22,6 +22,7 @@ public class Edge {
 	
 	public Edge() {
 		id = DebugIdGenerators.getEdgeId();
+		System.out.printf("edge id: %d\n", id);
 	}
 	
 	/*
@@ -93,7 +94,7 @@ public class Edge {
 	
 	public boolean isInsideBoundary(Vertex point) {
 		ArrayList<Vertex> boundaryLine = getBoundaryLine();
-		if (GameFacade.isPointInPolygon(point, boundaryLine)) return true;
+		if (GraphicalFacade.isPointInPolygon(point, boundaryLine)) return true;
 		return false;
 	}
 	

@@ -8,9 +8,8 @@ import sprouts.game.model.move.MoveNotationException;
 import sprouts.game.model.move.RawMove;
 import sprouts.game.model.move.RawMovePathGenerator;
 import sprouts.game.model.move.generators.MovePathResult;
-import sprouts.tests.MoveHistory;
 
-public class GameFacade {
+public class GraphicalFacade {
 	
 	private RawMovePathGenerator pathGenerator;
 	private Position position;
@@ -22,12 +21,23 @@ public class GameFacade {
 	public float minimumLineSegmentDistance;
 	public int sproutRadius;
 	
-	public GameFacade() {
+	public GraphicalFacade() {
 		DebugIdGenerators.reset();
 		
 		currentLine = new Line();
 		
+		pathGenerator = new RawMovePathGenerator();
+		
+		minimumLineSegmentDistance = 25;
+		drawingLine = false;
+		sproutRadius = 12;
+		
+		history = new MoveHistory();
+	}
+	
+	public void createFreshPosition(int numberOfSprouts) {
 		PositionBuilder builder = new PositionBuilder();
+		position = builder.createSproutsCircle(numberOfSprouts, 320, 240, 150).build();
 		
 		/*
 		position = builder
@@ -39,59 +49,32 @@ public class GameFacade {
 			.build();
 		*/
 		
-		position = builder.createSproutsCircle(8, 320, 240, 150).build();
-		pathGenerator = new RawMovePathGenerator();
-		
-		minimumLineSegmentDistance = 25;
-		drawingLine = false;
-		sproutRadius = 12;
-		
-		history = new MoveHistory();
-		
 		/*
-		executeMove("1<,2<");
-
-		Line line1 = new Line();
-		line1.add(new Vertex(140.0f,160.0f));
-		line1.add(new Vertex(172.00003f,159.19998f));
-		line1.add(new Vertex(203.20003f,155.99998f));
-		line1.add(new Vertex(240.80003f,151.99998f));
-		line1.add(new Vertex(268.00003f,149.59998f));
-		line1.add(new Vertex(293.60004f,145.59998f));
-		line1.add(new Vertex(322.40002f,133.59998f));
-		line1.add(new Vertex(350.40002f,127.19999f));
-		line1.add(new Vertex(375.20004f,121.59998f));
-		line1.add(new Vertex(400.00003f,117.59999f));
-		line1.add(new Vertex(427.20004f,115.99998f));
-		line1.add(new Vertex(455.20004f,122.39998f));
-		line1.add(new Vertex(476.00003f,136.79999f));
-		line1.add(new Vertex(481.60004f,164.79999f));
-		line1.add(new Vertex(479.20004f,190.4f));
-		line1.add(new Vertex(458.40002f,204.79999f));
-		line1.add(new Vertex(434.40002f,211.99998f));
-		line1.add(new Vertex(408.80002f,214.4f));
-		line1.add(new Vertex(383.20004f,223.19998f));
-		line1.add(new Vertex(368.00003f,244.79999f));
-		line1.add(new Vertex(389.60004f,267.19998f));
-		line1.add(new Vertex(417.60004f,283.99997f));
-		line1.add(new Vertex(444.80002f,299.19998f));
-		line1.add(new Vertex(467.20004f,316.8f));
-		line1.add(new Vertex(475.20004f,343.19998f));
-		line1.add(new Vertex(477.60004f,369.59998f));
-		line1.add(new Vertex(450.40002f,366.39996f));
-		line1.add(new Vertex(422.40002f,353.59998f));
-		line1.add(new Vertex(400.00003f,336.0f));
-		line1.add(new Vertex(377.60004f,315.19998f));
-		line1.add(new Vertex(358.40002f,297.59998f));
-		line1.add(new Vertex(338.40002f,278.4f));
-		line1.add(new Vertex(339.20004f,304.0f));
-		line1.add(new Vertex(359.20004f,322.4f));
-		line1.add(new Vertex(364.00003f,347.19998f));
-		line1.add(new Vertex(341.60004f,358.4f));
-		line1.add(new Vertex(340.0f,360.0f));
-		executeLine(line1);
+		Line line0 = new Line();
+		line0.add(new Vertex(213.93398f,133.93399f));
+		line0.add(new Vertex(239.0f,133.0f));
+		line0.add(new Vertex(263.0f,144.0f));
+		line0.add(new Vertex(281.0f,162.0f));
+		line0.add(new Vertex(287.0f,191.0f));
+		line0.add(new Vertex(284.0f,218.0f));
+		line0.add(new Vertex(275.0f,245.0f));
+		line0.add(new Vertex(259.0f,265.0f));
+		line0.add(new Vertex(230.0f,278.0f));
+		line0.add(new Vertex(194.0f,287.0f));
+		line0.add(new Vertex(163.0f,286.0f));
+		line0.add(new Vertex(133.0f,278.0f));
+		line0.add(new Vertex(110.0f,266.0f));
+		line0.add(new Vertex(90.0f,249.0f));
+		line0.add(new Vertex(85.0f,206.0f));
+		line0.add(new Vertex(90.0f,171.0f));
+		line0.add(new Vertex(104.0f,146.0f));
+		line0.add(new Vertex(127.0f,133.0f));
+		line0.add(new Vertex(150.0f,122.0f));
+		line0.add(new Vertex(179.0f,119.0f));
+		line0.add(new Vertex(203.0f,126.0f));
+		line0.add(new Vertex(213.93398f,133.93399f));
+		String move0 = executeLine(line0);
 		*/
-		//executeMove("6>,5<,[3,4]");
 		
 	}
 
@@ -103,6 +86,8 @@ public class GameFacade {
 		
 			try {
 				result = pathGenerator.generate(move, position);
+				
+				if (result.line == null) return result;
 
 				Util.require(!intersectsNewLine(result.line));
 				
@@ -121,14 +106,26 @@ public class GameFacade {
 	
 	public String executeLine(Line line) {
 		Util.require(!intersectsNewLine(line));
-		RawMove move = position.getMove(line);
+		RawMove move = position.update(line);
 		return move.toString();
 	}
 	
 	public String executeMove(String rawMove) {
 		MovePathResult result = generateMove(rawMove);
-		String actualMove = executeLine(result.line);
+		String actualMove = "";
+		if (result.line != null) {
+			actualMove = executeLine(result.line);
+		}
 		return actualMove;
+	}
+	
+	public MovePathResult executeMoveWithResult(String rawMove) {
+		MovePathResult result = generateMove(rawMove);
+		String actualMove = "";
+		if (result.line != null) {
+			actualMove = executeLine(result.line);
+		}
+		return result;
 	}
 
 	public Sprout getSproutClicked(float mx, float my) {

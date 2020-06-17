@@ -199,6 +199,7 @@ public class MovePreprocessor {
 				if (innerBoundaries.size() == 0) {
 					return candidate;
 				} else if (innerBoundaries.size() == 1) {
+					// @TODO: do we need this, should we always return it if size() == 0 || size() == 1?
 					Edge itself = innerBoundaries.get(0);
 					
 					List<Sprout> boundarySprouts = itself.getBoundarySprouts();

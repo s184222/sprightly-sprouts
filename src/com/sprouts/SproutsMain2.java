@@ -32,19 +32,23 @@ import com.sprouts.input.Mouse;
 import com.sprouts.math.Vec2;
 import com.sprouts.util.LibUtil;
 
+import sprouts.game.ai.AbstractFacade;
+import sprouts.game.ai.player.Player;
+import sprouts.game.ai.player.RandomPlayer;
 import sprouts.game.model.Console;
 import sprouts.game.model.Edge;
-import sprouts.game.model.GameFacade;
+import sprouts.game.model.GraphicalFacade;
 import sprouts.game.model.Line;
 import sprouts.game.model.LineSegment;
 import sprouts.game.model.Position;
 import sprouts.game.model.Region;
 import sprouts.game.model.Sprout;
 import sprouts.game.model.Vertex;
+import sprouts.game.model.move.RawMove;
 import sprouts.game.model.move.Triangle;
 import sprouts.game.model.move.generators.MovePathResult;
 import sprouts.game.model.move.generators.one.OneBoundaryMoveGeneratorData;
-import sprouts.game.model.move.two.TwoBoundaryMoveGeneratorData;
+import sprouts.game.model.move.generators.two.TwoBoundaryMoveGeneratorData;
 
 public class SproutsMain2 {
 
@@ -53,8 +57,8 @@ public class SproutsMain2 {
 	}
 	
 	private static final String WINDOW_TITLE = "Sprightly Sprouts";
-	private static final int WINDOW_WIDTH  = 500;
-	private static final int WINDOW_HEIGHT = 500;
+	private static final int WINDOW_WIDTH  = 1500;
+	private static final int WINDOW_HEIGHT = 1500;
 
 	private final Display display;
 	private final Mouse mouse;
@@ -65,7 +69,9 @@ public class SproutsMain2 {
 	private Texture spongeBobTexture;
 	private Font arialFont;
 	
-	private GameFacade facade;
+	private GraphicalFacade facadeG;
+	private AbstractFacade facadeA;
+	private Player ai;
 	
 	private List<Triangle> triangles;
 	private Map<Vertex, List<Vertex>> twoBoundaryGraph;
@@ -75,7 +81,7 @@ public class SproutsMain2 {
 	private Line path;
 	private List<Triangle> condense;
 	
-	private boolean drawEdgeIndices = false;
+	private boolean drawEdgeIndices = true;
 	private boolean drawTriangles = false;
 	private boolean showLineOrientation = false;
 	private boolean drawPath = false;
@@ -106,7 +112,7 @@ public class SproutsMain2 {
 		spongeBobTexture = TextureLoader.loadTexture("/textures/spongebob.png");
 
 		FontData arialData = FontLoader.loadFont("/fonts/arial.ttf");
-		arialFont = arialData.createFont(20);
+		arialFont = arialData.createFont(14);
 	}
 	
 	private void init() {
@@ -133,12 +139,12 @@ public class SproutsMain2 {
 			
 			@Override
 			public void mouseReleased(int button, float mouseX, float mouseY, int modifiers) {
-				facade.touchUp(mouseX, mouseY);
+				facadeG.touchUp(mouseX, mouseY);
 			}
 			
 			@Override
 			public void mousePressed(int button, float mouseX, float mouseY, int modifiers) {
-				facade.touchDown(mouseX, mouseY);
+				facadeG.touchDown(mouseX, mouseY);
 			}
 			
 			@Override
@@ -147,7 +153,7 @@ public class SproutsMain2 {
 			
 			@Override
 			public void mouseDragged(int button, float mouseX, float mouseY, float dragX, float dragY) {
-				facade.touchDragged(mouseX, mouseY);
+				facadeG.touchDragged(mouseX, mouseY);
 			}
 		});
 		
@@ -170,7 +176,7 @@ public class SproutsMain2 {
 				
 				switch (key) {
 				case GLFW.GLFW_KEY_R: {
-					facade = new GameFacade();
+					facadeG = new GraphicalFacade();
 					break;
 				}
 				
@@ -180,15 +186,27 @@ public class SproutsMain2 {
 				}
 				
 				case GLFW.GLFW_KEY_H: {
-					facade.printHistoryTestCode();
+					facadeG.printHistoryTestCode();
 					break;
 				}
 				
 				case GLFW.GLFW_KEY_S: {
-					Position position = facade.getPosition();
+					Position position = facadeG.getPosition();
 					for (Region region : position.getRegions()) {
 						region.verbose();
 					}
+			
+					break;
+				}
+				
+				case GLFW.GLFW_KEY_A: {
+					System.out.printf("thinking...\n");
+					RawMove move = ai.getMove(facadeA.getPosition());
+					System.out.printf("ai: %s\n", move.toString());
+
+					MovePathResult result = facadeG.executeMoveWithResult(move.toString());
+					facadeA.makeMove(move.toString());
+					saveDebug(result);
 			
 					break;
 				}
@@ -196,7 +214,11 @@ public class SproutsMain2 {
 			}
 		});
 		
-		facade = new GameFacade();
+		facadeG = new GraphicalFacade();
+		facadeA = new AbstractFacade();
+		facadeA.createFreshPosition(8);
+		facadeG.createFreshPosition(8);
+		ai = new RandomPlayer();
 		
 		Console console = new Console() {
 			
@@ -204,51 +226,56 @@ public class SproutsMain2 {
 			public void loop() {
 				String rawMove = prompt("move:");
 				
-				MovePathResult result = facade.generateMove(rawMove);
-				
-				if (result != null) {
-					facade.executeLine(result.line);
-					
-					path = result.line;
-	
-					triangles = null;
-					twoBoundaryGraph = null;
-					oneBoundaryGraph = null;
-					slither = null;
-					wrapper =  null;
-					
-					switch (result.generatorType) {
-					case "oneBoundary": {
-						OneBoundaryMoveGeneratorData data = (OneBoundaryMoveGeneratorData) result.customData;
-						
-						triangles = data.triangles;
-						oneBoundaryGraph = data.oneBoundaryGraph;
-						slither = data.slither;
-						wrapper = data.wrapper;
-						condense = data.condense;
-						
-						break;
-					}
-					case "twoBoundary": {
-						TwoBoundaryMoveGeneratorData data = (TwoBoundaryMoveGeneratorData) result.customData;
-						
-						triangles = data.triangles;
-						twoBoundaryGraph = data.twoBoundaryGraph;
-						
-						break;
-					}
-					
-					default: {
-						throw new IllegalStateException("unknown generator type: " +  result.generatorType);
-					}
-					}
-				}
+				MovePathResult result = facadeG.generateMove(rawMove);
+				String move = facadeG.executeLine(result.line);
+				facadeA.makeMove(move);
+
+				saveDebug(result);
 				
 			}
 		};
 		
 		console.start();
 		
+	}
+	
+	private void saveDebug(MovePathResult result) {
+		if (result != null) {
+			
+			path = result.line;
+
+			triangles = null;
+			twoBoundaryGraph = null;
+			oneBoundaryGraph = null;
+			slither = null;
+			wrapper =  null;
+			
+			switch (result.generatorType) {
+			case "oneBoundary": {
+				OneBoundaryMoveGeneratorData data = (OneBoundaryMoveGeneratorData) result.customData;
+				
+				triangles = data.triangles;
+				oneBoundaryGraph = data.oneBoundaryGraph;
+				slither = data.slither;
+				wrapper = data.wrapper;
+				condense = data.condense;
+				
+				break;
+			}
+			case "twoBoundary": {
+				TwoBoundaryMoveGeneratorData data = (TwoBoundaryMoveGeneratorData) result.customData;
+				
+				triangles = data.triangles;
+				twoBoundaryGraph = data.twoBoundaryGraph;
+				
+				break;
+			}
+			
+			default: {
+				throw new IllegalStateException("unknown generator type: " +  result.generatorType);
+			}
+			}
+		}
 	}
 
 	private void onViewportChanged(DisplaySize size) {
@@ -258,7 +285,7 @@ public class SproutsMain2 {
 	private void onViewportChanged(int width, int height) {
 		GL11.glViewport(0, 0, width, height);
 		
-		batchedTessellator2D.setViewport(0, 0, width, height);
+		batchedTessellator2D.setViewport(0, 0, width / 2, height / 2);
 	}
 	
 	private void loop() {
@@ -314,7 +341,7 @@ public class SproutsMain2 {
 		}
 		*/
 		
-		Position position = facade.getPosition();
+		Position position = facadeG.getPosition();
 		
 		if (drawTriangles) {
 			if (triangles != null) {
@@ -346,7 +373,7 @@ public class SproutsMain2 {
 					mouseVertex.x = mouse.getMouseX();
 					mouseVertex.y = mouse.getMouseY();
 					
-					if (GameFacade.isPointInPolygon(mouseVertex, triangle.getCorners())) {
+					if (GraphicalFacade.isPointInPolygon(mouseVertex, triangle.getCorners())) {
 						selected = triangle;
 						break;
 					}
@@ -520,7 +547,7 @@ public class SproutsMain2 {
 		List<Sprout> sprouts = position.getSprouts();
 		
 		for (Sprout sprout : sprouts) {
-			float size = facade.sproutRadius * 2f;
+			float size = facadeG.sproutRadius * 2f;
 
 			float x0 = sprout.position.x - size / 2f;
 			float y0 = sprout.position.y - size / 2f;
@@ -528,7 +555,7 @@ public class SproutsMain2 {
 			float x1 = sprout.position.x + size / 2f;
 			float y1 = sprout.position.y + size / 2f;
 
-			batchedTessellator2D.drawQuad(x0, y0, x1, y1);
+			//batchedTessellator2D.drawQuad(x0, y0, x1, y1);
 		}
 		
 		batchedTessellator2D.setColor(VertexColor.RED);
@@ -587,7 +614,7 @@ public class SproutsMain2 {
 		
 		batchedTessellator2D.setColor(VertexColor.ORANGE);
 		
-		Line currentLine = facade.currentLine;
+		Line currentLine = facadeG.currentLine;
 		
 		for (int i = 0; i < currentLine.size() - 1; i++) {
 			Vertex v0 = currentLine.get(i);
@@ -617,7 +644,24 @@ public class SproutsMain2 {
 		}
 		
 		/*
+		batchedTessellator2D.setColor(VertexColor.BLUE);
+
+		for (Sprout sprout : sprouts) {
+			String id = String.format("%d", sprout.id);
+			
+			TextBounds textBounds = arialFont.getTextBounds(id);
+			
+			float x = sprout.position.x - (textBounds.width - textBounds.x) / 2f;
+			float y = sprout.position.y + (textBounds.height - textBounds.y) / 2f;
+			y = sprout.position.y;
+			
+			
+			arialFont.drawString(batchedTessellator2D, id, x, y);
+		}
+		*/
+		
 		if (drawEdgeIndices) {
+			batchedTessellator2D.setColor(VertexColor.BLACK);
 			Vec2 rotater = new Vec2();
 
 			for (Edge edge : position.getEdges()) {
@@ -642,26 +686,8 @@ public class SproutsMain2 {
 				float x = pos.x - textBounds.width / 2f;
 				float y = pos.y + textBounds.height / 2f;
 				
-				arialFont.drawString(batchedTessellator2D, x, y, edgeId);
+				arialFont.drawString(batchedTessellator2D, edgeId, x, y);
 			}
-		}
-		*/
-		
-		batchedTessellator2D.setColor(VertexColor.BLACK);
-
-		for (Sprout sprout : sprouts) {
-			String id = String.format("%d", sprout.id);
-			
-			TextBounds textBounds = arialFont.getTextBounds(id);
-			
-			System.out.printf("%f %f %f %f\n", textBounds.x, textBounds.y, textBounds.width, textBounds.height);
-
-			float x = sprout.position.x - (textBounds.width - textBounds.x) / 2f;
-			float y = sprout.position.y + (textBounds.height - textBounds.y) / 2f;
-			
-			arialFont.drawString(batchedTessellator2D, id, x, y);
-			
-			break;
 		}
 		
 		batchedTessellator2D.endBatch();

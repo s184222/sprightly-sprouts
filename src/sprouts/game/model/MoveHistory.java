@@ -1,10 +1,8 @@
-package sprouts.tests;
+package sprouts.game.model;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import sprouts.game.model.Vertex;
 
 public class MoveHistory {
 	

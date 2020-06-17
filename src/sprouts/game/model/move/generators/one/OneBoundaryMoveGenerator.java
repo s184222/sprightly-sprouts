@@ -12,7 +12,7 @@ import java.util.function.BiFunction;
 import com.sprouts.math.LinMath;
 
 import sprouts.game.model.Edge;
-import sprouts.game.model.GameFacade;
+import sprouts.game.model.GraphicalFacade;
 import sprouts.game.model.Line;
 import sprouts.game.model.LineSegment;
 import sprouts.game.model.MathUtil;
@@ -66,6 +66,18 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		List<Triangle> triangles = triangleGenerator.getTriangles(position);
 		
 		Map<Triangle, List<Triangle>> graph = getTriangleGraph(triangles, region, position);
+		
+		
+		if (from.id == 23) {
+			OneBoundaryMoveGeneratorData data = new OneBoundaryMoveGeneratorData();
+			data.triangles = triangles;
+			data.oneBoundaryGraph = graph;
+
+			result.customData = data;
+			
+			//return result;
+		}
+		
 		List<Triangle> slithering = slither(graph, from, to, fromEdge, toEdge);
 		
 		List<Triangle> wrapping = wrapAroundContaining(slithering, inner, graph, region, from.position, to.position);
@@ -320,12 +332,17 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 
 		Util.require(end != null);
 		
+		if (from.id == 23) {
+			int k = 44;
+		}
+		
 		Line mergedLine;
 		if (fromEdge != null && toEdge != null) {
 			mergedLine = mergeBoundaryLines(fromEdge, toEdge);
 		} else {
 			mergedLine = new Line();
 		}
+		
 		
 		if (mergedLine.size() == 0) mergedLine.add(from.position);
 
@@ -584,7 +601,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 				boolean shouldRemove = true;
 				
 				for (Sprout single : region.innerSprouts) {
-					if (GameFacade.isPointInPolygon(single.position, path)) {
+					if (GraphicalFacade.isPointInPolygon(single.position, path)) {
 						shouldRemove = false;
 						break;
 					}
@@ -595,7 +612,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 						List<Sprout> sprouts = inner.getBoundarySprouts();
 						
 						for (Sprout sprout : sprouts) {
-							if (GameFacade.isPointInPolygon(sprout.position, path)) {
+							if (GraphicalFacade.isPointInPolygon(sprout.position, path)) {
 								shouldRemove = false;
 								break;
 							}

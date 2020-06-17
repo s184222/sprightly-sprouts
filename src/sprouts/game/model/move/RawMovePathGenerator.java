@@ -4,9 +4,9 @@ import sprouts.game.model.Position;
 import sprouts.game.model.move.generators.MovePathGenerator;
 import sprouts.game.model.move.generators.MovePathResult;
 import sprouts.game.model.move.generators.one.OneBoundaryMoveGenerator;
+import sprouts.game.model.move.generators.two.TwoBoundaryMoveGenerator;
 import sprouts.game.model.move.pathfinder.AStarPathFinder;
 import sprouts.game.model.move.pathfinder.PathFinder;
-import sprouts.game.model.move.two.TwoBoundaryMoveGenerator;
 
 public class RawMovePathGenerator {
 	

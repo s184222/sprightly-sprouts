@@ -122,7 +122,7 @@ public class Position {
 		return outerRectangle.getCorners();
 	}
 	
-	public RawMove getMove(Line line) {
+	public RawMove update(Line line) {
 		Line lineWithMiddle = new Line();
 		lineWithMiddle.addAll(line);
 		lineWithMiddle.addMiddlePoint();
@@ -224,6 +224,14 @@ public class Position {
 		return move;
 	}
 	
+	/*
+	 * @TODO:
+	 * 
+	 * - bug with outerboundary orientation. See bugNew.png 
+	 * 
+	 * 
+	 */
+	
 	private RawMove getOneBoundaryMove(Sprout from, Sprout to, Region region, Line line) {
 		RawMove move = new RawMove();
 		move.fromId = from.id;
@@ -231,7 +239,7 @@ public class Position {
 			
 		boolean isSoloSprout = !from.isInBoundary();
 		boolean isInOuterBoundary = region.isInOuterBoundary(from);
-		
+
 		boolean swapped = false;
 		if (!isInOuterBoundary) {
 			
@@ -284,8 +292,8 @@ public class Position {
 		createdSprout.neighbours.add(e2_1);
 		
 		if (isSoloSprout) {
-			newRegion.outerBoundary = e2_2;
 			region.innerBoundaries.add(e1_1);
+			newRegion.outerBoundary = e2_2;
 			
 			connect(e1_1, e2_1);
 			connect(e2_1, e1_1);
@@ -343,7 +351,7 @@ public class Position {
 		for (Edge inner : region.innerBoundaries) {
 			if (newRegionOuterSprouts.contains(inner.origin))	continue;
 			
-			if (GameFacade.isPointInPolygon(inner.origin.position, newRegionOuterBoundary)) {
+			if (GraphicalFacade.isPointInPolygon(inner.origin.position, newRegionOuterBoundary)) {
 				inner.setBoundaryRegion(newRegion);
 				transferredBoundaries.add(inner);
 			}
@@ -351,7 +359,7 @@ public class Position {
 
 		ArrayList<Sprout> transferredSprouts = new ArrayList<>();
 		for (Sprout innerSprout : region.innerSprouts) {
-			if (GameFacade.isPointInPolygon(innerSprout.position, newRegionOuterBoundary)) {
+			if (GraphicalFacade.isPointInPolygon(innerSprout.position, newRegionOuterBoundary)) {
 				transferredSprouts.add(innerSprout);
 			}
 		}
@@ -461,13 +469,11 @@ public class Position {
 		
 		for (int i = 0; i < regions.size(); i++) {
 			Region region = regions.get(i);
-			if (region.isOuterRegion()) continue;
 			
-			List<Vertex> outer = region.outerBoundary.getBoundaryLine();
-			if (GameFacade.isPointInPolygon(point, outer))	return region;
+			if (region.isInsideRegion(point)) return region;
 		}
 
-		return outerRegion;
+		throw new IllegalStateException("no region found");
 	}
 	
 	public boolean isLineSegmentOnLine(Vertex v1, Vertex v2) {
