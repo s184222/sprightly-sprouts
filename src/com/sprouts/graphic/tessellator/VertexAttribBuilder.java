@@ -47,7 +47,7 @@ public class VertexAttribBuilder implements AutoCloseable, IResource {
 			throw new IllegalStateException("Buffer closed.");
 	}
 	
-	private void ensureCapacity(int numBytes) {
+	public void ensureCapacity(int numBytes) {
 		checkClosed();
 
 		if (attribData.remaining() < numBytes) {
@@ -175,6 +175,10 @@ public class VertexAttribBuilder implements AutoCloseable, IResource {
 		ByteBuffer tmpBuffer = attribData.asReadOnlyBuffer();
 		tmpBuffer.flip();
 		return tmpBuffer;
+	}
+	
+	public ByteBuffer getWritableBuffer() {
+		return attribData;
 	}
 	
 	public int getVertexSize() {
