@@ -15,6 +15,10 @@ public class UnsafeUtil {
 		return UNSAFE;
 	}
 	
+	/* 
+	 * See https://github.com/LWJGL/lwjgl3/blob/4d2a73741258998ea4b0d97e976f57434c1c6a01/
+	 *         modules/lwjgl/core/src/main/java/org/lwjgl/system/MemoryUtil.java#L3099
+	 */
 	private static sun.misc.Unsafe scanAndGetUnsafeInstance() {
 		Field[] fields = sun.misc.Unsafe.class.getDeclaredFields();
 
