@@ -398,12 +398,13 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 		builder.ensureCapacity(builder.getVertexSize());
 
 		ByteBuffer buffer = builder.getWritableBuffer();
-		if (UNSAFE != null) {
+		if (UNSAFE != null && buffer.position() + 21 <= buffer.capacity()) {
 			// This is mostly an optimization, so the DirectByteBuffer
 			// from the java.nio package does not have to check bounds
 			// every time we want to put new data into the buffer. Note
 			// that we have the VertexAttribBuilder#ensureCapacity call
-			// above to ensure that we do not write to illegal memory.
+			// and the extra bound check above to ensure that we do not
+			// perform an illegal memory access.
 			long address = MemoryUtil.memAddress(buffer);
 
 			UNSAFE.putFloat(address + 0, x);
