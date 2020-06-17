@@ -156,6 +156,8 @@ public class Font implements IResource {
 				
 				STBTTPackedchar c = cdata.get(charIndex);
 				
+				
+				
 				width += c.xadvance();
 				
 			}

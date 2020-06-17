@@ -71,7 +71,7 @@ public class SproutsMain {
 		spongeBobTexture = TextureLoader.loadTexture("/textures/spongebob.png");
 
 		FontData arialData = FontLoader.loadFont("/fonts/arial.ttf");
-		arialFont = arialData.createFont(200);
+		arialFont = arialData.createFont(12);
 	}
 	
 	private void init() {
@@ -123,7 +123,7 @@ public class SproutsMain {
 	private void render() {
 		batchedTessellator2D.beginBatch();
 		
-		String text = "The quick brown fox";
+		String text = "The quick brown fox jumps over the lazy dog 1234567890";
 		float tx = 200.0f;
 		float ty = 170.0f;
 		

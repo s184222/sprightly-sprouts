@@ -35,11 +35,11 @@ public class FontData {
 	public Font createFont(float fontSize) {
 		STBTTPackedchar.Buffer cdata = STBTTPackedchar.malloc(NUM_PRINTABLE_CHARACTERS);
 		
-		Texture textureAtlas = createAtlas(fontSize, cdata);
 
 		float ascent;
 		float descent;
 		float lineGap;
+		float fontWidth;
 		
 		try (MemoryStack stack = stackPush()) {
 			IntBuffer bufAscent = stack.ints(0);
@@ -60,13 +60,16 @@ public class FontData {
 		    lineGap = scale * bufLineGap.get(0);
 		}
 		
+		Texture textureAtlas = createAtlas(fontSize, cdata);
+		
 		return new Font(fontSize, ascent, descent, lineGap, textureAtlas, cdata);
 	}
 	
 	private Texture createAtlas(float fontSize, STBTTPackedchar.Buffer cdata) {
 		try (STBTTPackContext pc = STBTTPackContext.malloc()) {
-			int bitmapW = (int) (6 * fontSize);
-			int bitmapH = (int) (5 * fontSize);
+			int lineLength = NUM_PRINTABLE_CHARACTERS / 10 + 1;
+			int bitmapW = (int) (lineLength * fontSize);
+			int bitmapH = (int) (10 * fontSize);
 			
 			// Generate a 4-channel bitmap with ARGB
 			ByteBuffer bitmap = MemoryUtil.memAlloc(4 * bitmapW * bitmapH);
