@@ -19,9 +19,9 @@ public class VertexAttribBuilder implements AutoCloseable, IResource {
 
 	private static final int DEFAULT_INITIAL_CAPACITY = 64;
 	
-	private static final int BYTE_SIZE = 1;
-	private static final int FLOAT_BYTE_SIZE = 4 * BYTE_SIZE;
-	private static final int INT_BYTE_SIZE = 4 * BYTE_SIZE;
+	public static final int BYTE_SIZE = 1;
+	public static final int FLOAT_BYTE_SIZE = 4 * BYTE_SIZE;
+	public static final int INT_BYTE_SIZE = 4 * BYTE_SIZE;
 	
 	private final int vertexSize;
 	
