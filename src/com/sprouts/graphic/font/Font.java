@@ -175,7 +175,7 @@ public class Font implements IResource {
 			return pChar.xadvance();
 		}
 		
-		return -1;
+		return 0;
 	}
 	
 	private int getCharIndex(char c) {
