@@ -14,7 +14,7 @@ public class FileUtil {
 	
 	public static ByteBuffer readAllBytes(InputStream is) throws IOException {
 		if (is == null)
-			throw new NullPointerException("Input stream is null!");
+			throw new IllegalArgumentException("Input stream is null!");
 		
 		List<byte[]> batch = new ArrayList<byte[]>();
 

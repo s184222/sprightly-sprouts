@@ -62,6 +62,9 @@ public class Texture implements ITextureRegion, IResource {
 	}
 	
 	public void setTextureData(ByteBuffer pixels, int width, int height, int channels) throws InvalidFormatException {
+		if (width == 0 || height == 0)
+			throw new IllegalArgumentException("Texture size must be positive!");
+		
 		int format = getFormatFromChannels(channels);
 
 		int alignment = 4;
@@ -143,5 +146,10 @@ public class Texture implements ITextureRegion, IResource {
 	@Override
 	public void dispose() {
 		glDeleteTextures(texId);
+	}
+
+	@Override
+	public float getAspect() {
+		return (height == 0) ? 1.0f : ((float)width / height);
 	}
 }

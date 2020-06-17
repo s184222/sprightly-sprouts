@@ -38,6 +38,13 @@ public class TextureRegion implements ITextureRegion {
 	}
 
 	@Override
+	public float getAspect() {
+		float du = this.u1 - this.u0;
+		float dv = this.v1 - this.v0;
+		return texture.getAspect() * du / dv;
+	}
+	
+	@Override
 	public float getU0() {
 		return u0;
 	}

@@ -12,11 +12,13 @@ import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.system.MemoryUtil;
 
 import com.sprouts.graphic.buffer.VertexArray;
 import com.sprouts.graphic.buffer.VertexBuffer;
@@ -34,12 +36,17 @@ import com.sprouts.math.LinMath;
 import com.sprouts.math.Mat3;
 import com.sprouts.math.Mat4;
 import com.sprouts.math.Vec2;
+import com.sprouts.util.UnsafeUtil;
+
+import sun.misc.Unsafe;
 
 /**
  * @author Christian
  */
 public abstract class AbstractTessellator2D implements ITessellator2D, AutoCloseable {
 
+	private static final Unsafe UNSAFE = UnsafeUtil.getUnsafe();
+	
 	private static final byte WHITE_TEXTURE_INDEX = Byte.MIN_VALUE;
 	private static final int MAX_TEXTURE_COUNT = 32;
 	private static final int BATCH_VERTEX_COUNT = 3 * 200; /* 200 triangles */
@@ -64,7 +71,7 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 	protected final Mat3 transform;
 	
 	protected ClipShape clipShape;
-	protected ClippedTriangle[] triangleCache;
+	protected ClipTriangle[] triangleCache;
 	
 	public AbstractTessellator2D(Tessellator2DShader shader) {
 		if (shader == null)
@@ -293,41 +300,87 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 		
 		triangleCache = Arrays.copyOf(triangleCache, cacheSize);
 		for (int i = currentSize; i < cacheSize; i++)
-			triangleCache[i] = new ClippedTriangle();
+			triangleCache[i] = new ClipTriangle();
 	}
 	
 	private void clipAndTessellate(ClipPlane[] planes, int planeIndex) {
-		ClippedTriangle t = triangleCache[planeIndex];
+		ClipTriangle t = triangleCache[planeIndex];
 		
 		if (planeIndex >= planes.length) {
-			tessellateTriangle(t.x0, t.y0, t.u0, t.v0,
-			                   t.x1, t.y1, t.u1, t.v1,
-			                   t.x2, t.y2, t.u2, t.v2);
+			tessellateTriangle(t.v0.x, t.v0.y, t.v0.u, t.v0.v,
+			                   t.v1.x, t.v1.y, t.v1.u, t.v1.v,
+			                   t.v2.x, t.v2.y, t.v2.u, t.v2.v);
 		} else {
 			ClipPlane plane = planes[planeIndex];
-			if (plane.contains(t.x0, t.y0, Z_CLIP_OFFSET)) {
-				if (plane.contains(t.x1, t.y1, Z_CLIP_OFFSET)) {
-					if (plane.contains(t.x2, t.y2, Z_CLIP_OFFSET)) {
+			if (plane.contains(t.v0.x, t.v0.y, Z_CLIP_OFFSET)) {
+				if (plane.contains(t.v1.x, t.v1.y, Z_CLIP_OFFSET)) {
+					if (plane.contains(t.v2.x, t.v2.y, Z_CLIP_OFFSET)) {
 						triangleCache[planeIndex + 1].set(t);
 						clipAndTessellate(planes, planeIndex + 1);
 					} else {
-						// TODO: make this work, I dunno how yet....
+						clip2Inside(planes, planeIndex, t.v0, t.v1, t.v2);
 					}
-				} else if (plane.contains(t.x2, t.y2, Z_CLIP_OFFSET)) {
-					
 				} else {
-					
+					if (plane.contains(t.v2.x, t.v2.y, Z_CLIP_OFFSET)) {
+						clip2Inside(planes, planeIndex, t.v2, t.v0, t.v1);
+					} else {
+						clip2Outside(planes, planeIndex, t.v0, t.v1, t.v2);
+					}
 				}
-			} else if (plane.contains(t.x1, t.y1, Z_CLIP_OFFSET)) {
-				if (plane.contains(t.x2, t.y2, Z_CLIP_OFFSET)) {
-					
+			} else {
+				if (plane.contains(t.v1.x, t.v1.y, Z_CLIP_OFFSET)) {
+					if (plane.contains(t.v2.x, t.v2.y, Z_CLIP_OFFSET)) {
+						clip2Inside(planes, planeIndex, t.v1, t.v2, t.v0);
+					} else {
+						clip2Outside(planes, planeIndex, t.v1, t.v2, t.v0);
+					}
 				} else {
-					
+					if (plane.contains(t.v2.x, t.v2.y, Z_CLIP_OFFSET)) {
+						clip2Outside(planes, planeIndex, t.v2, t.v0, t.v1);
+					} else {
+						// Triangle is completely outside of the clip
+						// shape. Discard it completely.
+					}
 				}
-			} else if (plane.contains(t.x2, t.y2, Z_CLIP_OFFSET)) {
-				
 			}
 		}
+	}
+	
+	private void clip2Inside(ClipPlane[] planes, int planeIndex, ClipVertex in0, ClipVertex in1, ClipVertex out) {
+		ClipPlane plane = planes[planeIndex];
+		ClipTriangle t = triangleCache[planeIndex + 1];
+		
+		t.v0.set(in0);
+		interpolateClipVertex(plane, out, in1, t.v1);
+		interpolateClipVertex(plane, out, in0, t.v2);
+
+		clipAndTessellate(planes, planeIndex + 1);
+		
+		t.v2.set(t.v1);
+		t.v0.set(in0);
+		t.v1.set(in1);
+
+		clipAndTessellate(planes, planeIndex + 1);
+	}
+	
+	private void clip2Outside(ClipPlane[] planes, int planeIndex, ClipVertex in, ClipVertex out0, ClipVertex out1) {
+		ClipPlane plane = planes[planeIndex];
+		ClipTriangle t = triangleCache[planeIndex + 1];
+		
+		t.v0.set(in);
+		interpolateClipVertex(plane, out0, in, t.v1);
+		interpolateClipVertex(plane, out1, in, t.v2);
+
+		clipAndTessellate(planes, planeIndex + 1);
+	}
+
+	private void interpolateClipVertex(ClipPlane plane, ClipVertex out, ClipVertex in, ClipVertex result) {
+		float t = plane.intersect(out.x, out.y, Z_CLIP_OFFSET, in.x, in.y, Z_CLIP_OFFSET);
+		
+		result.x = out.x + (in.x - out.x) * t;
+		result.y = out.y + (in.y - out.y) * t;
+		result.u = out.u + (in.u - out.u) * t;
+		result.v = out.v + (in.v - out.v) * t;
 	}
 	
 	protected void tessellateTriangle(float x0, float y0, float u0, float v0, 
@@ -342,17 +395,46 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 	protected void tessellateVertex(float x, float y, float u, float v) {
 		VertexAttribBuilder builder = getBuilder();
 		
-		builder.put(x, y);
-		
-		VertexColor color = colorGradient.getColor(x, y, transform);
-		builder.put((byte)color.getRed());
-		builder.put((byte)color.getGreen());
-		builder.put((byte)color.getBlue());
-		builder.put((byte)color.getAlpha());
-		
-		builder.put(u, v);
-		
-		builder.put((byte)textureIndex);
+		builder.ensureCapacity(builder.getVertexSize());
+
+		ByteBuffer buffer = builder.getWritableBuffer();
+		if (UNSAFE != null && buffer.position() + 21 <= buffer.capacity()) {
+			// This is mostly an optimization, so the DirectByteBuffer
+			// from the java.nio package does not have to check bounds
+			// every time we want to put new data into the buffer. Note
+			// that we have the VertexAttribBuilder#ensureCapacity call
+			// and the extra bound check above to ensure that we do not
+			// perform an illegal memory access.
+			long address = MemoryUtil.memAddress(buffer);
+
+			UNSAFE.putFloat(address + 0, x);
+			UNSAFE.putFloat(address + 4, y);
+			
+			VertexColor color = colorGradient.getColor(x, y, transform);
+			UNSAFE.putByte(address + 8, (byte)color.getRed());
+			UNSAFE.putByte(address + 9, (byte)color.getGreen());
+			UNSAFE.putByte(address + 10, (byte)color.getBlue());
+			UNSAFE.putByte(address + 11, (byte)color.getAlpha());
+			
+			UNSAFE.putFloat(address + 12, u);
+			UNSAFE.putFloat(address + 16, v);
+
+			UNSAFE.putByte(address + 20, (byte)textureIndex);
+			
+			buffer.position(buffer.position() + 21);
+		} else {
+			builder.put(x, y);
+			
+			VertexColor color = colorGradient.getColor(x, y, transform);
+			builder.put((byte)color.getRed());
+			builder.put((byte)color.getGreen());
+			builder.put((byte)color.getBlue());
+			builder.put((byte)color.getAlpha());
+			
+			builder.put(u, v);
+			
+			builder.put((byte)textureIndex);
+		}
 	}
 	
 	protected abstract VertexAttribBuilder getBuilder();
@@ -446,7 +528,7 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 	public void clearClipShape() {
 		clipShape = null;
 		
-		triangleCache = new ClippedTriangle[0];
+		triangleCache = new ClipTriangle[0];
 	}
 
 	@Override
@@ -475,62 +557,57 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 		dispose();
 	}
 	
-	private class ClippedTriangle {
+	private static class ClipTriangle {
 
-		public float x0;
-		public float y0;
-		public float u0;
-		public float v0;
-
-		public float x1;
-		public float y1;
-		public float u1;
-		public float v1;
-
-		public float x2;
-		public float y2;
-		public float u2;
-		public float v2;
+		public ClipVertex v0;
+		public ClipVertex v1;
+		public ClipVertex v2;
 		
-		public ClippedTriangle() {
-			this(0.0f, 0.0f, 0.0f, 0.0f,
-			     0.0f, 0.0f, 0.0f, 0.0f,
-			     0.0f, 0.0f, 0.0f, 0.0f);
+		public ClipTriangle() {
+			v0 = new ClipVertex();
+			v1 = new ClipVertex();
+			v2 = new ClipVertex();
 		}
 		
-		public ClippedTriangle(float x0, float y0, float u0, float v0,
-		                       float x1, float y1, float u1, float v1,
-		                       float x2, float y2, float u2, float v2) {
-		
-			set(x0, y0, u0, v0,
-			    x1, y1, u1, v1,
-			    x2, y2, u2, v2);
-		}
-		
-		public void set(ClippedTriangle t) {
-			set(t.x0, t.y0, t.u0, t.v0,
-			    t.x1, t.y1, t.u1, t.v1,
-			    t.x2, t.y2, t.u2, t.v2);
+		public void set(ClipTriangle t) {
+			this.v0.set(t.v0);
+			this.v1.set(t.v1);
+			this.v2.set(t.v2);
 		}
 
 		public void set(float x0, float y0, float u0, float v0,
 		                float x1, float y1, float u1, float v1,
 		                float x2, float y2, float u2, float v2) {
 
-			this.x0 = x0;
-			this.y0 = y0;
-			this.u0 = u0;
-			this.v0 = v0;
-			
-			this.x1 = x1;
-			this.y1 = y1;
-			this.u1 = u1;
-			this.v1 = v1;
-			
-			this.x2 = x2;
-			this.y2 = y2;
-			this.u2 = u2;
-			this.v2 = v2;
+			this.v0.set(x0, y0, u0, v0);
+			this.v1.set(x1, y1, u1, v1);
+			this.v2.set(x2, y2, u2, v2);
+		}
+	}
+	
+	private static class ClipVertex {
+		
+		public float x;
+		public float y;
+		public float u;
+		public float v;
+
+		public ClipVertex() {
+			x = y = u = v = 0.0f;
+		}
+		
+		public void set(ClipVertex other) {
+			x = other.x;
+			y = other.y;
+			u = other.u;
+			v = other.v;
+		}
+		
+		public void set(float x, float y, float u, float v) {
+			this.x = x;
+			this.y = y;
+			this.u = u;
+			this.v = v;
 		}
 	}
 }
