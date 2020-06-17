@@ -356,9 +356,9 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 
 		clipAndTessellate(planes, planeIndex + 1);
 		
-		t.v2.set(t.v1);
-		t.v0.set(in0);
-		t.v1.set(in1);
+		t.v0.set(in1);
+		//t.v1.set(t.v1);
+		t.v2.set(in0);
 
 		clipAndTessellate(planes, planeIndex + 1);
 	}
