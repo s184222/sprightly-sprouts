@@ -32,9 +32,6 @@ public class ObjData implements IResource {
 	}
 	
 	public void drawBuffer() {
-		
-		System.out.println(numVertices);
-		
 		glActiveTexture(GL_TEXTURE0);
 		texture.bind();
 		

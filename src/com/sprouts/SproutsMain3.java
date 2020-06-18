@@ -78,6 +78,8 @@ public class SproutsMain3 {
 		arialFont = arialData.createFont(12);
 		
 		objShader = new BasicObjShader();
+		objShader.enable();
+		objShader.setTextureSampler(0);
 		
 		testObj = ObjLoader.loadObj("/models/Test.obj");
 		
@@ -86,8 +88,6 @@ public class SproutsMain3 {
 		testTexture = TextureLoader.loadTexture("/textures/Test.png");
 		
 		testObj.setTexture(testTexture);
-		
-		
 	}
 	
 	private void init() {
@@ -115,19 +115,16 @@ public class SproutsMain3 {
 		GL11.glViewport(0, 0, width, height);
 		
 		batchedTessellator2D.setViewport(0, 0, width, height);
-		
+	
 		objShader.enable();
-		
-		objShader.setTextureSampler(0);
-		
-		objShader.setProjMat(new Mat4().toPerspective((float)Math.toRadians(70.0f), (float)width / height, 0.01f, 1000.0f));
+		objShader.setProjMat(new Mat4().toPerspective((float)Math.toRadians(70.0), (float)width / height, 0.01f, 100.0f));
 	}
 	
 	private void loop() {
 		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 		onViewportChanged(display.getDisplaySize());
 
-		GL11.glDisable(GL11.GL_CULL_FACE);
+		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		
@@ -142,50 +139,23 @@ public class SproutsMain3 {
 		}
 	}
 	
+	private float rads;
+	
 	private void render() {
-		
 		objShader.enable();
-		
+
+		Mat4 viewMat = new Mat4();
+		viewMat.translate(0, 0, -5.0f);
+		viewMat.rotateY(rads += 0.01f);
+
 		Mat4 modlMat = new Mat4();
+		modlMat.translate(0.0f, 0.0f, 0.0f);
 		modlMat.scale(100.0f, 100.0f, 100.0f);
+		
+		objShader.setViewMat(viewMat);
 		objShader.setModlMat(modlMat);
 		
 		testObj.drawBuffer();
-		/*
-		batchedTessellator2D.beginBatch();
-		String text = "The quick brown fox jumps over the lazy dog 1234567890";
-		float tx = 200.0f;
-		float ty = 170.0f;
-		
-		TextBounds textBounds = arialFont.getTextBounds(text);
-		float x0 = tx + textBounds.x;
-		float y0 = ty + textBounds.y;
-		float x1 = x0 + textBounds.width;
-		float y1 = y0 + textBounds.height;
-
-		batchedTessellator2D.setColor(VertexColor.DARK_CYAN);
-		batchedTessellator2D.drawQuad(x0, y0, x1, y1);
-		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(x0, y0), VertexColor.BLACK, new Vec2(x1, y1), VertexColor.WHITE));
-		arialFont.drawString(batchedTessellator2D, text, tx, ty);
-		
-		batchedTessellator2D.translate(200.0f, 250.0f);
-		
-		batchedTessellator2D.setColorGradient(new LinearColorGradient2D(new Vec2(0.0f, 0.0f), VertexColor.WHITE, new Vec2(0.0f, 400.0f), VertexColor.PURPLE));
-		
-		batchedTessellator2D.setTextureRegion(spongeBobTexture);
-		batchedTessellator2D.drawQuad(0.0f, 0.0f, 400.0f, 400.0f);
-		batchedTessellator2D.clearTransform();
-		
-		batchedTessellator2D.clearMaterial();
-		batchedTessellator2D.setColor(VertexColor.BLUE_VIOLET);
-		batchedTessellator2D.drawLine(50.0f, 150.0f, 150.0f, 250.0f, 2.0f);
-		batchedTessellator2D.setColor(VertexColor.CHOCOLATE);
-		batchedTessellator2D.drawLine(150.0f, 150.0f, 50.0f, 250.0f, 2.0f);
-		
-		batchedTessellator2D.setColor(VertexColor.DARK_GOLDENROD);
-		batchedTessellator2D.drawTriangle(50.0f, 50.0f, 100.0f, 100.0f, 100.0f, 10.0f);
-		batchedTessellator2D.endBatch();
-		 */
 	}
 	
 	private void checkGLErrors() {
@@ -204,6 +174,6 @@ public class SproutsMain3 {
 	}
 
 	public static void main(String[] args) {
-		new SproutsMain().run();
+		new SproutsMain3().run();
 	}
 }
