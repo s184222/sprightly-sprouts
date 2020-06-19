@@ -18,7 +18,7 @@ public abstract class BasicPost implements IPost {
 	public BasicPost(VertexArray quad) {
 		this.quad = quad;
 
-		frameBuffer = new FrameBuffer(FrameBufferType.TEXTURE, 0, 0);
+		frameBuffer = new FrameBuffer(FrameBufferType.COLOR, 0, 0);
 	}
 	
 	@Override

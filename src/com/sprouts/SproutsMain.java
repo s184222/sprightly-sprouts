@@ -12,6 +12,7 @@ import static org.lwjgl.opengl.GL11.glCullFace;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glGetError;
 import static org.lwjgl.opengl.GL11.glViewport;
+import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 
 import java.io.IOException;
 
@@ -54,7 +55,8 @@ public class SproutsMain {
 	
 	private Texture menuBackground;
 	
-	private FrameBuffer frameBuffer;
+	private FrameBuffer targetFrameBuffer;
+	private FrameBuffer resolvedFrameBuffer;
 	private PostManager postManager;
 	
 	private Tessellator2DShader shader;
@@ -78,7 +80,8 @@ public class SproutsMain {
 		
 		menuBackground.dispose();
 
-		frameBuffer.dispose();
+		targetFrameBuffer.dispose();
+		resolvedFrameBuffer.dispose();
 		postManager.dispose();
 
 		shader.dispose();
@@ -110,7 +113,8 @@ public class SproutsMain {
 	private void loadResources() throws IOException {
 		menuBackground = TextureLoader.loadTexture("/textures/forest_background.png");
 		
-		frameBuffer = new FrameBuffer(FrameBufferType.DEPTH_AND_TEXTURE, 0, 0);
+		targetFrameBuffer = new FrameBuffer(FrameBufferType.MULTISAMPLED_DEPTH_AND_COLOR, 0, 0);
+		resolvedFrameBuffer = new FrameBuffer(FrameBufferType.DEPTH_AND_COLOR, 0, 0);
 		postManager = new PostManager();
 		
 		shader = new BasicTessellator2DShader();
@@ -128,7 +132,8 @@ public class SproutsMain {
 	}
 
 	private void onViewportChanged(int width, int height) {
-		frameBuffer.setSize(width, height);
+		targetFrameBuffer.setSize(width, height);
+		resolvedFrameBuffer.setSize(width, height);
 		postManager.setSize(width, height);
 		
 		tessellator.setViewport(0.0f, 0.0f, width, height);
@@ -142,6 +147,7 @@ public class SproutsMain {
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_MULTISAMPLE);
 		
 		running = true;
 		
@@ -160,20 +166,22 @@ public class SproutsMain {
 	}
 	
 	private void render() {
-		frameBuffer.bind();
+		targetFrameBuffer.bind();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		draw();
 		
-		frameBuffer.unbind();
-		postManager.process(frameBuffer);
+		targetFrameBuffer.unbind();
+		targetFrameBuffer.resolve(resolvedFrameBuffer);
+		
+		postManager.process(resolvedFrameBuffer);
 		
 		DisplaySize size = display.getDisplaySize();
 		glViewport(0, 0, size.width, size.height);
 		
 		tessellator.beginBatch();
 		tessellator.setColor(VertexColor.WHITE);
-		tessellator.setTextureRegion(frameBuffer.getColorTexture());
+		tessellator.setTextureRegion(resolvedFrameBuffer.getColorTexture());
 		tessellator.drawQuad(0, 0, size.width, size.height);
 		tessellator.endBatch();
 	}
@@ -193,6 +201,9 @@ public class SproutsMain {
 			
 			tessellator.endBatch();
 		}
+		
+		if (menu != null)
+			menu.drawBackground(tessellator);
 	}
 	
 	private void checkGLErrors() {
