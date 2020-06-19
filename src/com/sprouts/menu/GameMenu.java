@@ -16,24 +16,34 @@ import com.sprouts.graphic.font.Font;
 import com.sprouts.graphic.font.TextBounds;
 import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 import com.sprouts.graphic.tessellator2d.color.LinearColorGradient2D;
+import com.sprouts.math.LinMath;
 import com.sprouts.math.Vec2;
 
+import sprouts.ai.AbstractFacade;
+import sprouts.ai.player.Player;
+import sprouts.ai.player.RandomPlayer;
+import sprouts.game.Console;
+import sprouts.game.GraphicalFacade;
 import sprouts.game.model.Edge;
-import sprouts.game.model.GameFacade;
 import sprouts.game.model.Line;
 import sprouts.game.model.LineSegment;
 import sprouts.game.model.Position;
 import sprouts.game.model.Region;
 import sprouts.game.model.Sprout;
 import sprouts.game.model.Vertex;
-import sprouts.game.model.move.Triangle;
-import sprouts.game.model.move.generators.MovePathResult;
-import sprouts.game.model.move.generators.one.OneBoundaryMoveGeneratorData;
-import sprouts.game.model.move.two.TwoBoundaryMoveGeneratorData;
+import sprouts.game.move.IdMove;
+import sprouts.game.move.advanced.OneBoundaryMoveGeneratorData;
+import sprouts.game.move.advanced.TwoBoundaryMoveGeneratorData;
+import sprouts.game.move.pipe.MovePathResult;
+import sprouts.game.move.simple.SimpleMoveGeneratorData;
+import sprouts.game.move.triangles.Triangle;
+import sprouts.game.util.MathUtil;
 
 public class GameMenu extends SproutsMenu {
 
-	private final GameFacade facade;
+	private GraphicalFacade facadeG;
+	private AbstractFacade facadeA;
+	private Player ai;
 	
 	private final Font font;
 	
@@ -58,55 +68,37 @@ public class GameMenu extends SproutsMenu {
 	public GameMenu(SproutsMain main) {
 		super(main);
 		
-		facade = new GameFacade();
+		facadeG = new GraphicalFacade();
+		facadeA = new AbstractFacade();
+		facadeA.createFreshPosition(8);
+		facadeG.createFreshPosition(8);
+		ai = new RandomPlayer();
 
 		font = getResourceManager().createFont(56.0f);
 		
 		uiEvents();
-	}
-
-	/*
-	 * 			public void loop() {
+		
+		Console console = new Console() {
+			
+			@Override
+			public void loop() {
 				String rawMove = prompt("move:");
 				
-				MovePathResult result = facade.generateMove(rawMove);
+				MovePathResult result = facadeG.generateMove(rawMove);
 				
 				if (result != null) {
-					facade.executeLine(result.line);
-					
-					path = result.line;
-	
-					triangles = null;
-					twoBoundaryGraph = null;
-					oneBoundaryGraph = null;
-					slither = null;
-					wrapper =  null;
-					
-					switch (result.generatorType) {
-					case "oneBoundary":
-						OneBoundaryMoveGeneratorData data = (OneBoundaryMoveGeneratorData) result.customData;
-						
-						triangles = data.triangles;
-						oneBoundaryGraph = data.oneBoundaryGraph;
-						slither = data.slither;
-						wrapper = data.wrapper;
-						condense = data.condense;
-						
-						break;
-					case "twoBoundary":
-						TwoBoundaryMoveGeneratorData data = (TwoBoundaryMoveGeneratorData) result.customData;
-						
-						triangles = data.triangles;
-						twoBoundaryGraph = data.twoBoundaryGraph;
-						
-						break;
-					default:
-						throw new IllegalStateException("unknown generator type: " +  result.generatorType);
-					}
+					String move = facadeG.executeLine(result.line);
+					//facadeA.makeMove(move);
 				}
+
+				saveDebug(result);
+				
 			}
-	 */
-	
+		};
+		
+		console.start();
+	}
+
 	private void uiEvents() {
 		addMouseEventListener(new IMouseEventListener() {
 			@Override
@@ -115,12 +107,12 @@ public class GameMenu extends SproutsMenu {
 			
 			@Override
 			public void mouseReleased(MouseEvent event) {
-				facade.touchUp(event.getX(), event.getY());
+				facadeG.touchUp(event.getX(), event.getY());
 			}
 			
 			@Override
 			public void mousePressed(MouseEvent event) {
-				facade.touchDown(event.getX(), event.getY());
+				facadeG.touchDown(event.getX(), event.getY());
 			}
 			
 			@Override
@@ -139,7 +131,7 @@ public class GameMenu extends SproutsMenu {
 			
 			@Override
 			public void mouseDragged(MouseEvent event) {
-				facade.touchDragged(event.getX(), event.getY());
+				facadeG.touchDragged(event.getX(), event.getY());
 			}
 		});
 		
@@ -158,20 +150,53 @@ public class GameMenu extends SproutsMenu {
 			
 			@Override
 			public void keyPressed(KeyEvent event) {
+				
 				switch (event.getKeyCode()) {
-				case GLFW.GLFW_KEY_F1:
+				case GLFW.GLFW_KEY_R: {
+					facadeG = new GraphicalFacade();
+					break;
+				}
+				
+				case GLFW.GLFW_KEY_F1: {
 					drawPath = !drawPath;
 					break;
-				case GLFW.GLFW_KEY_H:
-					facade.printHistoryTestCode();
+				}
+				
+				case GLFW.GLFW_KEY_H: {
+					facadeG.printHistoryTestCode();
 					break;
-				case GLFW.GLFW_KEY_S:
-					Position position = facade.getPosition();
-					for (Region region : position.getRegions())
+				}
+				
+				case GLFW.GLFW_KEY_S: {
+					Position position = facadeG.getPosition();
+					for (Region region : position.getRegions()) {
 						region.verbose();
+					}
 			
 					break;
 				}
+				
+				case GLFW.GLFW_KEY_A: {
+					System.out.printf("thinking...\n");
+					IdMove move = ai.getMove(facadeA.getPosition());
+					System.out.printf("ai: %s\n", move.toString());
+					
+					MovePathResult result = facadeG.generateMove(move.toString());
+					facadeG.executeLine(result.line);
+					facadeA.makeMove(move.toString());
+					
+					//saveDebug(result);
+
+					//facadeA.printLives();
+					//facadeG.printLives();
+					
+					if (facadeG.isGameOver()) System.out.printf("game over\n");
+			
+					break;
+				}
+				}
+				
+				
 			}
 		});
 	}
@@ -184,7 +209,8 @@ public class GameMenu extends SproutsMenu {
 	public void drawBackground(BatchedTessellator2D tessellator) {
 		tessellator.beginBatch();
 		
-		Position position = facade.getPosition();
+		Position position = facadeG.getPosition();
+		//tessellator.scale(1.7f, 3f);
 		
 		if (drawTriangles) {
 			if (triangles != null) {
@@ -216,7 +242,7 @@ public class GameMenu extends SproutsMenu {
 					mouseVertex.x = mouseX;
 					mouseVertex.y = mouseY;
 					
-					if (GameFacade.isPointInPolygon(mouseVertex, triangle.getCorners())) {
+					if (LinMath.isPointInPolygon(mouseVertex, triangle.getCorners())) {
 						selected = triangle;
 						break;
 					}
@@ -286,7 +312,7 @@ public class GameMenu extends SproutsMenu {
 
 			if (slither != null) {
 
-				tessellator.setColor(VertexColor.ORANGE);
+				tessellator.setColor(VertexColor.WHITE);
 				for (Triangle triangle : slither) {
 					
 					float width = 2;
@@ -313,10 +339,11 @@ public class GameMenu extends SproutsMenu {
 					tessellator.drawLine(c1.x, c1.y, c2.x, c2.y, width);
 				}
 			}
-			
+			//4<,4<,[0,1,7]			
 			if (wrapper != null) {
-				tessellator.setColor(VertexColor.PURPLE);
-				for (Triangle triangle : wrapper) {
+				for (int i = 0; i < wrapper.size(); i++) {
+					tessellator.setColor(new VertexColor(1f, 1f /  wrapper.size() * i, 0f));
+					Triangle triangle = wrapper.get(i);
 					Vertex p1 = triangle.getP1();
 					Vertex p2 = triangle.getP2();
 					Vertex p3 = triangle.getP3();
@@ -369,6 +396,25 @@ public class GameMenu extends SproutsMenu {
 			}
 		}
 		
+		if (slither != null) {
+
+			tessellator.setColor(VertexColor.WHITE);
+			for (int i = 0; i < slither.size() - 1; i++) {
+				Triangle t1 = slither.get(i);
+				
+				Vertex[] corners = t1.getCorners();
+				for (int j = 0; j < corners.length; j++) {
+					Vertex v0 = corners[j];
+					Vertex v1 = corners[MathUtil.wrap(j+1, 3)];
+					
+					LineSegment s = new LineSegment(v0, v1);
+					Vertex c1 = s.getMiddle();
+					float width = 3;
+					tessellator.drawQuad(c1.x-width, c1.y-width, c1.x+width, c1.y+width);
+				}
+			}
+		}
+		
 		if (drawTwoGraph) {
 			if (twoBoundaryGraph != null) {
 				tessellator.setColor(VertexColor.BROWN);
@@ -390,7 +436,7 @@ public class GameMenu extends SproutsMenu {
 		List<Sprout> sprouts = position.getSprouts();
 		
 		for (Sprout sprout : sprouts) {
-			float size = facade.sproutRadius * 2f;
+			float size = facadeG.sproutRadius * 2f;
 
 			float x0 = sprout.position.x - size / 2f;
 			float y0 = sprout.position.y - size / 2f;
@@ -444,20 +490,41 @@ public class GameMenu extends SproutsMenu {
 		
 		if (drawPath) {
 			if (path != null) {
-				tessellator.setColor(VertexColor.GREEN);
 				
 				for (int i = 0; i < path.size() - 1; i++) {
+					float red = 1f / path.size() * i;
+					tessellator.setColor(new VertexColor(red, 0f, 0f));
+					
 					float width = 3;
 					Vertex v0 = path.get(i);
 					Vertex v1 = path.get(i+1);
 					tessellator.drawLine(v0.x, v0.y, v1.x, v1.y, width);
 				}
+				
+				/*
+				Vertex v0 = path.get(0);
+				Vertex v1 = path.get(1);
+				Vertex v2 = path.get(7);
+				Vertex v3 = path.get(8);
+				
+				float width = 4;
+				
+						//boolean in = LinMath.intersect(v0.x,v0.y,v1.x,v1.y,v2.x,v2.y,v3.x,v3.y);
+						//System.out.printf("%b\n", in);
+				
+				tessellator.setColor(new VertexColor(0f, 0f, 1f));
+				tessellator.drawLine(v0.x, v0.y, v1.x, v1.y, width);
+				tessellator.setColor(new VertexColor(0, 1f, 0));
+				tessellator.drawLine(v2.x, v2.y, v3.x, v3.y, width);
+				*/
 			}
+			
+	
 		}
 		
 		tessellator.setColor(VertexColor.ORANGE);
 		
-		Line currentLine = facade.currentLine;
+		Line currentLine = facadeG.currentLine;
 		
 		for (int i = 0; i < currentLine.size() - 1; i++) {
 			Vertex v0 = currentLine.get(i);
@@ -478,16 +545,32 @@ public class GameMenu extends SproutsMenu {
 			Vertex v1 = currentLine.getLast();
 			float x1 = v1.x;
 			float y1 = v1.y;
+			float x2 = mouseX;
+			float y2 = mouseY;
 
 			float width = 2;
 
-			tessellator.drawLine(x1, y1, mouseX, mouseY, width);
+			tessellator.drawLine(x1, y1, x2, y2, width);
+		}
+		
+		tessellator.setColor(VertexColor.YELLOW);
+
+		for (Sprout sprout : sprouts) {
+			String id = String.format("%d", sprout.id);
+			
+			TextBounds textBounds = font.getTextBounds(id);
+			
+			float x = sprout.position.x - (textBounds.width - textBounds.x) / 2f;
+			float y = sprout.position.y + (textBounds.height - textBounds.y) / 2f;
+			y = sprout.position.y;
+			
+			
+			font.drawString(tessellator, id, x, y);
 		}
 		
 		if (drawEdgeIndices) {
-			Vec2 rotater = new Vec2();
-
 			tessellator.setColor(VertexColor.BLACK);
+			Vec2 rotater = new Vec2();
 
 			for (Edge edge : position.getEdges()) {
 				float rotate = 90;
@@ -508,25 +591,59 @@ public class GameMenu extends SproutsMenu {
 				String edgeId = String.format("%d", edge.id);
 				TextBounds textBounds = font.getTextBounds(edgeId);
 
-				float x = pos.x - textBounds.width / 2.0f - textBounds.x;
-				float y = pos.y - textBounds.height / 2.0f - textBounds.y;
+				float x = pos.x;
+				float y = pos.y;
 				
 				font.drawString(tessellator, edgeId, x, y);
 			}
 		}
 		
-		tessellator.setColor(VertexColor.BLACK);
-		for (Sprout sprout : sprouts) {
-			String id = String.format("%d", sprout.id);
-			
-			TextBounds textBounds = font.getTextBounds(id);
-			
-			float x = sprout.position.x - textBounds.width / 2.0f - textBounds.x;
-			float y = sprout.position.y - textBounds.height / 2.0f - textBounds.y;
-			
-			font.drawString(tessellator, id, x, y);
-		}
-		
 		tessellator.endBatch();
+	}
+	
+	private void saveDebug(MovePathResult result) {
+		if (result != null) {
+			
+			path = result.line;
+
+			triangles = null;
+			twoBoundaryGraph = null;
+			oneBoundaryGraph = null;
+			slither = null;
+			wrapper =  null;
+			
+			switch (result.generatorType) {
+			case "oneBoundary": {
+				OneBoundaryMoveGeneratorData data = (OneBoundaryMoveGeneratorData) result.customData;
+				
+				triangles = data.triangles;
+				oneBoundaryGraph = data.oneBoundaryGraph;
+				slither = data.slither;
+				wrapper = data.wrapper;
+				condense = data.condense;
+				
+				break;
+			}
+			case "twoBoundary": {
+				TwoBoundaryMoveGeneratorData data = (TwoBoundaryMoveGeneratorData) result.customData;
+				
+				triangles = data.triangles;
+				twoBoundaryGraph = data.twoBoundaryGraph;
+				
+				break;
+			}
+			case "simple": {
+				SimpleMoveGeneratorData data = (SimpleMoveGeneratorData) result.customData;
+				
+				triangles = data.triangles;
+				twoBoundaryGraph = data.twoBoundaryGraph;
+				
+				break;
+			}
+			default: {
+				throw new IllegalStateException("unknown generator type: " +  result.generatorType);
+			}
+			}
+		}
 	}
 }
