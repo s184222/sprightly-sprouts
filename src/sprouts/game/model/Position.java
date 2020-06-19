@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import sprouts.game.model.move.RawMove;
+import com.sprouts.math.LinMath;
+
+import sprouts.game.Trig;
+import sprouts.game.UidGenerator;
+import sprouts.game.move.IdMove;
+import sprouts.game.util.Assert;
 
 public class Position {
 	
@@ -129,7 +134,7 @@ public class Position {
 		return outerRectangle.getCorners();
 	}
 	
-	public RawMove update(Line line) {
+	public IdMove update(Line line) {
 		Line lineWithMiddle = new Line();
 		lineWithMiddle.addAll(line);
 		lineWithMiddle.addMiddlePoint();
@@ -143,16 +148,16 @@ public class Position {
 		Region region = getLineRegion(lineWithMiddle);
 		
 		if (region.isInSameBoundary(from, to)) {
-			RawMove move = getOneBoundaryMove(from, to, region, lineWithMiddle);
+			IdMove move = getOneBoundaryMove(from, to, region, lineWithMiddle);
 			return move;
 		} else {
-			RawMove move = getTwoBoundaryMove(from, to, region, lineWithMiddle);
+			IdMove move = getTwoBoundaryMove(from, to, region, lineWithMiddle);
 			return move;
 		}
 	}
 	
-	private RawMove getTwoBoundaryMove(Sprout from, Sprout to, Region region, Line line) {
-		RawMove move = new RawMove();
+	private IdMove getTwoBoundaryMove(Sprout from, Sprout to, Region region, Line line) {
+		IdMove move = new IdMove();
 		move.fromId = from.id;
 		move.toId = to.id;
 		
@@ -162,7 +167,7 @@ public class Position {
 		boolean isFromSoloSprout = region.isInnerSprout(from);
 		boolean isToSoloSprout = region.isInnerSprout(to);
 		
-		Util.require(!isFromOuterBoundary || !isToOuterBoundary, "broken! both are in the outer boundary. A 1 boundary move should had be executed instead.");
+		Assert.that(!isFromOuterBoundary || !isToOuterBoundary, "broken! both are in the outer boundary. A 1 boundary move should had be executed instead.");
 		
 		solidifyVertices(line);
 		
@@ -239,8 +244,8 @@ public class Position {
 	 * 
 	 */
 	
-	private RawMove getOneBoundaryMove(Sprout from, Sprout to, Region region, Line line) {
-		RawMove move = new RawMove();
+	private IdMove getOneBoundaryMove(Sprout from, Sprout to, Region region, Line line) {
+		IdMove move = new IdMove();
 		move.fromId = from.id;
 		move.toId = to.id;
 			
@@ -358,7 +363,7 @@ public class Position {
 		for (Edge inner : region.innerBoundaries) {
 			if (newRegionOuterSprouts.contains(inner.origin))	continue;
 			
-			if (GraphicalFacade.isPointInPolygon(inner.origin.position, newRegionOuterBoundary)) {
+			if (LinMath.isPointInPolygon(inner.origin.position, newRegionOuterBoundary)) {
 				inner.setBoundaryRegion(newRegion);
 				transferredBoundaries.add(inner);
 			}
@@ -366,7 +371,7 @@ public class Position {
 
 		ArrayList<Sprout> transferredSprouts = new ArrayList<>();
 		for (Sprout innerSprout : region.innerSprouts) {
-			if (GraphicalFacade.isPointInPolygon(innerSprout.position, newRegionOuterBoundary)) {
+			if (LinMath.isPointInPolygon(innerSprout.position, newRegionOuterBoundary)) {
 				transferredSprouts.add(innerSprout);
 			}
 		}
@@ -402,7 +407,7 @@ public class Position {
 		}
 	}
 
-	private void addInnerToMove(RawMove move, Region region) {
+	private void addInnerToMove(IdMove move, Region region) {
 		for (Edge innerBoundary : region.innerBoundaries) {
 			
 			// the canonization uses the the lowest id.

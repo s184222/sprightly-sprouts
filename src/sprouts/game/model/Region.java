@@ -3,6 +3,13 @@ package sprouts.game.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import sprouts.game.util.Assert;
+
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
 public class Region {
 	
 	public Edge outerBoundary;
@@ -49,7 +56,7 @@ public class Region {
 			if (representative.isOuterBoundary()) {
 				outerBoundary = null;
 			} else {
-				Util.require(innerBoundaries.contains(representative));
+				Assert.that(innerBoundaries.contains(representative));
 				innerBoundaries.remove(representative);
 			}
 

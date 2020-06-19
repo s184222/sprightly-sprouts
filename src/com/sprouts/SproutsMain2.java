@@ -33,24 +33,25 @@ import com.sprouts.math.LinMath;
 import com.sprouts.math.Vec2;
 import com.sprouts.util.LibUtil;
 
-import sprouts.game.ai.AbstractFacade;
-import sprouts.game.ai.player.Player;
-import sprouts.game.ai.player.RandomPlayer;
-import sprouts.game.model.Console;
+import sprouts.ai.AbstractFacade;
+import sprouts.ai.player.Player;
+import sprouts.ai.player.RandomPlayer;
+import sprouts.game.Console;
+import sprouts.game.GraphicalFacade;
 import sprouts.game.model.Edge;
-import sprouts.game.model.GraphicalFacade;
 import sprouts.game.model.Line;
 import sprouts.game.model.LineSegment;
-import sprouts.game.model.MathUtil;
 import sprouts.game.model.Position;
 import sprouts.game.model.Region;
 import sprouts.game.model.Sprout;
 import sprouts.game.model.Vertex;
-import sprouts.game.model.move.RawMove;
-import sprouts.game.model.move.Triangle;
-import sprouts.game.model.move.generators.MovePathResult;
-import sprouts.game.model.move.generators.one.OneBoundaryMoveGeneratorData;
-import sprouts.game.model.move.generators.two.TwoBoundaryMoveGeneratorData;
+import sprouts.game.move.IdMove;
+import sprouts.game.move.advanced.OneBoundaryMoveGeneratorData;
+import sprouts.game.move.advanced.TwoBoundaryMoveGeneratorData;
+import sprouts.game.move.pipe.MovePathResult;
+import sprouts.game.move.simple.SimpleMoveGeneratorData;
+import sprouts.game.move.triangles.Triangle;
+import sprouts.game.util.MathUtil;
 
 public class SproutsMain2 {
 
@@ -87,7 +88,7 @@ public class SproutsMain2 {
 	private boolean drawTriangles = true;
 	private boolean showLineOrientation = false;
 	private boolean drawPath = true;
-	private boolean drawOneGraph = false;
+	private boolean drawOneGraph = true;
 	private boolean drawTwoGraph = true;
 	
 	public SproutsMain2() {
@@ -203,11 +204,11 @@ public class SproutsMain2 {
 				
 				case GLFW.GLFW_KEY_A: {
 					System.out.printf("thinking...\n");
-					RawMove move = ai.getMove(facadeA.getPosition());
+					IdMove move = ai.getMove(facadeA.getPosition());
 					System.out.printf("ai: %s\n", move.toString());
 					
-					MovePathResult result = facadeG.executeMoveWithResult(move.toString());
-
+					MovePathResult result = facadeG.generateMove(move.toString());
+					facadeG.executeLine(result.line);
 					facadeA.makeMove(move.toString());
 					
 					//saveDebug(result);
@@ -237,8 +238,10 @@ public class SproutsMain2 {
 				
 				MovePathResult result = facadeG.generateMove(rawMove);
 				
-				String move = facadeG.executeLine(result.line);
-				//facadeA.makeMove(move);
+				if (result != null) {
+					String move = facadeG.executeLine(result.line);
+					//facadeA.makeMove(move);
+				}
 
 				saveDebug(result);
 				
@@ -280,7 +283,14 @@ public class SproutsMain2 {
 				
 				break;
 			}
-			
+			case "simple": {
+				SimpleMoveGeneratorData data = (SimpleMoveGeneratorData) result.customData;
+				
+				triangles = data.triangles;
+				twoBoundaryGraph = data.twoBoundaryGraph;
+				
+				break;
+			}
 			default: {
 				throw new IllegalStateException("unknown generator type: " +  result.generatorType);
 			}
@@ -385,7 +395,7 @@ public class SproutsMain2 {
 					mouseVertex.x = mouse.getMouseX();
 					mouseVertex.y = mouse.getMouseY();
 					
-					if (GraphicalFacade.isPointInPolygon(mouseVertex, triangle.getCorners())) {
+					if (LinMath.isPointInPolygon(mouseVertex, triangle.getCorners())) {
 						selected = triangle;
 						break;
 					}
@@ -455,7 +465,7 @@ public class SproutsMain2 {
 
 			if (slither != null) {
 
-				batchedTessellator2D.setColor(VertexColor.ORANGE);
+				batchedTessellator2D.setColor(VertexColor.WHITE);
 				for (Triangle triangle : slither) {
 					
 					float width = 2;
@@ -482,10 +492,11 @@ public class SproutsMain2 {
 					batchedTessellator2D.drawLine(c1.x, c1.y, c2.x, c2.y, width);
 				}
 			}
-			
+			//4<,4<,[0,1,7]			
 			if (wrapper != null) {
-				batchedTessellator2D.setColor(VertexColor.PURPLE);
-				for (Triangle triangle : wrapper) {
+				for (int i = 0; i < wrapper.size(); i++) {
+					batchedTessellator2D.setColor(new VertexColor(1f, 1f /  wrapper.size() * i, 0f));
+					Triangle triangle = wrapper.get(i);
 					Vertex p1 = triangle.getP1();
 					Vertex p2 = triangle.getP2();
 					Vertex p3 = triangle.getP3();

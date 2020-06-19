@@ -6,6 +6,9 @@ import java.util.Iterator;
 
 import com.sprouts.math.LinMath;
 
+import sprouts.game.util.MathUtil;
+import sprouts.game.util.Assert;
+
 public class Line extends ArrayList<Vertex> {
 	
 	public Vertex getFirst() {
@@ -37,7 +40,7 @@ public class Line extends ArrayList<Vertex> {
 	}
 	
 	public Line[] splitMiddle() {
-		Util.require(size() >= 3);
+		Assert.that(size() >= 3);
 		
 		float closest = Float.MAX_VALUE;
 		int centerIndex = -1;
@@ -163,7 +166,7 @@ public class Line extends ArrayList<Vertex> {
 	
 	public void append(Line line) {
 		if (size() > 0) {
-			Util.require(getLast().equals(line.getFirst()));
+			Assert.that(getLast().equals(line.getFirst()));
 			removeLast();
 		}
 		

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import com.sprouts.math.LinMath;
+
 public class Edge {
 	
 	public Sprout origin;
@@ -86,6 +88,10 @@ public class Edge {
 		return line;
 	}
 	
+	private class IntRef {
+		public int value;
+	}
+	
 	public int getBoundaryLives() {
 		List<Sprout> sprouts = getBoundarySprouts();
 		IntRef lives = new IntRef();
@@ -98,7 +104,7 @@ public class Edge {
 	
 	public boolean isInsideBoundary(Vertex point) {
 		ArrayList<Vertex> boundaryLine = getBoundaryLine();
-		if (GraphicalFacade.isPointInPolygon(point, boundaryLine)) return true;
+		if (LinMath.isPointInPolygon(point, boundaryLine)) return true;
 		return false;
 	}
 	

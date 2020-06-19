@@ -1,7 +1,7 @@
 package sprouts.tests;
 
 import junit.framework.TestCase;
-import sprouts.game.model.GraphicalFacade;
+import sprouts.game.GraphicalFacade;
 import sprouts.game.model.Line;
 import sprouts.game.model.Vertex;
 
@@ -9,6 +9,7 @@ public class Test extends TestCase {
 	
 	public void test1() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
 		
 		String move0 = facade.executeMove("1<,2<");
 		assertEquals("1<,2<,[]", move0);
@@ -61,6 +62,7 @@ public class Test extends TestCase {
 	
 	public void test2() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
 		
 		String move0 = facade.executeMove("1<,2<");
 		assertEquals("1<,2<,[]", move0);
@@ -110,7 +112,8 @@ public class Test extends TestCase {
 	
 	public void test3() {
 		GraphicalFacade facade = new GraphicalFacade();
-
+		facade.createFreshPosition(8, 320, 240, 150);
+		
 		String move0 = facade.executeMove("1<,2<");
 		assertEquals("1<,2<,[]", move0);
 		
@@ -146,6 +149,7 @@ public class Test extends TestCase {
 	
 	public void test4() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
 		
 		String move0 = facade.executeMove("1<,2<");
 		assertEquals("1<,2<,[]", move0);
@@ -180,6 +184,7 @@ public class Test extends TestCase {
 	
 	public void test5() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
 		
 		Line line0 = new Line();
 		line0.add(new Vertex(213.93399f,346.066f));
@@ -202,7 +207,8 @@ public class Test extends TestCase {
 	
 	public void test6() {
 		GraphicalFacade facade = new GraphicalFacade();
-
+		facade.createFreshPosition(8, 320, 240, 150);
+		
 		Line line0 = new Line();
 		line0.add(new Vertex(213.93399f,346.066f));
 		line0.add(new Vertex(232.80003f,329.59998f));
@@ -240,6 +246,7 @@ public class Test extends TestCase {
 	
 	public void test7() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
 		
 		Line line0 = new Line();
 		line0.add(new Vertex(320.0f,390.0f));
@@ -257,8 +264,8 @@ public class Test extends TestCase {
 	}
 	
 	public void test8() {
-
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
 
 		Line line0 = new Line();
 		line0.add(new Vertex(213.93399f,346.066f));
@@ -318,6 +325,7 @@ public class Test extends TestCase {
 	
 	public void test9() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
 		
 		Line line0 = new Line();
 		line0.add(new Vertex(320.0f,390.0f));
@@ -366,7 +374,8 @@ public class Test extends TestCase {
 	
 	public void test10() {
 		GraphicalFacade facade = new GraphicalFacade();
-
+		facade.createFreshPosition(8, 320, 240, 150);
+		
 		Line line0 = new Line();
 		line0.add(new Vertex(213.93398f,133.93399f));
 		line0.add(new Vertex(224.00003f,159.19998f));
@@ -424,6 +433,8 @@ public class Test extends TestCase {
 	
 	public void test11() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
+		
 		facade.executeMove("0<,0<,[1,2]");
 
 		facade.executeMove("0<,8<,[1,2]!");
@@ -431,6 +442,8 @@ public class Test extends TestCase {
 	
 	public void test12() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
+		
 		facade.executeMove("0<,0<,[1,2]");
 
 		facade.executeMove("0<,8<,[3,4,5,6,7]!");
@@ -438,6 +451,8 @@ public class Test extends TestCase {
 	
 	public void test13() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
+		
 		facade.executeMove("0<,0<,[1,2]");
 
 		facade.executeMove("0<,8<,[3]!");
@@ -445,6 +460,8 @@ public class Test extends TestCase {
 	
 	public void test14() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
+		
 		facade.executeMove("0<,0<");
 
 		facade.executeMove("8<,0<,[]!");
@@ -452,6 +469,8 @@ public class Test extends TestCase {
 	
 	public void test15() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
+		
 		facade.executeMove("0<,0<");
 
 		facade.executeMove("8<,0<,[1]!");
@@ -459,6 +478,8 @@ public class Test extends TestCase {
 	
 	public void test16() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
+		
 		facade.executeMove("0<,0<,[1,2,3,4,5,6,7]");
 
 		facade.executeMove("0<,8<,[1]!");
@@ -466,6 +487,8 @@ public class Test extends TestCase {
 	
 	public void test17() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
+		
 		facade.executeMove("0<,0<,[1,2,3,4,5,6,7]");
 
 		facade.executeMove("0<,8<,[]!");
@@ -473,6 +496,7 @@ public class Test extends TestCase {
 	
 	public void test18() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
 
 		Line line0 = new Line();
 		line0.add(new Vertex(320.0f,390.0f));
@@ -610,6 +634,7 @@ public class Test extends TestCase {
 	
 	public void test19() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
 		
 		facade.executeMove("2<,2<,[3,4]");
 		facade.executeMove("8<,6<,[]");
@@ -622,6 +647,7 @@ public class Test extends TestCase {
 	
 	public void test20() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
 
 		Line line0 = new Line();
 		line0.add(new Vertex(426.066f,346.066f));
@@ -692,6 +718,7 @@ public class Test extends TestCase {
 	
 	public void test21() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
 		
 		Line line0 = new Line();
 		line0.add(new Vertex(213.93399f,346.066f));
@@ -754,6 +781,7 @@ public class Test extends TestCase {
 	
 	public void test22() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
 
 		String move0 = facade.executeMove("2<,3<");
 		assertEquals("2<,3<,[]", move0);
@@ -795,6 +823,7 @@ public class Test extends TestCase {
 	
 	public void test23() {
 		GraphicalFacade facade = new GraphicalFacade();
+		facade.createFreshPosition(8, 320, 240, 150);
 		
 		Line line0 = new Line();
 		line0.add(new Vertex(320.0f,390.0f));

@@ -3,10 +3,11 @@ package com.sprouts.math;
 import java.util.ArrayList;
 import java.util.List;
 
+import sprouts.game.model.Vertex;
+
 public final class LinMath {
 	
 	public static final float EPSILON = 0.01f;
-	public static float EPSILON_INTERSECT = 0.0001f;
 	
 	private LinMath() {
 	}
@@ -57,41 +58,6 @@ public final class LinMath {
 		double c2 = a2 * x2 + b2 * y2;
 		double divisor = a1 * b2 - a2 * b1;
 
-		if (Math.abs(divisor) < EPSILON * EPSILON) {
-			return false; // if divide == 0 it means the lines are parallel
-		}
-
-		double x = (b2 * c1 - b1 * c2) / divisor;
-		double y = (a1 * c2 - a2 * c1) / divisor;
-		double ratiox1 = (x - x0) / (x1 - x0);
-		double ratioy1 = (y - y0) / (y1 - y0);
-		double ratiox2 = (x - x2) / (x3 - x2);
-		double ratioy2 = (y - y2) / (y3 - y2);
-		
-//		System.out.println(ratiox1 + " " + ratioy1 + " " + ratiox2 + " " + ratioy2 + " " + x + " " + y + " " + x1 + " " + y1 + " " + EPSILON);
-		if (((ratiox1 >= 0-EPSILON_INTERSECT && ratiox1 <= 1+EPSILON_INTERSECT) || (ratioy1 >= 0-EPSILON_INTERSECT && ratioy1 <= 1+EPSILON_INTERSECT)) && 
-				((ratiox2 >= 0-EPSILON_INTERSECT && ratiox2 <= 1+EPSILON_INTERSECT) || (ratioy2 >= 0-EPSILON_INTERSECT && ratioy2 <= 1+EPSILON_INTERSECT))){
-			if (intersection != null) intersection.set((float)x, (float)y);
-			return true;
-			
-		}
-		
-		return false;
-	}
-	
-	public static boolean intersect2(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3) {
-		return intersect(x0, y0, x1, y1, x2, y2, x3, y3, null);
-	}
-
-	public static boolean intersect2(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3, Vec2 intersection) {
-		double a1 = y1 - y0;
-		double b1 = x0 - x1;
-		double c1 = a1 * x1 + b1 * y1;
-		double a2 = y3 - y2;
-		double b2 = x2 - x3;
-		double c2 = a2 * x2 + b2 * y2;
-		double divisor = a1 * b2 - a2 * b1;
-
 		if (Math.abs(divisor) <= EPSILON * EPSILON) {
 			return false; // if divide == 0 it means the lines are parallel
 		}
@@ -103,19 +69,14 @@ public final class LinMath {
 		double ratiox2 = (x - x2) / (x3 - x2);
 		double ratioy2 = (y - y2) / (y3 - y2);
 		
-		EPSILON_INTERSECT = 0.0001f;
-		
 //		System.out.println(ratiox1 + " " + ratioy1 + " " + ratiox2 + " " + ratioy2 + " " + x + " " + y + " " + x1 + " " + y1 + " " + EPSILON);
-		if (((ratiox1 >= 0-EPSILON_INTERSECT && ratiox1 <= 1+EPSILON_INTERSECT) || (ratioy1 >= 0-EPSILON_INTERSECT && ratioy1 <= 1+EPSILON_INTERSECT)) && 
-				((ratiox2 >= 0-EPSILON_INTERSECT && ratiox2 <= 1+EPSILON_INTERSECT) || (ratioy2 >= 0-EPSILON_INTERSECT && ratioy2 <= 1+EPSILON_INTERSECT))){
+		if (((ratiox1 >= 0 && ratiox1 <= 1) || (ratioy1 >= 0 && ratioy1 <= 1)) && 
+				((ratiox2 >= 0 && ratiox2 <= 1) || (ratioy2 >= 0 && ratioy2 <= 1))){
 			if (intersection != null) intersection.set((float)x, (float)y);
-			EPSILON_INTERSECT = 0;
 			
 			return true;
 			
 		}
-		EPSILON_INTERSECT = 0;
-		
 		
 		return false;
 	}
@@ -210,4 +171,42 @@ public final class LinMath {
 //		System.out.println(LinMath.contains(list,new Vec2(4,2)));
 //		System.out.println(intersect(new Vec2(0,0),new Vec2(3,3),new Vec2(2,3),new Vec2(4,3),false,true));
 //	}
+	
+	// @TODO: refactor	// @HACK
+	/*
+	public static boolean isPointInPolygon(Vertex point, List<Vertex> vertices) {
+		List<Vec2> outer = new ArrayList<>();
+		for (Vertex vertex : vertices) outer.add(new Vec2(vertex.x, vertex.y));
+		Vec2 point2 = new Vec2(point.x, point.y);
+		return LinMath.contains(outer, point2);
+	}
+	*/
+	
+	public static boolean isPointInPolygon (Vertex point, List<Vertex> polygon) {
+		Vertex last = polygon.get(polygon.size()-1);
+		float x = point.x, y = point.y;
+		boolean oddNodes = false;
+		for (int i = 0; i < polygon.size(); i++) {
+			Vertex vertex = polygon.get(i);
+			if ((vertex.y < y && last.y >= y) || (last.y < y && vertex.y >= y)) {
+				if (vertex.x + (y - vertex.y) / (last.y - vertex.y) * (last.x - vertex.x) < x) oddNodes = !oddNodes;
+			}
+			last = vertex;
+		}
+		return oddNodes;
+	}
+	
+	public static boolean isPointInPolygon (Vertex point, Vertex[] polygon) {
+		Vertex last = polygon[polygon.length-1];
+		float x = point.x, y = point.y;
+		boolean oddNodes = false;
+		for (int i = 0; i < polygon.length; i++) {
+			Vertex vertex = polygon[i];
+			if ((vertex.y < y && last.y >= y) || (last.y < y && vertex.y >= y)) {
+				if (vertex.x + (y - vertex.y) / (last.y - vertex.y) * (last.x - vertex.x) < x) oddNodes = !oddNodes;
+			}
+			last = vertex;
+		}
+		return oddNodes;
+	}
 }

@@ -1,19 +1,19 @@
 package sprouts.tests;
 
-import sprouts.game.ai.AbstractFacade;
-import sprouts.game.ai.player.Player;
-import sprouts.game.ai.player.RandomPlayer;
-import sprouts.game.model.GraphicalFacade;
-import sprouts.game.model.Util;
-import sprouts.game.model.move.RawMove;
-import sprouts.game.model.move.generators.MovePathResult;
+import sprouts.ai.AbstractFacade;
+import sprouts.ai.player.Player;
+import sprouts.ai.player.RandomPlayer;
+import sprouts.game.GraphicalFacade;
+import sprouts.game.move.IdMove;
+import sprouts.game.move.pipe.MovePathResult;
+import sprouts.game.util.Assert;
 
 public class StressTest {
 	
 	public static void main(String[] args) {
 		
 		int iterations = 100;
-		for (int i = 0; i < iterations; i++) {
+		for (int i = 6; i < iterations; i++) {
 			
 			GraphicalFacade g = new GraphicalFacade();
 			AbstractFacade a = new AbstractFacade();
@@ -28,17 +28,18 @@ public class StressTest {
 			System.out.printf("===================\n");
 
 			while (!g.isGameOver()) {
-				RawMove aiMove = ai.getMove(a.getPosition());
+				IdMove aiMove = ai.getMove(a.getPosition());
 				System.out.printf("ai: %s\n", aiMove.toString());
 				
-				MovePathResult p = g.executeMoveWithResult(aiMove.toString());
-				if (p != null)  {
+				String result = g.executeMove(aiMove.toString());
+				if (result != null)  {
 					a.makeMove(aiMove.toString());
 					break;
 					
+					// 4<,4<,[0,1,7]
 				}
 
-				if (aiMove == null) Util.require(g.isGameOver());
+				if (aiMove == null) Assert.that(g.isGameOver());
 			}
 		}
 	}

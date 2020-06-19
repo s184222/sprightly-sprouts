@@ -1,5 +1,10 @@
 package sprouts.game.model;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
 public class Vertex {
 
 	public float x, y;

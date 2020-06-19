@@ -3,6 +3,16 @@ package sprouts.game.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * All sprouts have an unique ID. A sprout may be connected to other sprouts,
+ * if sprouts are connected then their exists an edge which goes from the first sprout
+ * to the second sprout and another edge which goes from the second sprout to the first sprout.
+ * The edges which are leaving a sprout are contained in {@code neighbours}
+ * A sprout is in a boundary if it has at least 1 neighbour. A sprout may be in multiple boundaries.
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
 public class Sprout {
 	
 	public final int id;
@@ -24,10 +34,22 @@ public class Sprout {
 		return neighbours.size();
 	}
 
+	/**
+	 * A sprout can have up to 3 neighbours.
+	 * Lives are defined as how many more neighbours it can have.
+	 * 
+	 * @return the lives left of that sprout
+	 */
 	public int getLives() {
 		return totalLives - getNeighbourCount();
 	}
 	
+	/**
+	 * If a sprout has no edges leaving it, then it is by definition not in a boundary.
+	 * The sprout is 
+	 * 
+	 * @return true if the sprout is in a boundary, false otherwise
+	 */
 	public boolean isInBoundary() {
 		return getNeighbourCount() != 0;
 	}

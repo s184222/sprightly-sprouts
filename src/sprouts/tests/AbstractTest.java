@@ -1,7 +1,7 @@
 package sprouts.tests;
 
 import junit.framework.TestCase;
-import sprouts.game.ai.AbstractFacade;
+import sprouts.ai.AbstractFacade;
 
 public class AbstractTest extends TestCase {
 	

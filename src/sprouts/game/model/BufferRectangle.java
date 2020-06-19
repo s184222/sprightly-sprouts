@@ -3,6 +3,11 @@ package sprouts.game.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
 public class BufferRectangle {
 	
 	private Vertex lowerLeft, lowerRight, upperLeft, upperRight;
@@ -25,6 +30,12 @@ public class BufferRectangle {
 		corners.add(upperRight);
 	}
 	
+	/**
+	 * resizes the rectangle, if (x,y) is outside the rectangle after taking the buffing into account.
+	 * 
+	 * @param x
+	 * @param y
+	 */
 	public void update(float x, float y) {
 		float minX = lowerLeft.x + bufferX;
 		float minY = lowerLeft.y + bufferY;
