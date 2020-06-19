@@ -40,13 +40,7 @@ public class GraphicalFacade {
 		DebugIdGenerators.reset();
 		
 		currentLine = new Line();
-		
 		builder = new PositionBuilder();
-		
-		minimumLineSegmentDistance = 25;
-		drawingLine = false;
-		sproutRadius = 12;
-		
 		history = new MoveHistory();
 		
 		moveGenerationPipes = new ArrayList<>();
@@ -59,12 +53,17 @@ public class GraphicalFacade {
 		
 		MoveGenerationPipeline advancedPipe = new AdvancedMoveGenerationPipeline(pathfinder, triangleGenerator);
 		moveGenerationPipes.add(advancedPipe);
+		
+		minimumLineSegmentDistance = 25;
+		drawingLine = false;
+		sproutRadius = 12;
 	}
 	
 	public void createFreshPosition(int numberOfSprouts) {
 		float cx = 320;
 		float cy = 240;
-		float radius = 80 + numberOfSprouts * 12;
+		//float radius = 80 + numberOfSprouts * 12;
+		float radius = 150f;
 		position = builder.createSproutsCircle(numberOfSprouts, cx, cy, radius).build();
 	}
 	
@@ -78,6 +77,7 @@ public class GraphicalFacade {
 				MovePathResult result = pipe.process(rawMove, position);
 				return result;
 			} catch (MoveException | MoveNotationException e) {
+				System.out.printf("%s\n", e.getMessage());
 			}
 		}
 

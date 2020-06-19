@@ -9,12 +9,27 @@ import com.sprouts.math.LinMath;
 import sprouts.game.util.MathUtil;
 import sprouts.game.util.Assert;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
 public class Line extends ArrayList<Vertex> {
 	
 	public Vertex getFirst() {
 		return get(0);
 	}
 	
+	
+	/*
+	 * 
+	 * 5,7
+>move:
+5,8
+>move:
+5,9
+	 * 
+	 */
 	public Vertex getSemiFirst() {
 		return get(1);
 	}
@@ -39,6 +54,14 @@ public class Line extends ArrayList<Vertex> {
 		return lines;
 	}
 	
+	/**
+	 * 
+	 * Splits the line at the vertex closest to the middle of the line
+	 * 
+	 * 
+	 * @return the line splitted at the middle into two smaller lines
+	 *
+	 */
 	public Line[] splitMiddle() {
 		Assert.that(size() >= 3);
 		

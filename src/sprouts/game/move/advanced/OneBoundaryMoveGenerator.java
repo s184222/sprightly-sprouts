@@ -63,17 +63,14 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		}
 		
 		List<Triangle> triangles = triangleGenerator.getTriangles(position);
-		
 		Map<Triangle, List<Triangle>> graph = getTriangleGraph(triangles, region, position);
-		
 		List<Triangle> slithering = slither(graph, from, to, fromEdge, toEdge);
-		
 		List<Triangle> wrapping = wrapAroundContaining(slithering, inner, graph, region, from.position, to.position, position);
 		
-		/*	// @REMOVE ME
+		/*
 		if (true) {
 			
-					OneBoundaryMoveGeneratorData data = new OneBoundaryMoveGeneratorData();
+			OneBoundaryMoveGeneratorData data = new OneBoundaryMoveGeneratorData();
 			data.triangles = triangles;
 			data.oneBoundaryGraph = graph;
 			data.slither = slithering;
@@ -207,7 +204,6 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 	}
 
 	private int getSlitherEntryIndex(List<Triangle> slithering, Triangle slitherEntry, Vertex from, Vertex to, List<Triangle> path, Position position) {
-
 		List<Integer> candidateIndices = new ArrayList<>();
 		for (int i = 0; i < slithering.size(); i++) {
 			Triangle slitherTriangle = slithering.get(i);
@@ -232,9 +228,8 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 			
 		}
 		
-		//if (at == -1) return -1;
-		
 		Assert.that(at != -1);
+		//if (at == -1) return -1;
 		
 		return at;
 	}
@@ -344,7 +339,6 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		} else {
 			mergedLine = new Line();
 		}
-		
 		
 		if (mergedLine.size() == 0) mergedLine.add(from.position);
 
@@ -544,9 +538,9 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		boolean c2 = (p0s != null && p0s.equals(p1s)) || (p1s.from.equals(p0) || p1s.to.equals(p0));
 		boolean c3 = (q1s != null && q0s.equals(q1s)) || (q0s.from.equals(q1) || q0s.to.equals(q1));
 		
-			if (c1 && c2 && c3) {
-				return true;
-			}
+		if (c1 && c2 && c3) {
+			return true;
+		}
 		
 		return false;
 	}
@@ -567,7 +561,6 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 	}
 	
 	private void condense(List<Triangle> slither, Region region) {
-
 		boolean removing = true;
 		while (removing) {
 			removing = false;

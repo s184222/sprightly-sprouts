@@ -12,7 +12,7 @@ public class StressTest {
 	public static void main(String[] args) {
 		
 		int iterations = 100;
-		for (int i = 6; i < iterations; i++) {
+		for (int i = 0; i < iterations; i++) {
 			
 			GraphicalFacade g = new GraphicalFacade();
 			AbstractFacade a = new AbstractFacade();
@@ -33,9 +33,11 @@ public class StressTest {
 				String result = g.executeMove(aiMove.toString());
 				if (result != null)  {
 					a.makeMove(aiMove.toString());
-					break;
 					
 					// 4<,4<,[0,1,7]
+				} else {
+					break;
+					
 				}
 
 				if (aiMove == null) Assert.that(g.isGameOver());

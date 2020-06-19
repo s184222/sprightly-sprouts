@@ -55,7 +55,7 @@ public class AdvancedMoveNotationParser implements MoveNotationParser {
 			List<String> matches = Regex.match(regex, rawMove);
 			return matches;
 		} catch (IllegalStateException e) {
-			throw new MoveNotationException("error parsing.");
+			throw new MoveNotationException("error parsing. \"%s\"", rawMove);
 		}
 	}
 	

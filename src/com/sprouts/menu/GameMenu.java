@@ -58,8 +58,8 @@ public class GameMenu extends SproutsMenu {
 	private boolean drawEdgeIndices = false;
 	private boolean drawTriangles = false;
 	private boolean showLineOrientation = false;
-	private boolean drawPath = false;
-	private boolean drawOneGraph = false;
+	private boolean drawPath = true;
+	private boolean drawOneGraph = true;
 	private boolean drawTwoGraph = false;
 	
 	private int mouseX;
