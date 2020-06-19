@@ -178,6 +178,8 @@ public class LoadGameSproutsMenu extends SproutsMenu {
 	}
 	
 	private void updatePreview() {
+		preview.removeAll();
+
 		File file = new File(pathField.getText());
 		if (file.isFile()) {
 			try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -188,8 +190,6 @@ public class LoadGameSproutsMenu extends SproutsMenu {
 				spec.setVerticalFill(CompositionFill.FILL_MINIMUM);
 				spec.setHorizontalAlignment(LayoutSpecification.ALIGN_LEFT);
 				spec.setVerticalAlignment(LayoutSpecification.ALIGN_CENTER);
-				
-				preview.removeAll();
 				
 				String line;
 				while ((line = br.readLine()) != null && ++lineCount < MAX_PREVIEW_LINES)
