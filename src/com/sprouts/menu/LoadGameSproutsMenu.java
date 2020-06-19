@@ -1,0 +1,142 @@
+package com.sprouts.menu;
+
+import java.io.File;
+
+import javax.swing.JFileChooser;
+import javax.swing.UIManager;
+
+import com.sprouts.SproutsMain;
+import com.sprouts.composition.Composition;
+import com.sprouts.composition.CompositionSize;
+import com.sprouts.composition.ParentComposition;
+import com.sprouts.composition.border.Margin;
+import com.sprouts.composition.drawable.TextureOverlayDrawable;
+import com.sprouts.composition.layout.CompositionFill;
+import com.sprouts.composition.layout.LayoutDirection;
+import com.sprouts.composition.layout.LayoutSpecification;
+import com.sprouts.composition.layout.LinearLayoutManager;
+import com.sprouts.composition.text.ButtonComposition;
+import com.sprouts.composition.text.LabelComposition;
+import com.sprouts.composition.text.TextAlignment;
+import com.sprouts.composition.text.editable.TextFieldComposition;
+
+public class LoadGameSproutsMenu extends SproutsMenu {
+
+	private final SproutsMenu prevMenu;
+	
+	private final TextFieldComposition pathField;
+	private final ButtonComposition browseButton;
+	
+	private final ButtonComposition cancelButton;
+	private final ButtonComposition loadButton;
+	
+	public LoadGameSproutsMenu(SproutsMain main, SproutsMenu prevMenu) {
+		super(main);
+		
+		this.prevMenu = prevMenu;
+		
+		pathField = new TextFieldComposition();
+		browseButton = new ButtonComposition("Browse");
+		
+		cancelButton = new ButtonComposition("Cancel");
+		loadButton = new ButtonComposition("Load");
+		
+		uiLayout();
+		uiEvents();
+	}
+	
+	private void uiLayout() {
+		ParentComposition content = new ParentComposition(new LinearLayoutManager(LayoutDirection.VERTICAL, 20));
+		content.setPadding(new Margin(10));
+		content.setMinimumSize(new CompositionSize(700, 250));
+		
+		LayoutSpecification spec = new LayoutSpecification();
+		
+		spec.setVerticalFill(CompositionFill.FILL_MINIMUM);
+		content.add(createFieldPanel(), spec);
+
+		spec.setHorizontalFill(CompositionFill.FILL_REMAINING);
+		spec.setVerticalFill(CompositionFill.FILL_REMAINING);
+		content.add(createButtonPanel(), spec);
+	
+		spec.setHorizontalFill(CompositionFill.FILL_MINIMUM);
+		spec.setVerticalFill(CompositionFill.FILL_MINIMUM);
+		spec.setHorizontalAlignment(LayoutSpecification.ALIGN_CENTER);
+		spec.setVerticalAlignment(LayoutSpecification.ALIGN_CENTER);
+		add(content, spec);
+	}
+
+	private Composition createFieldPanel() {
+		ParentComposition fieldPanel = new ParentComposition(new LinearLayoutManager(LayoutDirection.HORIZONTAL, 20));
+
+		LayoutSpecification spec = new LayoutSpecification();
+		spec.setVerticalFill(CompositionFill.FILL_MINIMUM);
+		spec.setHorizontalAlignment(LayoutSpecification.ALIGN_CENTER);
+		spec.setVerticalAlignment(LayoutSpecification.ALIGN_CENTER);
+
+		spec.setHorizontalFill(CompositionFill.FILL_MINIMUM);
+		fieldPanel.add(new LabelComposition("File Path: "), spec);
+		spec.setHorizontalFill(CompositionFill.FILL_REMAINING);
+		fieldPanel.add(pathField, spec);
+		spec.setHorizontalFill(CompositionFill.FILL_MINIMUM);
+		browseButton.setPadding(new Margin(30, 30, 5, 5));
+		browseButton.setTextAlignment(TextAlignment.CENTER);
+		fieldPanel.add(wrapOverlay(browseButton), spec);
+		
+		pathField.setBackground(new TextureOverlayDrawable(main.getPostTexture(), pathField.getBackground()));
+		
+		return fieldPanel;
+	}
+	
+	private Composition createButtonPanel() {
+		ParentComposition buttonPanel = new ParentComposition();
+		
+		LayoutSpecification spec = new LayoutSpecification();
+		spec.setHorizontalFill(CompositionFill.FILL_MINIMUM);
+		spec.setVerticalFill(CompositionFill.FILL_MINIMUM);
+		spec.setVerticalAlignment(LayoutSpecification.ALIGN_BOTTOM);
+
+		spec.setHorizontalAlignment(LayoutSpecification.ALIGN_LEFT);
+		cancelButton.setPadding(new Margin(30, 30, 5, 5));
+		cancelButton.setTextAlignment(TextAlignment.CENTER);
+		buttonPanel.add(wrapOverlay(cancelButton), spec);
+		
+		spec.setHorizontalAlignment(LayoutSpecification.ALIGN_RIGHT);
+		loadButton.setMinimumSize(cancelButton.getMinimumSize());
+		loadButton.setTextAlignment(TextAlignment.CENTER);
+		buttonPanel.add(wrapOverlay(loadButton), spec);
+		
+		return buttonPanel;
+	}
+	
+	private void uiEvents() {
+		browseButton.addButtonListener((source) -> {
+			try {
+				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			} catch (Exception ignore) {
+			}
+			
+			JFileChooser chooser = new JFileChooser();
+			chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			
+			int result = chooser.showOpenDialog(null);
+			if (result == JFileChooser.APPROVE_OPTION) {
+				File file = chooser.getSelectedFile();
+				pathField.setText(file.getAbsolutePath());
+			}
+		});
+		
+		cancelButton.addButtonListener((source) -> {
+			main.setMenu(prevMenu);
+		});
+		
+		loadButton.addButtonListener((source) -> {
+			main.setMenu(new GameMenu(main));
+		});
+	}
+	
+	@Override
+	public void update() {
+
+	}
+}

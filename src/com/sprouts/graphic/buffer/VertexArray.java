@@ -1,6 +1,5 @@
 package com.sprouts.graphic.buffer;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
@@ -15,14 +14,6 @@ public class VertexArray implements IResource {
 	
 	public VertexArray() {
 		vaoHandle = glGenVertexArrays();
-	}
-
-	public void storeBuffer(int attributeIndex, VertexBuffer buffer) {
-		storeBuffer(attributeIndex, buffer, GL_FLOAT, false);
-	}
-
-	public void storeBuffer(int attributeIndex, VertexBuffer buffer, int type, boolean normalized) {
-		storeBuffer(attributeIndex, buffer, type, normalized, buffer.getVertexSize(), 0, 0);
 	}
 
 	public void storeBuffer(int attributeIndex, VertexBuffer buffer, int type, boolean normalized, int size, int stride, int offset) {

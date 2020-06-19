@@ -40,6 +40,7 @@ public class BatchedTessellator2D extends AbstractTessellator2D {
 		drawBatch();
 
 		clearMaterial();
+		clearAlphaMultiplier();
 		clearTransform();
 		clearClipShape();
 		
