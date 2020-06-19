@@ -28,8 +28,6 @@ import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 
 public class LoadGameSproutsMenu extends SproutsMenu {
 
-	private static final int MAX_PREVIEW_LINES = 10;
-	
 	private final SproutsMenu prevMenu;
 	
 	private final TextFieldComposition pathField;
@@ -183,20 +181,29 @@ public class LoadGameSproutsMenu extends SproutsMenu {
 		File file = new File(pathField.getText());
 		if (file.isFile()) {
 			try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-				int lineCount = 0;
-				
 				LayoutSpecification spec = new LayoutSpecification();
 				spec.setHorizontalFill(CompositionFill.FILL_MINIMUM);
 				spec.setVerticalFill(CompositionFill.FILL_MINIMUM);
 				spec.setHorizontalAlignment(LayoutSpecification.ALIGN_LEFT);
 				spec.setVerticalAlignment(LayoutSpecification.ALIGN_CENTER);
 				
-				String line;
-				while ((line = br.readLine()) != null && ++lineCount < MAX_PREVIEW_LINES)
-					preview.add(new LabelComposition(line), spec);
+				int y = 0;
 				
-				if (line != null)
-					preview.add(new LabelComposition("..."), spec);
+				String line;
+				while ((line = br.readLine()) != null) {
+					LabelComposition label = new LabelComposition(line);
+					
+					int h = (int)Math.ceil(label.getFont().getLineHeight());
+					if (y + h * 2 < preview.getHeight()) {
+						preview.add(label, spec);
+					} else {
+						label.setText("...");
+						preview.add(label, spec);
+						break;
+					}
+					
+					y += h;
+				}
 			} catch (IOException e) {
 			}
 		}
