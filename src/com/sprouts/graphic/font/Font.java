@@ -59,8 +59,9 @@ public class Font implements IResource {
 				}
 
 			}
-
 		}
+		
+		tessellator.setTextureRegion(null);
 	}
 	
 	public String trimText(String text, float width, String ellipses) {
