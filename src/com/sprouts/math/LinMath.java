@@ -6,7 +6,7 @@ import java.util.List;
 public final class LinMath {
 	
 	public static final float EPSILON = 0.01f;
-	public static final float EPSILON_INTERSECT = 0.0001f;
+	public static float EPSILON_INTERSECT = 0.0001f;
 	
 	private LinMath() {
 	}
@@ -43,7 +43,8 @@ public final class LinMath {
 	 * source: https://www.youtube.com/watch?v=4bIsntTiKfM
 	 * source: https://www.youtube.com/watch?v=A86COO8KC58
 	 */
-	public static boolean intersect(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) {
+	
+	public static boolean intersect(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3) {
 		return intersect(x0, y0, x1, y1, x2, y2, x3, y3, null);
 	}
 
@@ -66,6 +67,7 @@ public final class LinMath {
 		double ratioy1 = (y - y0) / (y1 - y0);
 		double ratiox2 = (x - x2) / (x3 - x2);
 		double ratioy2 = (y - y2) / (y3 - y2);
+		
 //		System.out.println(ratiox1 + " " + ratioy1 + " " + ratiox2 + " " + ratioy2 + " " + x + " " + y + " " + x1 + " " + y1 + " " + EPSILON);
 		if (((ratiox1 >= 0-EPSILON_INTERSECT && ratiox1 <= 1+EPSILON_INTERSECT) || (ratioy1 >= 0-EPSILON_INTERSECT && ratioy1 <= 1+EPSILON_INTERSECT)) && 
 				((ratiox2 >= 0-EPSILON_INTERSECT && ratiox2 <= 1+EPSILON_INTERSECT) || (ratioy2 >= 0-EPSILON_INTERSECT && ratioy2 <= 1+EPSILON_INTERSECT))){
@@ -76,6 +78,48 @@ public final class LinMath {
 		
 		return false;
 	}
+	
+	public static boolean intersect2(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3) {
+		return intersect(x0, y0, x1, y1, x2, y2, x3, y3, null);
+	}
+
+	public static boolean intersect2(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3, Vec2 intersection) {
+		double a1 = y1 - y0;
+		double b1 = x0 - x1;
+		double c1 = a1 * x1 + b1 * y1;
+		double a2 = y3 - y2;
+		double b2 = x2 - x3;
+		double c2 = a2 * x2 + b2 * y2;
+		double divisor = a1 * b2 - a2 * b1;
+
+		if (Math.abs(divisor) <= EPSILON * EPSILON) {
+			return false; // if divide == 0 it means the lines are parallel
+		}
+
+		double x = (b2 * c1 - b1 * c2) / divisor;
+		double y = (a1 * c2 - a2 * c1) / divisor;
+		double ratiox1 = (x - x0) / (x1 - x0);
+		double ratioy1 = (y - y0) / (y1 - y0);
+		double ratiox2 = (x - x2) / (x3 - x2);
+		double ratioy2 = (y - y2) / (y3 - y2);
+		
+		EPSILON_INTERSECT = 0.0001f;
+		
+//		System.out.println(ratiox1 + " " + ratioy1 + " " + ratiox2 + " " + ratioy2 + " " + x + " " + y + " " + x1 + " " + y1 + " " + EPSILON);
+		if (((ratiox1 >= 0-EPSILON_INTERSECT && ratiox1 <= 1+EPSILON_INTERSECT) || (ratioy1 >= 0-EPSILON_INTERSECT && ratioy1 <= 1+EPSILON_INTERSECT)) && 
+				((ratiox2 >= 0-EPSILON_INTERSECT && ratiox2 <= 1+EPSILON_INTERSECT) || (ratioy2 >= 0-EPSILON_INTERSECT && ratioy2 <= 1+EPSILON_INTERSECT))){
+			if (intersection != null) intersection.set((float)x, (float)y);
+			EPSILON_INTERSECT = 0;
+			
+			return true;
+			
+		}
+		EPSILON_INTERSECT = 0;
+		
+		
+		return false;
+	}
+	
 	//this intersect is only used for the function contains 
 	public static Vec2 intersectContains(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3) {
 		float a1 = p1.y - p0.y;

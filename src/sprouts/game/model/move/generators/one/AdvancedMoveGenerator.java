@@ -30,14 +30,14 @@ import sprouts.game.model.move.generators.MovePathGenerator;
 import sprouts.game.model.move.generators.MovePathResult;
 import sprouts.game.model.move.pathfinder.PathFinder;
 
-public class OneBoundaryMoveGenerator implements MovePathGenerator {
+public class AdvancedMoveGenerator implements MovePathGenerator {
 	
 	private PathFinder pathfinder;
 	private TriangleGenerator triangleGenerator;
 	
 	private String name;
 	
-	public OneBoundaryMoveGenerator(PathFinder pathfinder, TriangleGenerator triangleGenerator) {
+	public AdvancedMoveGenerator(PathFinder pathfinder, TriangleGenerator triangleGenerator) {
 		this.pathfinder = pathfinder;
 		this.triangleGenerator = triangleGenerator;
 		
@@ -67,20 +67,9 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		
 		Map<Triangle, List<Triangle>> graph = getTriangleGraph(triangles, region, position);
 		
-		
-		if (from.id == 23) {
-			OneBoundaryMoveGeneratorData data = new OneBoundaryMoveGeneratorData();
-			data.triangles = triangles;
-			data.oneBoundaryGraph = graph;
-
-			result.customData = data;
-			
-			//return result;
-		}
-		
 		List<Triangle> slithering = slither(graph, from, to, fromEdge, toEdge);
 		
-		List<Triangle> wrapping = wrapAroundContaining(slithering, inner, graph, region, from.position, to.position);
+		List<Triangle> wrapping = wrapAroundContaining(slithering, inner, graph, region, from.position, to.position, position);
 		Util.require(canCreatePath(slithering, from.position, to.position));
 		
 		condense(slithering, region);
@@ -142,7 +131,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		return true;
 	}
 
-	private List<Triangle> wrapAroundContaining(List<Triangle> slithering, List<Sprout> inner, Map<Triangle, List<Triangle>> graph, Region region, Vertex from, Vertex to) {
+	private List<Triangle> wrapAroundContaining(List<Triangle> slithering, List<Sprout> inner, Map<Triangle, List<Triangle>> graph, Region region, Vertex from, Vertex to, Position position) {
 
 		List<Triangle> lastWrapping = new ArrayList<>();
 		
@@ -180,7 +169,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 			lastWrapping.clear();
 			lastWrapping.addAll(wrapping);
 
-			int at = getSlitherEntryIndex(slithering, slitherEntry, from, to, path);
+			int at = getSlitherEntryIndex(slithering, slitherEntry, from, to, path, position);
 			slithering.addAll(at + 1, path);
 		}
 
@@ -203,7 +192,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		return slitherEntry;
 	}
 
-	private int getSlitherEntryIndex(List<Triangle> slithering, Triangle slitherEntry, Vertex from, Vertex to, List<Triangle> path) {
+	private int getSlitherEntryIndex(List<Triangle> slithering, Triangle slitherEntry, Vertex from, Vertex to, List<Triangle> path, Position position) {
 
 		List<Integer> candidateIndices = new ArrayList<>();
 		for (int i = 0; i < slithering.size(); i++) {
@@ -226,6 +215,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 				at = index;
 				break;
 			}
+			
 		}
 		
 		Util.require(at != -1);
@@ -331,10 +321,6 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		Triangle end = getEndTriangle(to, toReference, graph);
 
 		Util.require(end != null);
-		
-		if (from.id == 23) {
-			int k = 44;
-		}
 		
 		Line mergedLine;
 		if (fromEdge != null && toEdge != null) {
@@ -481,69 +467,54 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		// fix path entanglements
 		
 		for (int i = 0; i < path.size() - 1; i++) {
-			for (int j = i+1; j < path.size() - 1; j++) {
+			for (int j = i+2; j < path.size() - 1; j++) {
 				Vertex p0 = path.get(i);
 				Vertex p1 = path.get(i + 1);
 				
 				Vertex q0 = path.get(j);
 				Vertex q1 = path.get(j + 1);
 				
-				// @TODO: fix problem where the lines are parallel and intersect.
-				if (p0.x == q0.x && p0.y == q0.y) continue;
-				if (p0.x == q1.x && p0.y == q1.y) continue;
-				if (p1.x == q0.x && p1.y == q0.y) continue;
-				if (p1.x == q1.x && p1.y == q1.y) continue;
+				LineSegment p0s = pointToLineSegment.get(p0);
+				LineSegment p1s = pointToLineSegment.get(p1);
+				LineSegment q0s = pointToLineSegment.get(q0);
+				LineSegment q1s = pointToLineSegment.get(q1);
 				
-				if (LinMath.intersect(p0.x, p0.y, p1.x, p1.y, q0.x, q0.y, q1.x, q1.y)) {
-					LineSegment p1s = pointToLineSegment.get(p1);
-					LineSegment q0s = pointToLineSegment.get(q0);
-					LineSegment q1s = pointToLineSegment.get(q1);
+				boolean lineSegment1 = p1s.equals(q0s) && (p1s.from.equals(q1) || p1s.to.equals(q1) || (q1s != null && p1s.equals(q1s)));
 					
-					if (p1s != null && q0s != null && p1s.equals(q0s)) {
+				boolean lineSegment2 = p1s.equals(q1s) && (p1s.from.equals(p0) || p1s.to.equals(p0) || (p0s != null && p1s.equals(p0s)));
+
+				if (lineSegment1) {
+					if (LinMath.intersect2(p0.x, p0.y, p1.x, p1.y, q0.x, q0.y, q1.x, q1.y)) {
 						Collections.swap(path, i+1, j);
-					}	else if (p1s != null && q1s != null && p1s.equals(q1s)){
-						Collections.swap(path, i+1, j+1);
-					} else {
-						return null;
-						//System.out.printf("%s %s %s %s\n", p0, p1, q0, q1);
-						//Util.require(false, "broken");
-						//return path;
+					}
+				}	else if (lineSegment2) {
+						if (LinMath.intersect2(p0.x, p0.y, p1.x, p1.y, q0.x, q0.y, q1.x, q1.y)) {
+							Collections.swap(path, i+1, j+1);
+						}
+			}	else {
+				
+				if (p0 == q0) continue;
+				if (p0 == q1) continue;
+				if (p1 == q0) continue;	
+				if (p1 == q1) continue;
+				
+				if (LinMath.intersect2(p0.x, p0.y, p1.x, p1.y, q0.x, q0.y, q1.x, q1.y)) {
+						if (p1s.equals(q0s)) {
+							Collections.swap(path, i+1, j);
+						}	else if (p1s.equals(q1s)){
+							Collections.swap(path, i+1, j+1);
+						} else {
+							return null;
+						}
 					}
 				}
+
 			}
 		}
-		
-		// @TODO: remove
-		if (intersectsWithItself(path)) Util.require(false);
 		
 		return path;
 	}
 
-	// @TODO: remove sanity check.
-	private boolean intersectsWithItself(List<Vertex> path) {
-		for (int i = 0; i < path.size() - 1; i++) {
-			for (int j = i+1; j < path.size() - 1; j++) {
-				Vertex p0 = path.get(i);
-				Vertex p1 = path.get(i + 1);
-				
-				Vertex q0 = path.get(j);
-				Vertex q1 = path.get(j + 1);
-				
-				if (p0.x == q0.x && p0.y == q0.y) continue;
-				if (p0.x == q1.x && p0.y == q1.y) continue;
-				if (p1.x == q0.x && p1.y == q0.y) continue;
-				if (p1.x == q1.x && p1.y == q1.y) continue;
-				
-				if (LinMath.intersect(p0.x, p0.y, p1.x, p1.y, q0.x, q0.y, q1.x, q1.y)) {
-					System.out.printf("collides %d %d\n", i, j);
-					return true;
-				}
-			}
-		}
-			
-		return false;
-	}
-	
 	private LineSegment getSharedLineSegment(Triangle triangleA, Triangle triangleB) {
 		Vertex[] corners = triangleA.getCorners();
 		
@@ -557,7 +528,6 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		}
 		
 		return null;
-		//throw new IllegalStateException("no common side");
 	}
 	
 	private void condense(List<Triangle> slither, Region region) {

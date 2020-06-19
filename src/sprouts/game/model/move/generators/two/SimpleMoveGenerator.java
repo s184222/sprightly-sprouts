@@ -22,7 +22,7 @@ import sprouts.game.model.move.generators.MovePathGenerator;
 import sprouts.game.model.move.generators.MovePathResult;
 import sprouts.game.model.move.pathfinder.PathFinder;
 
-public class TwoBoundaryMoveGenerator implements MovePathGenerator {
+public class SimpleMoveGenerator implements MovePathGenerator {
 	
 	private BiFunction<Vertex, Vertex, Float> costFunction;
 
@@ -31,7 +31,7 @@ public class TwoBoundaryMoveGenerator implements MovePathGenerator {
 	
 	private String name;
 	
-	public TwoBoundaryMoveGenerator(PathFinder pathFinder, TriangleGenerator triangleGenerator) {
+	public SimpleMoveGenerator(PathFinder pathFinder, TriangleGenerator triangleGenerator) {
 		this.pathFinder = pathFinder;
 		this.triangleGenerator = triangleGenerator;
 		
@@ -55,10 +55,20 @@ public class TwoBoundaryMoveGenerator implements MovePathGenerator {
 
 		List<Triangle> triangles = triangleGenerator.getTriangles(position);
 		Map<Vertex, List<Vertex>> graph = getVertexGraph(from.position, to.position, fromEdge, toEdge, triangles, position);
-		List<Vertex> path = pathFinder.find(from.position, to.position, graph, costFunction, costFunction);
+		
+		List<Vertex> endings = graph.get(to.position);
+		
+		boolean same = from.equals(to);
+		Vertex end = same ? endings.remove(0) : to.position;
+		
+		List<Vertex> path = pathFinder.find(from.position, end, graph, costFunction, costFunction);
+		
+		System.out.printf("%d\n", path.size());
 		
 		Line line = new Line();
 		line.addAll(path);
+		
+		if (same) line.add(move.to.position);
 		
 		TwoBoundaryMoveGeneratorData data = new TwoBoundaryMoveGeneratorData();
 		data.twoBoundaryGraph = graph;
@@ -88,6 +98,9 @@ public class TwoBoundaryMoveGenerator implements MovePathGenerator {
 				}
 				
 				if (!position.isLineSegmentOnLine(segment.from, segment.to)) {
+					// due to floating precision, 2 linesegment which are revsered may yield different middle vertices, so linesegments are canonized
+					// so the same orientation of the linesegment is always selected.
+					if (shouldReverse(segment)) segment.reverse();
 					Vertex vertex = segment.getMiddle();
 					adjacent.add(vertex);
 				}
@@ -101,7 +114,13 @@ public class TwoBoundaryMoveGenerator implements MovePathGenerator {
 				
 				List<Vertex> adjacencyList = graph.remove(vertex);
 				if (adjacencyList == null) adjacencyList = new ArrayList<>();
-				adjacencyList.addAll(neighbours);
+				
+				for (Vertex neighbour : neighbours) {
+					if (!adjacencyList.contains(neighbour)) {
+						adjacencyList.add(neighbour);
+					}
+				}
+				
 				graph.put(vertex, adjacencyList);
 				
 				neighbours.add(vertex);
@@ -109,6 +128,17 @@ public class TwoBoundaryMoveGenerator implements MovePathGenerator {
 		}
 					
 		return graph;
+	}
+	
+	private boolean shouldReverse(LineSegment segment) {
+		if (segment.to.x < segment.from.x) {
+			return true;
+		} else if (segment.to.x == segment.from.x) {
+			if (segment.to.y < segment.from.y) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	private boolean isCorrectSide(LineSegment segment, Vertex origin, Edge edge) {

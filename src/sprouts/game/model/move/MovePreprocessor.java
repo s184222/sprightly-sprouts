@@ -19,6 +19,8 @@ public class MovePreprocessor {
 		int fromId = rawMove.fromId;
 		int toId = rawMove.toId;
 		
+		boolean any = rawMove.any;
+		
 		boolean toAscending = rawMove.toAscending;
 		boolean fromAscending = rawMove.fromAscending;
 	
@@ -66,10 +68,10 @@ public class MovePreprocessor {
 			innerIds.add(sprout.id);
 		}
 			
-		Region region = getRegion(from, fromAscending, to, toAscending, inner, position.getRegions());
+		Region region = getRegion(from, fromAscending, to, toAscending, inner, position.getRegions(), any);
 		
-		Edge fromEdge = getEdge(from, fromAscending, region);
-		Edge toEdge = getEdge(to, toAscending, region);
+		Edge fromEdge = any ? getAnyEdge(from, region) : getEdge(from, fromAscending, region);
+		Edge toEdge = any ? getAnyEdge(to, region) : getEdge(to, toAscending, region);
 		
 		if (inverted) inner.clear();
 		
@@ -83,56 +85,77 @@ public class MovePreprocessor {
 		return move;
 	}
 	
-	private Edge getEdge(Sprout origin, boolean ascending, Region region) {
-		List<Edge> neighbours = origin.neighbours;
+	private Edge getAnyEdge(Sprout origin, Region region) {
+		List<Edge> candidates = new ArrayList<>();
 		
-		if (neighbours.size() == 0) {
-			// sprout is not in a boundary
-			return null;
-		} else if (neighbours.size() == 1) {
-			// there is only 1 edge, this can happen, if an edge in a boundary is not "between" 2 other edges.
-			Edge c1 = neighbours.get(0);
-			Util.require(c1.isAscending() == ascending);
-			return c1;
-		} else {
-			Util.require(neighbours.size() == 2);
-
-			Edge c1 = neighbours.get(0);
-			Edge c2 = neighbours.get(1);
-			
-			if (c1.isAscending() && c2.isAscending()) {
-				// special case, where it is a boundary with only 2 sprouts, e.g. 2-4-2...
-				// in this case both candidates are ascending.
-				
-				for (Edge boundary : region.innerBoundaries) {
-					if (boundary.isSameBoundary(c1)) return c1;
-					else if (boundary.isSameBoundary(c2)) return c2;
-				}
-				
-				if (!region.isOuterRegion()) {
-					if (c1.isOuterBoundary()) return c1;
-					else if (c2.isOuterBoundary()) return c2;
-				}
-			
-				throw new IllegalStateException("broken! an edge should have been found!");
-				
-			} else {
-				Util.require(c1.isAscending() != c2.isAscending());
-				
-				if (ascending) {
-					return c1.isAscending() ? c1 : c2;
-				} else {
-					return c1.isAscending() ? c2 : c1;
-				}
+		for (Edge neighbour : origin.neighbours) {
+			if (region.equals(neighbour.region)) {
+				candidates.add(neighbour);
 			}
 		}
+		
+		if (candidates.size() == 0) return null;
+		return candidates.get(0);
 	}
 	
-	private List<Region> getRegions(Sprout sprout, List<Region> regions2) {
+	private Edge getEdge(Sprout origin, boolean ascending, Region region) {
+		List<Edge> candidates = new ArrayList<>();
+		
+		for (Edge neighbour : origin.neighbours) {
+			if (region.equals(neighbour.region)) {
+				candidates.add(neighbour);
+			}
+		}
+		
+		if (candidates.size() == 0) {
+			// sprout is not in a boundary
+			return null;
+		} else {
+			if (candidates.size() == 1) {
+				// there is only 1 edge, this can happen, if an edge in a boundary is not "between" 2 other edges.
+				Edge c1 = candidates.get(0);
+				Util.require(c1.isAscending() == ascending);
+				return c1;
+			} else {
+				Util.require(candidates.size() == 2);
+
+				Edge c1 = candidates.get(0);
+				Edge c2 = candidates.get(1);
+				
+				if (c1.isAscending() && c2.isAscending()) {
+					// special case, where it is a boundary with only 2 sprouts, e.g. 2-4-2...
+					// in this case both candidates are ascending.
+					
+					for (Edge boundary : region.innerBoundaries) {
+						if (boundary.isSameBoundary(c1)) return c1;
+						else if (boundary.isSameBoundary(c2)) return c2;
+					}
+					
+					if (!region.isOuterRegion()) {
+						if (c1.isOuterBoundary()) return c1;
+						else if (c2.isOuterBoundary()) return c2;
+					}
+				
+					throw new IllegalStateException("broken! an edge should have been found!");
+					
+				} else {
+					Util.require(c1.isAscending() != c2.isAscending());
+					
+					if (ascending) {
+						return c1.isAscending() ? c1 : c2;
+					} else {
+						return c1.isAscending() ? c2 : c1;
+					}
+				}
+			}
+		} 
+	}
+	
+	private List<Region> getRegions(Sprout sprout, List<Region> allRegions) {
 		List<Region> regions = new ArrayList<>();
 		
 		if (sprout.neighbours.size() == 0) {
-			for (Region region : regions2) {
+			for (Region region : allRegions) {
 				if (region.isInnerSprout(sprout)) {
 					regions.add(region);
 				}
@@ -147,11 +170,11 @@ public class MovePreprocessor {
 		return regions;
 	}
 	
-	private List<Region> getRegions(Sprout sprout, boolean ascending, List<Region> regions2) {
+	private List<Region> getRegions(Sprout sprout, boolean ascending, List<Region> allRegions) {
 		List<Region> regions = new ArrayList<>();
 
 		if (sprout.neighbours.size() == 0) {
-			for (Region region : regions2) {
+			for (Region region : allRegions) {
 				if (region.isInnerSprout(sprout)) {
 					regions.add(region);
 				}
@@ -170,20 +193,30 @@ public class MovePreprocessor {
 		return regions;
 	}
 	
-	private Region getRegion(Sprout from, boolean fromAscending, Sprout to, boolean toAscending, List<Sprout> inners, List<Region> regions) throws MoveException {
-		List<Region> fromRegions = getRegions(from, fromAscending, regions);
-		List<Region> toRegions = getRegions(to, toAscending, regions);
+	private Region getRegion(Sprout from, boolean fromAscending, Sprout to, boolean toAscending, List<Sprout> inners, List<Region> regions, boolean any) throws MoveException {
+		
+		List<Region> fromRegions;
+		List<Region> toRegions;
+		if (any) {
+			fromRegions = getRegions(from, regions);
+			toRegions = getRegions(to, regions);
+		} else {
+			fromRegions = getRegions(from, fromAscending, regions);
+			toRegions = getRegions(to, toAscending, regions);
+		}
 		
 		List<Region> candidates = new ArrayList<>();
 		candidates.addAll(fromRegions);
 		candidates.retainAll(toRegions);
+		
+		if (any) return candidates.get(0);
 		
 		for (Sprout sprout : inners) {
 			List<Region> innerCandidates = getRegions(sprout, regions);
 			candidates.retainAll(innerCandidates);
 		}
 		
-		if (candidates.size() == 1) {	
+		if (candidates.size() == 1) {
 			return candidates.get(0);
 		} else if (candidates.size() > 1) {
 			// we end here, if it is a 1-boundary move, where the (outer) boundary only contains "from" and "to".
@@ -199,9 +232,7 @@ public class MovePreprocessor {
 				if (innerBoundaries.size() == 0) {
 					return candidate;
 				} else if (innerBoundaries.size() == 1) {
-					// @TODO: do we need this, should we always return it if size() == 0 || size() == 1?
 					Edge itself = innerBoundaries.get(0);
-					
 					List<Sprout> boundarySprouts = itself.getBoundarySprouts();
 					if (boundarySprouts.contains(from) && boundarySprouts.contains(to)) return candidate;
 				}

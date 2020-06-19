@@ -15,12 +15,14 @@ public class AbstractFacade {
 	}
 	
 	public void makeMove(String move) {
+		/*
 		try {
-			RawMove rawMove = new RawMove(move);
+			RawMove rawMove = new RawMove();
 			position.makeMove(rawMove);
 		} catch (MoveNotationException e) {
 			System.out.printf("%s\n", e.getMessage());
 		}
+		*/
 	}
 	
 	public void createFreshPosition(int initialNumberOfSprouts) {
@@ -75,5 +77,9 @@ public class AbstractFacade {
 		
 		// @TODO: remove sanity check
 		Util.require(getPositionString().equals(raw));
+	}
+
+	public void printLives() {
+		position.printLives();
 	}
 }

@@ -74,42 +74,41 @@ public class Position {
 		for (Region region : regions) {
 
 			// 2 boundary moves
-			for (int i = 0; i < region.size() - 1; i++) {
-				Boundary boundary1 = region.get(i);
-				Boundary boundary2 = region.get(i + 1);
+			for (int b1 = 0; b1 < region.size(); b1++) {
+				Boundary boundary1 = region.get(b1);
 				
-				for (int j = 0; j < boundary1.size(); j++) {
-					int id1 = boundary1.get(j);
-					int sprout1Lives = sproutIdToLives.get(id1);
-					if (sprout1Lives == 0) continue;
-					
-					for (int k = j + 1; k < boundary2.size(); k++) {
-						int id2 = boundary2.get(k);
-						int sprout2Lives = sproutIdToLives.get(id2);
-						if (sprout2Lives == 0) continue;
+				for (int b2 = b1+1; b2 < region.size(); b2++) {
+					Boundary boundary2 = region.get(b2);
+				
+					for (int s1 = 0; s1 < boundary1.size(); s1++) {
+						int id1 = boundary1.get(s1);
+						int sprout1Lives = sproutIdToLives.get(id1);
+						if (sprout1Lives == 0) continue;
 						
-						RawMove move = new RawMove();
-						move.fromId = id1;
-						move.fromAscending = boundary1.isAscending(j);
-						move.toId = id2;
-						move.toAscending = boundary2.isAscending(k);
-						moves.add(move);
+						for (int s2 = s1; s2 < boundary2.size(); s2++) {
+							int id2 = boundary2.get(s2);
+							int sprout2Lives = sproutIdToLives.get(id2);
+							if (sprout2Lives == 0) continue;
+							
+							RawMove move = new RawMove();
+							move.fromId = id1;
+							move.fromAscending = boundary1.isAscending(s1);
+							move.toId = id2;
+							move.toAscending = boundary2.isAscending(s2);
+							moves.add(move);
+						}
 					}
 				}
 			}
 			
 			// 1 boundary moves
-			for (int i = 0; i < region.size(); i++) {
-				Boundary boundary = region.get(i);
+			for (int b = 0; b < region.size(); b++) {
+				Boundary boundary = region.get(b);
 				
 				List<Boundary> innerBoundaries = new ArrayList<>();
 				innerBoundaries.addAll(region);
 				innerBoundaries.remove(boundary);
 
-				// @TODO: in each boundary when can store a boolean isOuterBoundary
-				// all region1's are outerboundary
-				// region2 are outerboundary, if region is outerboundary!
-				
 				Boundary outerBoundary = region.getOuterBoundary();
 				if (outerBoundary != null) innerBoundaries.remove(outerBoundary);
 				
@@ -121,8 +120,8 @@ public class Position {
 				
 				Set<List<Integer>> innersPowerset = powerSet(inners);
 				
-				for (int j = 0; j < boundary.size(); j++) {
-					int id1 = boundary.get(j);
+				for (int s = 0; s < boundary.size(); s++) {
+					int id1 = boundary.get(s);
 					int sprout1Lives = sproutIdToLives.get(id1);
 					if (sprout1Lives == 0) continue;
 					
@@ -135,10 +134,18 @@ public class Position {
 						for (List<Integer> inner : innersPowerset) {
 							RawMove move = new RawMove();
 							move.fromId = id1;
-							move.fromAscending = boundary.isAscending(j);
+							move.fromAscending = boundary.isAscending(s);
 							move.toId = id2;
 							move.toAscending = boundary.isAscending(k);
-							move.inner.addAll(inner);
+							
+							if (isAmbigious(id1, sprout1Lives, id2, sprout2Lives, boundary)) {
+								move.inner.addAll(inners);
+								move.inverted = true;
+							} else {
+								move.inner.addAll(inner);
+								move.inverted = false;
+							}
+							
 							moves.add(move);
 						}
 					}
@@ -147,6 +154,13 @@ public class Position {
 		}
 
 		return moves;
+	}
+	
+	private boolean isAmbigious(int id1, int id1Lives, int id2, int id2Lives, Boundary boundary) {
+		if (boundary.size() != 2) return false;
+		if (id1Lives != 1) return false;
+		if (id2Lives != 1) return false;
+		return true;
 	}
 	
 	private <T> Set<List<T>> powerSet(List<T> originalSet) {
@@ -196,10 +210,6 @@ public class Position {
 
 		sproutIdToLives.put(sprout1, s1Lives-1);
 		sproutIdToLives.put(sprout2, s2Lives-1);
-		
-		System.out.printf("%d %d\n", sprout1, sproutIdToLives.get(sprout1));
-		System.out.printf("%d %d\n", sprout2, sproutIdToLives.get(sprout2));
-		
 	}
 
 	public void makeMove(RawMove move) {
@@ -212,7 +222,7 @@ public class Position {
 		boolean inverted = move.inverted;
 		
 		List<Integer> inner = move.inner;
-
+		
 		Region region = getRegion(from, fromAscending, to, toAscending, inner);
 
 		Boundary x = region.getBoundary(from);
@@ -408,5 +418,14 @@ public class Position {
 		builder.append("!");
 		
 		return builder.toString();
+	}
+	
+	public void printLives() {
+		System.out.printf("=== lives ===\n");
+		for (int i = 0; i < sproutIdGenerator.peek(); i++) {
+			int lives = sproutIdToLives.get(i);
+			System.out.printf("%d\n", lives);
+		}
+		System.out.printf("\n");
 	}
 }

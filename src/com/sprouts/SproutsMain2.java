@@ -29,6 +29,7 @@ import com.sprouts.input.IKeyboardListener;
 import com.sprouts.input.IMouseListener;
 import com.sprouts.input.Keyboard;
 import com.sprouts.input.Mouse;
+import com.sprouts.math.LinMath;
 import com.sprouts.math.Vec2;
 import com.sprouts.util.LibUtil;
 
@@ -40,6 +41,7 @@ import sprouts.game.model.Edge;
 import sprouts.game.model.GraphicalFacade;
 import sprouts.game.model.Line;
 import sprouts.game.model.LineSegment;
+import sprouts.game.model.MathUtil;
 import sprouts.game.model.Position;
 import sprouts.game.model.Region;
 import sprouts.game.model.Sprout;
@@ -57,8 +59,8 @@ public class SproutsMain2 {
 	}
 	
 	private static final String WINDOW_TITLE = "Sprightly Sprouts";
-	private static final int WINDOW_WIDTH  = 1500;
-	private static final int WINDOW_HEIGHT = 1500;
+	private static final int WINDOW_WIDTH  = 1000;
+	private static final int WINDOW_HEIGHT = 1000;
 
 	private final Display display;
 	private final Mouse mouse;
@@ -81,12 +83,12 @@ public class SproutsMain2 {
 	private Line path;
 	private List<Triangle> condense;
 	
-	private boolean drawEdgeIndices = true;
-	private boolean drawTriangles = false;
+	private boolean drawEdgeIndices = false;
+	private boolean drawTriangles = true;
 	private boolean showLineOrientation = false;
-	private boolean drawPath = false;
+	private boolean drawPath = true;
 	private boolean drawOneGraph = false;
-	private boolean drawTwoGraph = false;
+	private boolean drawTwoGraph = true;
 	
 	public SproutsMain2() {
 		display = new Display();
@@ -112,7 +114,7 @@ public class SproutsMain2 {
 		spongeBobTexture = TextureLoader.loadTexture("/textures/spongebob.png");
 
 		FontData arialData = FontLoader.loadFont("/fonts/arial.ttf");
-		arialFont = arialData.createFont(14);
+		arialFont = arialData.createFont(18);
 	}
 	
 	private void init() {
@@ -203,10 +205,17 @@ public class SproutsMain2 {
 					System.out.printf("thinking...\n");
 					RawMove move = ai.getMove(facadeA.getPosition());
 					System.out.printf("ai: %s\n", move.toString());
-
+					
 					MovePathResult result = facadeG.executeMoveWithResult(move.toString());
+
 					facadeA.makeMove(move.toString());
-					saveDebug(result);
+					
+					//saveDebug(result);
+
+					//facadeA.printLives();
+					//facadeG.printLives();
+					
+					if (facadeG.isGameOver()) System.out.printf("game over\n");
 			
 					break;
 				}
@@ -227,8 +236,9 @@ public class SproutsMain2 {
 				String rawMove = prompt("move:");
 				
 				MovePathResult result = facadeG.generateMove(rawMove);
+				
 				String move = facadeG.executeLine(result.line);
-				facadeA.makeMove(move);
+				//facadeA.makeMove(move);
 
 				saveDebug(result);
 				
@@ -285,7 +295,7 @@ public class SproutsMain2 {
 	private void onViewportChanged(int width, int height) {
 		GL11.glViewport(0, 0, width, height);
 		
-		batchedTessellator2D.setViewport(0, 0, width / 2, height / 2);
+		batchedTessellator2D.setViewport(0, 0, width, height);
 	}
 	
 	private void loop() {
@@ -310,6 +320,7 @@ public class SproutsMain2 {
 	private void render() {
 		batchedTessellator2D.beginBatch();
 
+		//batchedTessellator2D.translate(100, 100);
 		/*
 		{
 			String text = "the brown fox";
@@ -342,6 +353,7 @@ public class SproutsMain2 {
 		*/
 		
 		Position position = facadeG.getPosition();
+		//batchedTessellator2D.scale(1.7f, 3f);
 		
 		if (drawTriangles) {
 			if (triangles != null) {
@@ -526,6 +538,25 @@ public class SproutsMain2 {
 			}
 		}
 		
+		if (slither != null) {
+
+			batchedTessellator2D.setColor(VertexColor.WHITE);
+			for (int i = 0; i < slither.size() - 1; i++) {
+				Triangle t1 = slither.get(i);
+				
+				Vertex[] corners = t1.getCorners();
+				for (int j = 0; j < corners.length; j++) {
+					Vertex v0 = corners[j];
+					Vertex v1 = corners[MathUtil.wrap(j+1, 3)];
+					
+					LineSegment s = new LineSegment(v0, v1);
+					Vertex c1 = s.getMiddle();
+					float width = 3;
+					batchedTessellator2D.drawQuad(c1.x-width, c1.y-width, c1.x+width, c1.y+width);
+				}
+			}
+		}
+		
 		if (drawTwoGraph) {
 			if (twoBoundaryGraph != null) {
 				batchedTessellator2D.setColor(VertexColor.BROWN);
@@ -555,7 +586,7 @@ public class SproutsMain2 {
 			float x1 = sprout.position.x + size / 2f;
 			float y1 = sprout.position.y + size / 2f;
 
-			//batchedTessellator2D.drawQuad(x0, y0, x1, y1);
+			batchedTessellator2D.drawQuad(x0, y0, x1, y1);
 		}
 		
 		batchedTessellator2D.setColor(VertexColor.RED);
@@ -601,15 +632,36 @@ public class SproutsMain2 {
 		
 		if (drawPath) {
 			if (path != null) {
-				batchedTessellator2D.setColor(VertexColor.GREEN);
 				
 				for (int i = 0; i < path.size() - 1; i++) {
+					float red = 1f / path.size() * i;
+					batchedTessellator2D.setColor(new VertexColor(red, 0f, 0f));
+					
 					float width = 3;
 					Vertex v0 = path.get(i);
 					Vertex v1 = path.get(i+1);
 					batchedTessellator2D.drawLine(v0.x, v0.y, v1.x, v1.y, width);
 				}
+				
+				/*
+				Vertex v0 = path.get(0);
+				Vertex v1 = path.get(1);
+				Vertex v2 = path.get(7);
+				Vertex v3 = path.get(8);
+				
+				float width = 4;
+				
+						//boolean in = LinMath.intersect(v0.x,v0.y,v1.x,v1.y,v2.x,v2.y,v3.x,v3.y);
+						//System.out.printf("%b\n", in);
+				
+				batchedTessellator2D.setColor(new VertexColor(0f, 0f, 1f));
+				batchedTessellator2D.drawLine(v0.x, v0.y, v1.x, v1.y, width);
+				batchedTessellator2D.setColor(new VertexColor(0, 1f, 0));
+				batchedTessellator2D.drawLine(v2.x, v2.y, v3.x, v3.y, width);
+				*/
 			}
+			
+	
 		}
 		
 		batchedTessellator2D.setColor(VertexColor.ORANGE);
@@ -643,8 +695,7 @@ public class SproutsMain2 {
 			batchedTessellator2D.drawLine(x1, y1, x2, y2, width);
 		}
 		
-		/*
-		batchedTessellator2D.setColor(VertexColor.BLUE);
+		batchedTessellator2D.setColor(VertexColor.YELLOW);
 
 		for (Sprout sprout : sprouts) {
 			String id = String.format("%d", sprout.id);
@@ -658,7 +709,6 @@ public class SproutsMain2 {
 			
 			arialFont.drawString(batchedTessellator2D, id, x, y);
 		}
-		*/
 		
 		if (drawEdgeIndices) {
 			batchedTessellator2D.setColor(VertexColor.BLACK);
@@ -683,8 +733,8 @@ public class SproutsMain2 {
 				String edgeId = String.format("%d", edge.id);
 				TextBounds textBounds = arialFont.getTextBounds(edgeId);
 
-				float x = pos.x - textBounds.width / 2f;
-				float y = pos.y + textBounds.height / 2f;
+				float x = pos.x;
+				float y = pos.y;
 				
 				arialFont.drawString(batchedTessellator2D, edgeId, x, y);
 			}

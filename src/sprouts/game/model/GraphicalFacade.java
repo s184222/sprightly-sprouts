@@ -8,13 +8,17 @@ import sprouts.game.model.move.MoveNotationException;
 import sprouts.game.model.move.RawMove;
 import sprouts.game.model.move.RawMovePathGenerator;
 import sprouts.game.model.move.generators.MovePathResult;
+import sprouts.game.model.move.notation.CompleteMoveNotationParser;
+import sprouts.game.model.move.notation.MoveNotationParser;
 
 public class GraphicalFacade {
 	
 	private RawMovePathGenerator pathGenerator;
 	private Position position;
 	private MoveHistory history;
-
+	
+	private MoveNotationParser notationParser;
+	
 	public Line currentLine;
 	boolean drawingLine;
 	public Sprout from;
@@ -27,17 +31,22 @@ public class GraphicalFacade {
 		currentLine = new Line();
 		
 		pathGenerator = new RawMovePathGenerator();
+		notationParser = new CompleteMoveNotationParser();
 		
 		minimumLineSegmentDistance = 25;
 		drawingLine = false;
 		sproutRadius = 12;
 		
 		history = new MoveHistory();
+
+		// @hack to make tests work
+		createFreshPosition(8);
 	}
 	
 	public void createFreshPosition(int numberOfSprouts) {
 		PositionBuilder builder = new PositionBuilder();
 		position = builder.createSproutsCircle(numberOfSprouts, 320, 240, 150).build();
+		//position = builder.createSproutsCircle(numberOfSprouts, 320, 240, 150).build();
 		
 		/*
 		position = builder
@@ -49,32 +58,38 @@ public class GraphicalFacade {
 			.build();
 		*/
 		
+		//executeMove("5<,5<,[0,2,3]");
+		//executeMove("2<,2<,[3]");
+		//executeMove("1<,1<,[5,4,6]");
+
+		//executeMove("2<,1<,[3,5,0,7]");
+		
+		
+		//executeMove("0<,0<,[1,2]");
+		//executeMove("0<,8<,[1,2]!");
+		
+		//executeMove("7<,7<,[0,1,2,3]");
+		//executeMove("8<,7<,[0,1,2,3]!");
+		
+		
 		/*
-		Line line0 = new Line();
-		line0.add(new Vertex(213.93398f,133.93399f));
-		line0.add(new Vertex(239.0f,133.0f));
-		line0.add(new Vertex(263.0f,144.0f));
-		line0.add(new Vertex(281.0f,162.0f));
-		line0.add(new Vertex(287.0f,191.0f));
-		line0.add(new Vertex(284.0f,218.0f));
-		line0.add(new Vertex(275.0f,245.0f));
-		line0.add(new Vertex(259.0f,265.0f));
-		line0.add(new Vertex(230.0f,278.0f));
-		line0.add(new Vertex(194.0f,287.0f));
-		line0.add(new Vertex(163.0f,286.0f));
-		line0.add(new Vertex(133.0f,278.0f));
-		line0.add(new Vertex(110.0f,266.0f));
-		line0.add(new Vertex(90.0f,249.0f));
-		line0.add(new Vertex(85.0f,206.0f));
-		line0.add(new Vertex(90.0f,171.0f));
-		line0.add(new Vertex(104.0f,146.0f));
-		line0.add(new Vertex(127.0f,133.0f));
-		line0.add(new Vertex(150.0f,122.0f));
-		line0.add(new Vertex(179.0f,119.0f));
-		line0.add(new Vertex(203.0f,126.0f));
-		line0.add(new Vertex(213.93398f,133.93399f));
-		String move0 = executeLine(line0);
+		executeMove("5<,5<,[0,2,3]");
+		executeMove("2<,2<,[3]");
+		executeMove("1<,1<,[5,4,6]");
+		executeMove("1<,10<,[7]!");
+		executeMove("5<,0<,[]");
+		executeMove("2<,12>,[]");
+		executeMove("9<,13>,[]");
+		executeMove("6<,6<,[]");
+		executeMove("15<,6<,[5,4]!");
+		executeMove("0<,8<,[]");
+		executeMove("0<,17<,[]");
+		executeMove("7<,7<,[1]");
+		executeMove("7<,11<,[]");
 		*/
+		//20<,19<,[]
+		
+		// 4<,4<,[12,6]
 		
 	}
 
@@ -82,16 +97,19 @@ public class GraphicalFacade {
 		MovePathResult result = null;
 
 		try {
-			RawMove move = new RawMove(rawMove);
+			RawMove move = notationParser.parse(rawMove);
 		
 			try {
 				result = pathGenerator.generate(move, position);
 				
-				if (result.line == null) return result;
-
-				Util.require(!intersectsNewLine(result.line));
-				
 				history.add(rawMove);
+
+				if (intersectsNewLine(result.line)) {
+					System.out.printf("problem!!!\n");
+					history.printTestCode();
+					Util.require(!intersectsNewLine(result.line));
+				}
+				
 				
 			} catch (MoveException e) {
 				System.out.printf("Generation exception: %s\n", e.getMessage());
@@ -105,7 +123,7 @@ public class GraphicalFacade {
 	}
 	
 	public String executeLine(Line line) {
-		Util.require(!intersectsNewLine(line));
+		//Util.require(!intersectsNewLine(line));
 		RawMove move = position.update(line);
 		return move.toString();
 	}
@@ -121,10 +139,10 @@ public class GraphicalFacade {
 	
 	public MovePathResult executeMoveWithResult(String rawMove) {
 		MovePathResult result = generateMove(rawMove);
-		String actualMove = "";
-		if (result.line != null) {
-			actualMove = executeLine(result.line);
+		if(result != null) {
+			String actualMove = executeLine(result.line);
 		}
+			
 		return result;
 	}
 
@@ -280,7 +298,7 @@ public class GraphicalFacade {
 			
 			executeLine(lineToAdd);
 			
-			if (position.isGameOver()) System.out.printf("game over!!!!\n");
+			
 		}
 	}
 	
@@ -391,5 +409,26 @@ public class GraphicalFacade {
 	
 	public Position getPosition() {
 		return position;
+	}
+
+	public void printLives() {
+		System.out.printf("=== lives G ===\n");
+		for (int i = 0; i < position.getSprouts().size(); i++) {
+			Sprout s = null;
+			for (Sprout sprout : position.getSprouts()) {
+				if (sprout.id == i) {
+					s = sprout;
+					break;
+				}
+			}
+			
+			System.out.printf("%d\n", s.getLives());
+		}
+		
+		System.out.printf("\n");
+	}
+
+	public boolean isGameOver() {
+		return position.isGameOver();
 	}
 }

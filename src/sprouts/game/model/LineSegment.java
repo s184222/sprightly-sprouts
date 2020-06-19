@@ -29,6 +29,12 @@ public class LineSegment {
 		
 		return vertex;
 	}
+	
+	public void reverse() {
+		Vertex tmp = from;
+		from = to;
+		to = tmp;
+	}
 
 	@Override
 	public int hashCode() {

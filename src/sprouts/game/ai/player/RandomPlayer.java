@@ -10,10 +10,12 @@ import sprouts.game.model.move.RawMove;
 public class RandomPlayer implements Player {
 	
 	private Random random;
-	private int seed;
 	
 	public RandomPlayer() {
-		seed = 444;
+		this(6);	//444
+	}
+	
+	public RandomPlayer(int seed) {
 		random = new Random(seed);
 	}
 
@@ -33,6 +35,8 @@ public class RandomPlayer implements Player {
 		*/
 		
 		
+		if (moves.size() == 0) return null;
+
 		Collections.shuffle(moves, random);
 		
 		RawMove move = moves.get(0);

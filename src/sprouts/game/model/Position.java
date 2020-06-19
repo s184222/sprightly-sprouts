@@ -76,6 +76,13 @@ public class Position {
 	}
 	
 	public boolean isGameOver() {
+		/*
+		System.out.printf("=== region lives===\n");
+		for (Region region : regions) {
+			System.out.printf("%d\n", region.getLives());
+		}
+		*/
+		
 		for (Region region : regions) {
 			if (region.isAlive()) return false;
 		}

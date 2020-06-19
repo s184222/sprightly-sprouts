@@ -21,4 +21,8 @@ public class UidGenerator {
 	public void update(int id) {
 		if (id >= nextUid) nextUid = id + 1;
 	}
+	
+	public int peek() {
+		return nextUid;
+	}
 }

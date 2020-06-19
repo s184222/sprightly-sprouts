@@ -1,7 +1,9 @@
 package sprouts.game.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class Edge {
@@ -22,7 +24,6 @@ public class Edge {
 	
 	public Edge() {
 		id = DebugIdGenerators.getEdgeId();
-		System.out.printf("edge id: %d\n", id);
 	}
 	
 	/*
@@ -53,15 +54,15 @@ public class Edge {
 	 */
 	
 	public List<Sprout> getBoundarySprouts() {
-		List<Sprout> sprouts = new ArrayList<>();
+		Set<Sprout> sprouts = new HashSet<>();
 		traverse(edge -> sprouts.add(edge.origin));
-		return sprouts;
+		return new ArrayList<>(sprouts);
 	}
 	
 	public List<Integer> getBoundarySproutIds() {
-		List<Integer> sproutIds = new ArrayList<>();
+		Set<Integer> sproutIds = new HashSet<>();
 		traverse(edge -> sproutIds.add(edge.origin.id));
-		return sproutIds;
+		return new ArrayList<>(sproutIds);
 	}
 	
 	public void setAsBoundaryRepresentative() {
@@ -86,9 +87,12 @@ public class Edge {
 	}
 	
 	public int getBoundaryLives() {
+		List<Sprout> sprouts = getBoundarySprouts();
 		IntRef lives = new IntRef();
 		lives.value = 0;
-		traverse(edge -> lives.value += edge.origin.getLives());
+		for (Sprout sprout : sprouts) {
+			lives.value += sprout.getLives();
+		}
 		return lives.value;
 	}
 	

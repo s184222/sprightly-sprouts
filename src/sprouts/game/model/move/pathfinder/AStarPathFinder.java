@@ -55,9 +55,10 @@ public class AStarPathFinder implements PathFinder {
 		Node<T> sourceNode = Node.root(minimumCostFunction.apply(source, goal));
 		tToNode.put(source, sourceNode);
 		frontier.add(source);
-
+		
 		while (frontier.size() > 0) {
 			T current = frontier.remove();
+			
 			if (current.equals(goal)) break;
 
 			explored.add(current);
