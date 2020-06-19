@@ -1,13 +1,17 @@
 package com.sprouts.graphic;
 
 import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
+import static org.lwjgl.glfw.GLFW.GLFW_ARROW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
 import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
 import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
 import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
+import static org.lwjgl.glfw.GLFW.glfwCreateStandardCursor;
 import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
 import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
+import static org.lwjgl.glfw.GLFW.glfwDestroyCursor;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
+import static org.lwjgl.glfw.GLFW.glfwGetClipboardString;
 import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
 import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowSize;
@@ -15,6 +19,8 @@ import static org.lwjgl.glfw.GLFW.glfwInit;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSetCharCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetClipboardString;
+import static org.lwjgl.glfw.GLFW.glfwSetCursor;
 import static org.lwjgl.glfw.GLFW.glfwSetCursorPosCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetErrorCallback;
 import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
@@ -34,7 +40,9 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.lwjgl.glfw.GLFWCharCallbackI;
 import org.lwjgl.glfw.GLFWCursorPosCallbackI;
@@ -54,10 +62,14 @@ public class Display implements IResource {
 	
 	private List<DisplayListener> listeners;
 	
+	private Map<Integer, Long> standardCursors;
+	
 	public Display() {
 		windowHandle = -1L;
 		
 		listeners = new ArrayList<DisplayListener>();
+	
+		standardCursors = new HashMap<Integer, Long>();
 	}
 	
 	public void addDisplayListener(DisplayListener listener) {
@@ -165,8 +177,37 @@ public class Display implements IResource {
 		return glfwWindowShouldClose(windowHandle);
 	}
 
+	public void setCursor(int cursorType) {
+		if (cursorType == GLFW_ARROW_CURSOR) {
+			glfwSetCursor(windowHandle, NULL);
+		} else {
+			long ptr;
+			if (standardCursors.containsKey(cursorType)) {
+				ptr = standardCursors.get(cursorType);
+			} else {
+				ptr = glfwCreateStandardCursor(cursorType);
+				standardCursors.put(cursorType, ptr);
+			}
+			
+			glfwSetCursor(windowHandle, ptr);
+		}
+	}
+
+	public String getClipboardString() {
+		return glfwGetClipboardString(windowHandle);
+	}
+
+	public void setClipboardString(String clipboardString) {
+		glfwSetClipboardString(windowHandle, clipboardString);
+	}
+	
 	@Override
 	public void dispose() {
+		// Destroy the standard cursors
+		for (Long cursorPtr : standardCursors.values())
+			glfwDestroyCursor(cursorPtr.longValue());
+		standardCursors.clear();
+		
 		// Free the window callbacks and destroy the window
 		glfwFreeCallbacks(windowHandle);
 		glfwDestroyWindow(windowHandle);

@@ -73,6 +73,14 @@ public interface ITessellator2D extends IResource {
 	
 	public void setTextureRegion(ITextureRegion textureRegion);
 	
+	public void clearAlphaMultiplier();
+	
+	public float getAlphaMultiplier();
+
+	public void setAlphaMultiplier(float alphaMultiplier);
+	
+	public void multiplyAlpha(float multiplier);
+	
 	public void clearTransform();
 	
 	public Mat3 getTransform();

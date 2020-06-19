@@ -29,8 +29,8 @@ public class Texture implements ITextureRegion, IResource {
 	
 	private final int texId;
 	
-	private int width;
-	private int height;
+	protected int width;
+	protected int height;
 	
 	public Texture() {
 		texId = GL11.glGenTextures();
@@ -59,6 +59,12 @@ public class Texture implements ITextureRegion, IResource {
 			dispose();
 			throw e;
 		}
+	}
+	
+	protected Texture(int texId) {
+		this.texId = texId;
+		
+		width = height = 0;
 	}
 	
 	public void setTextureData(ByteBuffer pixels, int width, int height, int channels) throws InvalidFormatException {

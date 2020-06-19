@@ -2,9 +2,10 @@ package com.sprouts.graphic.buffer;
 
 public enum FrameBufferType {
 
-	TEXTURE(true, false),
+	COLOR(true, false),
 	DEPTH(false, true),
-	DEPTH_AND_TEXTURE(true, true);
+	DEPTH_AND_COLOR(true, true),
+	MULTISAMPLED_DEPTH_AND_COLOR(true, true);
 	
 	private final boolean texAttach;
 	private final boolean depthAttach;
@@ -14,7 +15,7 @@ public enum FrameBufferType {
 		this.depthAttach = depthAttach;
 	}
 	
-	public boolean hasTextureAttachment() {
+	public boolean hasColorAttachment() {
 		return texAttach;
 	}
 

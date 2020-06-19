@@ -68,6 +68,8 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 	protected ITextureRegion textureRegion;
 	protected int textureIndex;
 	
+	protected float alphaMultiplier;
+	
 	protected final Mat3 transform;
 	
 	protected ClipShape clipShape;
@@ -88,6 +90,7 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 		transform = new Mat3();
 
 		clearMaterial();
+		clearAlphaMultiplier();
 		clearTransform();
 		clearClipShape();
 		
@@ -356,9 +359,9 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 
 		clipAndTessellate(planes, planeIndex + 1);
 		
-		t.v2.set(t.v1);
-		t.v0.set(in0);
-		t.v1.set(in1);
+		t.v0.set(in1);
+		//t.v1.set(t.v1);
+		t.v2.set(in0);
 
 		clipAndTessellate(planes, planeIndex + 1);
 	}
@@ -410,7 +413,7 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 			UNSAFE.putFloat(address + 0, x);
 			UNSAFE.putFloat(address + 4, y);
 			
-			VertexColor color = colorGradient.getColor(x, y, transform);
+			VertexColor color = getVertexColor(x, y);
 			UNSAFE.putByte(address + 8, (byte)color.getRed());
 			UNSAFE.putByte(address + 9, (byte)color.getGreen());
 			UNSAFE.putByte(address + 10, (byte)color.getBlue());
@@ -425,7 +428,7 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 		} else {
 			builder.put(x, y);
 			
-			VertexColor color = colorGradient.getColor(x, y, transform);
+			VertexColor color = getVertexColor(x, y);
 			builder.put((byte)color.getRed());
 			builder.put((byte)color.getGreen());
 			builder.put((byte)color.getBlue());
@@ -435,6 +438,11 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 			
 			builder.put((byte)textureIndex);
 		}
+	}
+	
+	protected VertexColor getVertexColor(float x, float y) {
+		VertexColor color = colorGradient.getColor(x, y, transform);
+		return color.withAlpha((int)(color.getAlpha() * alphaMultiplier));
 	}
 	
 	protected abstract VertexAttribBuilder getBuilder();
@@ -492,6 +500,26 @@ public abstract class AbstractTessellator2D implements ITessellator2D, AutoClose
 		activeTextures.add(texture);
 	
 		return nextTextureIndex;
+	}
+	
+	@Override
+	public void clearAlphaMultiplier() {
+		alphaMultiplier = 1.0f;
+	}
+	
+	@Override
+	public float getAlphaMultiplier() {
+		return alphaMultiplier;
+	}
+
+	@Override
+	public void setAlphaMultiplier(float alphaMultiplier) {
+		this.alphaMultiplier = LinMath.clamp(alphaMultiplier, 0.0f, 1.0f);
+	}
+	
+	@Override
+	public void multiplyAlpha(float multiplier) {
+		alphaMultiplier = LinMath.clamp(alphaMultiplier * multiplier, 0.0f, 1.0f);
 	}
 
 	@Override

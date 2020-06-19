@@ -179,6 +179,9 @@ public final class VertexColor {
 	public static final VertexColor DARK_SLATE_GREY        = DARK_SLATE_GRAY;
 	public static final VertexColor BLACK                  = new VertexColor(0xFF000000);
 	
+	/* FULLY TRANSPARENT */
+	public static final VertexColor TRANSPARENT            = new VertexColor(0x00000000);
+	
 	private final int alpha;
 	private final int red;
 	private final int green;

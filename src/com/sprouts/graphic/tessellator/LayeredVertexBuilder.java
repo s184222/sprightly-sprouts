@@ -419,14 +419,12 @@ public class LayeredVertexBuilder implements AutoCloseable, IResource {
 	 * @param deltaOffset - the amount of bytes which the offset has changed.
 	 */
 	private void incrementChildrenOffsets(VertexLayerInfo layer, int deltaOffset) {
-		if (layer.nextLayer != null) {
-			layer = layer.nextLayer;
+		layer = layer.nextLayer;
 
+		while (layer != null) {
 			layer.offset += deltaOffset;
-			while ((layer = layer.nextSibling) != null) {
-				layer.offset += deltaOffset;
-				incrementChildrenOffsets(layer, deltaOffset);
-			}
+			incrementChildrenOffsets(layer, deltaOffset);
+			layer = layer.nextSibling;
 		}
 	}
 	
