@@ -68,6 +68,11 @@ public class ParentComposition extends Composition {
 		requestDraw(true);
 	}
 	
+	public void removeAll() {
+		while (!children.isEmpty())
+			remove(children.get(children.size() - 1));
+	}
+	
 	@Override
 	protected void doLayout() {
 		layoutManager.layoutChildren(this);

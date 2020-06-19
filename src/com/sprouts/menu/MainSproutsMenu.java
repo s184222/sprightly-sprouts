@@ -8,6 +8,7 @@ import com.sprouts.composition.layout.GridLayoutManager;
 import com.sprouts.composition.layout.LayoutSpecification;
 import com.sprouts.composition.text.ButtonComposition;
 import com.sprouts.composition.text.TextAlignment;
+import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 
 public class MainSproutsMenu extends SproutsMenu {
 
@@ -68,5 +69,9 @@ public class MainSproutsMenu extends SproutsMenu {
 	
 	@Override
 	public void update() {
+	}
+
+	@Override
+	public void drawBackground(BatchedTessellator2D tessellator) {
 	}
 }

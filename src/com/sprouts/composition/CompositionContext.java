@@ -23,8 +23,6 @@ import com.sprouts.graphic.tessellator2d.shader.Tessellator2DShader;
 import com.sprouts.input.Keyboard;
 import com.sprouts.input.Mouse;
 
-import sun.awt.DisplayChangedListener;
-
 /**
  * @author Christian
  */

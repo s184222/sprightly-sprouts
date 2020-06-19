@@ -5,6 +5,7 @@ import com.sprouts.composition.Composition;
 import com.sprouts.composition.ParentComposition;
 import com.sprouts.composition.drawable.EmptyDrawable;
 import com.sprouts.composition.drawable.TextureOverlayDrawable;
+import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 
 public abstract class SproutsMenu extends ParentComposition {
 
@@ -22,5 +23,7 @@ public abstract class SproutsMenu extends ParentComposition {
 	}
 	
 	public abstract void update();
+
+	public abstract void drawBackground(BatchedTessellator2D tessellator);
 	
 }
