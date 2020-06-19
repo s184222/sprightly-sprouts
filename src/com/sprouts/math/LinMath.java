@@ -172,7 +172,6 @@ public final class LinMath {
 //		System.out.println(intersect(new Vec2(0,0),new Vec2(3,3),new Vec2(2,3),new Vec2(4,3),false,true));
 //	}
 	
-	// @TODO: refactor	// @HACK
 	/*
 	public static boolean isPointInPolygon(Vertex point, List<Vertex> vertices) {
 		List<Vec2> outer = new ArrayList<>();

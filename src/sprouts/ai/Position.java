@@ -14,23 +14,6 @@ import sprouts.game.util.Assert;
 
 public class Position {
 
-	/*
-	 * GraphicalRepresentation:
-	 * 
-	 * ConcreteRepresentation:
-	 * 
-	 * (Paper/Abstact)Representation: position: string
-	 * 
-	 * ====
-	 * 
-	 * AI: 
-	 * moves = concrete.computeAllMoves() 
-	 * for Move m in moves: 
-	 *   abstract = concrete.toAbstractRepresentation()
-	 * 	 winning = abstract.isWinning(abstract) 
-	 *   if winning then concrete.doMove(m)
-	 */
-	
 	private UidGenerator sproutIdGenerator;
 
 	private int initialNumberOfLives;

@@ -13,7 +13,7 @@ import sprouts.game.model.Vertex;
 import sprouts.game.move.IdMove;
 import sprouts.game.move.MoveException;
 import sprouts.game.move.MoveNotationException;
-import sprouts.game.move.advanced.AdvanceMoveGenerationPipeline;
+import sprouts.game.move.advanced.AdvancedMoveGenerationPipeline;
 import sprouts.game.move.pathfinder.AStarPathFinder;
 import sprouts.game.move.pathfinder.PathFinder;
 import sprouts.game.move.pipe.MoveGenerationPipeline;
@@ -57,12 +57,15 @@ public class GraphicalFacade {
 		MoveGenerationPipeline simplePipe = new SimpleMoveGenerationPipeline(pathfinder, triangleGenerator);
 		moveGenerationPipes.add(simplePipe);
 		
-		MoveGenerationPipeline advancePipe = new AdvanceMoveGenerationPipeline(pathfinder, triangleGenerator);
-		moveGenerationPipes.add(advancePipe);
+		MoveGenerationPipeline advancedPipe = new AdvancedMoveGenerationPipeline(pathfinder, triangleGenerator);
+		moveGenerationPipes.add(advancedPipe);
 	}
 	
 	public void createFreshPosition(int numberOfSprouts) {
-		position = builder.createSproutsCircle(8, 320, 240, 150).build();
+		float cx = 320;
+		float cy = 240;
+		float radius = 80 + numberOfSprouts * 12;
+		position = builder.createSproutsCircle(numberOfSprouts, cx, cy, radius).build();
 	}
 	
 	public void createFreshPosition(int numberOfSprouts, float x, float y, float radius) {
@@ -209,10 +212,6 @@ public class GraphicalFacade {
 			if (to.getNeighbourCount() > 2) return;
 			if (to.equals(from) && to.getNeighbourCount() > 1) return;
 			if (to.equals(from) && lineToAdd.size() < 3) return;
-			
-			// @speed @RegionLine
-			// we could just use the lines in the region
-			// and not check all.
 			
 			List<Line> nonNeighbours = new ArrayList<>();
 			nonNeighbours.addAll(position.getLines());

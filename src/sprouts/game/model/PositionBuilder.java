@@ -2,6 +2,14 @@ package sprouts.game.model;
 
 import com.sprouts.math.Vec2;
 
+/**
+ * 
+ * Builds a position
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
+
 public class PositionBuilder {
 	
 	private Position position;

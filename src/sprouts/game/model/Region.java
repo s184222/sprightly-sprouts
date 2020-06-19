@@ -7,6 +7,8 @@ import sprouts.game.util.Assert;
 
 /**
  * 
+ * A region is the empty space 
+ * 
  * @author Rasmus Møller Larsen, s184190
  *
  */
@@ -22,6 +24,7 @@ public class Region {
 	}
 	
 	public boolean isOuterRegion() {
+		// the outer region has no boundary which it is confined with in
 		return outerBoundary == null;
 	}
 	
@@ -39,6 +42,12 @@ public class Region {
 		return b1.equals(b2);
 	}
 
+	/**
+	 * 
+	 * @param sprout
+	 * @return the boundary representative of the sprout which is within the region
+	 * 		   or null if the sprout has no boundary within the region.
+	 */
 	public Edge getBoundary(Sprout sprout) {
 		for (Edge neighbour : sprout.neighbours) {
 			if (!neighbour.region.equals(this)) continue;
@@ -47,6 +56,14 @@ public class Region {
 		return null;
 	}
 	
+	/**
+	 * 
+	 * Removes the boundary of the sprout from the region,
+	 * if the sprout is not in a boundary, then remove the sprout
+	 * from the region
+	 * 
+	 * @param sprout - sprout to free
+	 */
 	public void freeBoundary(Sprout sprout) {
 		if (innerSprouts.contains(sprout)) {
 			innerSprouts.remove(sprout);
@@ -63,7 +80,15 @@ public class Region {
 			representative.setBoundaryRegion(null);
 		}
 	}
-	
+
+	/**
+	 * 
+	 * check that the point is within the region, but not inside any potential subregions,
+	 * which boundaries within the region may create.
+	 * 
+	 * @param point
+	 * @return true if inside region
+	 */
 	public boolean isInsideRegion(Vertex point) {
 		if (!isOuterRegion()) {
 			if (!outerBoundary.isInsideBoundary(point)) return false;
@@ -76,6 +101,11 @@ public class Region {
 		return true;
 	}
 
+	/**
+	 * 
+	 * @return the the sum of the lives of each sprout within the region
+	 * 
+	 */
 	public int getLives() {
 		int lives = 0;
 		
@@ -96,6 +126,12 @@ public class Region {
 		return lives;
 	}
 	
+	/**
+	 * If a region has at least 2 lives, then it is alive,
+	 * because it is possible to draw a line between 2 sprouts,
+	 * 
+	 * @return true if alive
+	 */
 	public boolean isAlive() {
 		return getLives() >= 2;
 	}

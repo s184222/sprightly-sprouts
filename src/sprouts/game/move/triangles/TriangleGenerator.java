@@ -14,8 +14,22 @@ import sprouts.game.model.Position;
 import sprouts.game.model.Sprout;
 import sprouts.game.model.Vertex;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ * 
+ */
 public class TriangleGenerator {
 	
+	/**
+	 * 
+	 * Computes a constrained delaunay triangulation of the position,
+	 * such that no triangle intersect with a line.
+	 * 
+	 * 
+	 * @param position - the current position
+	 * @return triangulation of the position
+	 */
 	public List<Triangle> getTriangles(Position position) {
 
 		try {
@@ -23,7 +37,7 @@ public class TriangleGenerator {
 			
 			List<Line> lines = position.getLines();
 			for (Line line : lines) {
-				for (int i = 0; i < line.size() - 1; i++ ) {
+				for (int i = 0; i < line.size() - 1; i++) {
 					Vertex from = line.get(i);
 					Vertex to = line.get(i+1);
 					

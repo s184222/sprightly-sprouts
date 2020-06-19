@@ -10,8 +10,31 @@ import sprouts.game.model.Sprout;
 import sprouts.game.model.Vertex;
 import sprouts.game.move.triangles.Triangle;
 
+/**
+ * A collection of trigonometric functions concerned with the rotation.
+ * 
+ * Utility functions which return the first vertex, triangle or edge 
+ * encountered during a clockwise or counterclockwise rotation given a start
+ * line (origin to reference vertex).
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
 public class Trig {
 	
+	/**
+	 * The algorithm behaves as if a linesegment given by (origin, reference) rotates around itself
+	 * either clockwise or counterclockwise and returns the index of the first candidates which it 
+	 * encounters.
+	 * 
+	 * @param origin
+	 * @param reference
+	 * @param candidateTos - vertices to consider
+	 * @param clockwise if true else counterclockwise
+	 * @return returns the index of the first candidate first encountered 
+	 * 		   during a clockwise/counterclockwise rotation around origin with (origin, reference)
+	 * 		   as the initial direction of the scanline.
+	 */
 	public static int getFirstOnRotation(Vertex origin, Vertex reference, List<Vertex> candidateTos, boolean clockwise) {
 		Vec2 vec = new Vec2();
 		vec.set(reference.x, reference.y)
@@ -50,6 +73,14 @@ public class Trig {
 		return getFirstEdge(origin.position, destination, origin.neighbours, false);
 	}
 	
+	/**
+	 * 
+	 * @param origin
+	 * @param reference
+	 * @param tos - edges to consider
+	 * @param clockwise if true else counterclockwise
+	 * @return the first edge encountered during either a clockwise or counterclockwise sweep.
+	 */
 	public static Edge getFirstEdge(Vertex origin, Vertex reference, List<Edge> tos, boolean clockwise) {
 		List<Vertex> candidates = new ArrayList<>();
 		
@@ -62,6 +93,14 @@ public class Trig {
 		return tos.get(smallestAngleIndex);
 	}
 	
+	/**
+	 * 
+	 * @param origin
+	 * @param reference
+	 * @param triangles - triangles to consider
+	 * @param clockwise if true else counterclockwise
+	 * @return the first triangle encountered during either a clockwise or counterclockwise sweep.
+	 */
 	public static Triangle getFirstTriangle(Vertex origin, Vertex reference, List<Triangle> triangles, boolean clockwise) {
 		List<Vertex> candidates = new ArrayList<>();
 		

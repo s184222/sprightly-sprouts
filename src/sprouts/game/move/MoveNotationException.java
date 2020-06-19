@@ -1,7 +1,7 @@
 package sprouts.game.move;
 
 /**
- * Exception is throws if a move in a string format is invalid
+ * Exception is throws if a move in a string format is invalid.
  * 
  * @author Rasmus Møller Larsen, s184190
  *

@@ -39,101 +39,6 @@ public class Position {
 		outerRectangle = new BufferRectangle();
 	}
 	
-	public Edge createEdge(Sprout origin, Line line, Region region) {
-		Edge edge = new Edge();
-		edge.origin = origin;
-		edge.line = line;
-		edge.region = region;
-		
-		edges.add(edge);
-
-		return edge;
-	}
-	
-	public Sprout createSprout(Vertex vertex) {
-		int id = sproutIdGenerator.generate();
-
-		Sprout sprout = new Sprout(id);
-		sprout.position = vertex;
-		
-		sprouts.add(sprout);
-		
-		return sprout;
-	}
-
-	public void addVertex(Vertex vertex) {
-		outerRectangle.update(vertex.x, vertex.y);
-		vertices.add(vertex);
-	}
-	
-	public Sprout getSprout(Vertex vertex) {
-		for (Sprout sprout : sprouts) {
-			if (sprout.position.equals(vertex)) return sprout;
-		}
-		return null;
-	}
-	
-	public Sprout getSprout(int id) {
-		for (Sprout sprout : sprouts) {
-			if (sprout.id == id) return sprout;
-		}
-		return null;
-	}
-	
-	public boolean isGameOver() {
-		/*
-		System.out.printf("=== region lives===\n");
-		for (Region region : regions) {
-			System.out.printf("%d\n", region.getLives());
-		}
-		*/
-		
-		for (Region region : regions) {
-			if (region.isAlive()) return false;
-		}
-		return true;
-	}
-	
-	public List<Vertex> getVertices() {
-		return vertices;
-	}
-	
-	public List<Edge> getEdges() {
-		return edges;
-	}
-	
-	public void addRegion(Region region) {
-		regions.add(region);
-	}
-	
-	public List<Region> getRegions() {
-		return regions;
-	}
-	
-	public void addSprout(Sprout sprout) {
-		sprouts.add(sprout);
-	}
-	
-	public List<Sprout> getSprouts() {
-		return sprouts;
-	}
-
-	public void addLine(Line line) {
-		lines.add(line);
-	}
-	
-	public List<Line> getLines() {
-		return lines;
-	}
-	
-	public Region getOuterRegion() {
-		return outerRegion;
-	}
-	
-	public List<Vertex> getOuterCorners() {
-		return outerRectangle.getCorners();
-	}
-	
 	public IdMove update(Line line) {
 		Line lineWithMiddle = new Line();
 		lineWithMiddle.addAll(line);
@@ -235,14 +140,6 @@ public class Position {
 		
 		return move;
 	}
-	
-	/*
-	 * @TODO:
-	 * 
-	 * - bug with outerboundary orientation. See bugNew.png 
-	 * 
-	 * 
-	 */
 	
 	private IdMove getOneBoundaryMove(Sprout from, Sprout to, Region region, Line line) {
 		IdMove move = new IdMove();
@@ -495,4 +392,95 @@ public class Position {
 		}
 		return false;
 	}
+
+	
+	public Sprout getSprout(Vertex vertex) {
+		for (Sprout sprout : sprouts) {
+			if (sprout.position.equals(vertex)) return sprout;
+		}
+		return null;
+	}
+	
+	public Sprout getSprout(int id) {
+		for (Sprout sprout : sprouts) {
+			if (sprout.id == id) return sprout;
+		}
+		return null;
+	}
+	
+	public boolean isGameOver() {
+		for (Region region : regions) {
+			if (region.isAlive()) return false;
+		}
+		return true;
+	}
+	
+	public Edge createEdge(Sprout origin, Line line, Region region) {
+		Edge edge = new Edge();
+		edge.origin = origin;
+		edge.line = line;
+		edge.region = region;
+		
+		edges.add(edge);
+
+		return edge;
+	}
+	
+	public Sprout createSprout(Vertex vertex) {
+		int id = sproutIdGenerator.generate();
+
+		Sprout sprout = new Sprout(id);
+		sprout.position = vertex;
+		
+		sprouts.add(sprout);
+		
+		return sprout;
+	}
+
+	public void addVertex(Vertex vertex) {
+		outerRectangle.update(vertex.x, vertex.y);
+		vertices.add(vertex);
+	}
+	
+	
+	public List<Vertex> getVertices() {
+		return vertices;
+	}
+	
+	public List<Edge> getEdges() {
+		return edges;
+	}
+	
+	public void addRegion(Region region) {
+		regions.add(region);
+	}
+	
+	public List<Region> getRegions() {
+		return regions;
+	}
+	
+	public void addSprout(Sprout sprout) {
+		sprouts.add(sprout);
+	}
+	
+	public List<Sprout> getSprouts() {
+		return sprouts;
+	}
+
+	public void addLine(Line line) {
+		lines.add(line);
+	}
+	
+	public List<Line> getLines() {
+		return lines;
+	}
+	
+	public Region getOuterRegion() {
+		return outerRegion;
+	}
+	
+	public List<Vertex> getOuterCorners() {
+		return outerRectangle.getCorners();
+	}
+	
 }

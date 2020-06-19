@@ -2,7 +2,7 @@ package sprouts.ai;
 
 import sprouts.game.UidGenerator;
 import sprouts.game.move.MoveNotationException;
-import sprouts.game.move.advanced.AdvanceMoveNotationParser;
+import sprouts.game.move.advanced.AdvancedMoveNotationParser;
 import sprouts.game.move.pipe.MoveNotationParser;
 import sprouts.game.util.Assert;
 
@@ -18,7 +18,7 @@ public class AbstractFacade {
 	
 	public void makeMove(String move) {
 		try {
-			MoveNotationParser parser = new AdvanceMoveNotationParser();
+			MoveNotationParser parser = new AdvancedMoveNotationParser();
 			position.makeMove(parser.parse(move));
 		} catch (MoveNotationException e) {
 			System.out.printf("%s\n", e.getMessage());

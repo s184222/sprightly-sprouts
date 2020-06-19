@@ -4,6 +4,11 @@ import java.util.Arrays;
 
 import sprouts.game.model.Vertex;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
 public class Triangle {
 	
 	private Vertex[] corners;

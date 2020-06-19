@@ -9,10 +9,10 @@ import sprouts.game.move.triangles.TriangleGenerator;
  * @author Rasmus Møller Larsen, s184190
  *
  */
-public class AdvanceMoveGenerationPipeline extends MoveGenerationPipeline {
+public class AdvancedMoveGenerationPipeline extends MoveGenerationPipeline {
 
-	public AdvanceMoveGenerationPipeline(PathFinder pathFinder, TriangleGenerator triangleGenerator) {
-		super(new AdvanceMoveNotationParser(), 
+	public AdvancedMoveGenerationPipeline(PathFinder pathFinder, TriangleGenerator triangleGenerator) {
+		super(new AdvancedMoveNotationParser(), 
 				new AdvancedPreprocessor(), 
 				new AdvancedMoveGenerator(pathFinder, triangleGenerator));
 	}

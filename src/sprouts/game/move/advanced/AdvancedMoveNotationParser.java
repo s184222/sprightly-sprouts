@@ -24,7 +24,7 @@ import sprouts.game.move.pipe.MoveNotationParser;
  * 
  */
 
-public class AdvanceMoveNotationParser implements MoveNotationParser {
+public class AdvancedMoveNotationParser implements MoveNotationParser {
 
 	@Override
 	public IdMove parse(String rawMove) throws MoveNotationException {

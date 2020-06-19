@@ -6,6 +6,13 @@ import java.util.Map;
 
 import sprouts.game.model.Vertex;
 
+/**
+ * 
+ * Auto-generating Unit test code of the moves which have been drawn or request.
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
 public class MoveHistory {
 	
 	private Map<Integer, String> moveHistory;

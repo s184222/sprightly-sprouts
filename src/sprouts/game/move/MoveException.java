@@ -1,7 +1,7 @@
 package sprouts.game.move;
 
 /**
- * Exception is throws if a {@link Move} is invalid in a given position
+ * Exception is throws if a {@link Move} is invalid in a given position.
  * 
  * @see Move
  * 

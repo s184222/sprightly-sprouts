@@ -507,9 +507,9 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 						Collections.swap(path, i+1, j);
 					}
 				}	else if (lineSegment2) {
-						if (dst(q1, p0) < dst(p1, p0) && dst(p1,q1) < Math.max(dst(q1, p0), dst(p1, p0))) {
-							Collections.swap(path, i+1, j+1);
-						}
+					if (dst(q1, p0) < dst(p1, p0) && dst(p1,q1) < Math.max(dst(q1, p0), dst(p1, p0))) {
+						Collections.swap(path, i+1, j+1);
+					}
 				}	else {
 				
 					if (p0 == q0) continue;
@@ -518,15 +518,15 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 					if (p1 == q1) continue;
 					
 					if (LinMath.intersect(p0.x, p0.y, p1.x, p1.y, q0.x, q0.y, q1.x, q1.y)) {
-							if (p1s.equals(q0s)) {
-								Collections.swap(path, i+1, j);
-							}	else if (p1s.equals(q1s)){
-								Collections.swap(path, i+1, j+1);
-							} else {
-								return null;
-							}
+						if (p1s.equals(q0s)) {
+							Collections.swap(path, i+1, j);
+						}	else if (p1s.equals(q1s)){
+							Collections.swap(path, i+1, j+1);
+						} else {
+							return null;
 						}
 					}
+				}
 			}
 		}
 		
@@ -602,7 +602,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 				
 				List<Vertex> path = createPathFromTriangles(condensable, end, end);
 				path.remove(0);	// start and end vertex are the same, isPointInPolygon expects that they are not the same. 
-												// So remove one of them.
+								// So remove one of them.
 
 				boolean shouldRemove = true;
 				
