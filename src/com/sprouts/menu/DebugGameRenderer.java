@@ -42,7 +42,7 @@ public class DebugGameRenderer implements IKeyEventListener {
 	
 	private final GameMenu gameMenu;
 	
-	private final AbstractFacade facadeA;
+	private AbstractFacade facadeA;
 	private final Player ai;
 	
 	private List<Triangle> triangles;
@@ -383,6 +383,10 @@ public class DebugGameRenderer implements IKeyEventListener {
 		switch (event.getKeyCode()) {
 		case GLFW.GLFW_KEY_R: {
 			gameMenu.facadeG = new GraphicalFacade();
+			gameMenu.facadeG.createFreshPosition(8);
+
+			facadeA = new AbstractFacade();
+			facadeA.createFreshPosition(8);
 			break;
 		}
 		
