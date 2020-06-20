@@ -60,136 +60,20 @@ public class GraphicalFacade {
 		sproutRadius = 12;
 	}
 	
-	public void executeTest1() {
-		List<String> moves = new ArrayList<>();
-		createFreshPosition(4);
-		
-		moves.add("1,2");
-		moves.add("5,3");
-		moves.add("6,4");
-		moves.add("1,2");
-		moves.add("2,1");
-		moves.add("8,9");
-		moves.add("7,3");
-		moves.add("3,11");
-		moves.add("12,4");
-		moves.add("4,13");
-		moves.add("10,4");
-		
-		executeMoves(moves);
-	}
-	
-	
-	public void executeTest2() {
-		List<String> moves = new ArrayList<>();
-		createFreshPosition(2);
-
-		moves.add("1,2");
-		moves.add("2,3");
-		moves.add("3,1");
-		moves.add("5,4");
-		moves.add("6,2");
-		
-		executeMoves(moves);
-	}
-	
-	public void executeTest3() {
-		List<String> moves = new ArrayList<>();
-		createFreshPosition(2);
-		
-		moves.add("1,2");
-		moves.add("2,3");
-		moves.add("4,1");
-		moves.add("2,5");
-		moves.add("6,1");
-		
-		executeMoves(moves);
-	}
-	
-	public void executeTest4() {
-		List<String> moves = new ArrayList<>();
-		createFreshPosition(2);
-		
-		moves.add("1,1");
-		moves.add("2,2");
-		moves.add("1,2");
-		moves.add("5,4");
-		moves.add("6,3");
-		
-		executeMoves(moves);
-	}
-	
-	public void executeTest5() {
-		List<String> moves = new ArrayList<>();
-		createFreshPosition(5);
-		
-		moves.add("1,2");
-		moves.add("2,3");
-		moves.add("3,4");
-		moves.add("4,5");
-		moves.add("1,6");
-		moves.add("2,7");
-		moves.add("8,3");
-		moves.add("9,4");
-		moves.add("10,1");
-		moves.add("14,11");
-		moves.add("15,12");
-		moves.add("16,13");
-		moves.add("5,17");
-		moves.add("18,15");
-
-		executeMoves(moves);
-	}
-	
-	public void executeTest6() {
-		List<String> moves = new ArrayList<>();
-		createFreshPosition(4);
-		
-		moves.add("1,3");
-		moves.add("2,4");
-		moves.add("2,2");
-		moves.add("7,6");
-		moves.add("8,4");
-		moves.add("3,9");
-		/*
-		moves.add("4,10");
-		moves.add("5,3");
-		moves.add("12,1");
-		moves.add("1,13");
-		moves.add("11,14");
-		*/
-		executeMoves(moves);
-
-	}
-	
-	public void executeTest7() {
-		List<String> moves = new ArrayList<>();
-		createFreshPosition(2);
-		
-		moves.add("1,2");
-		moves.add("3,1");
-		moves.add("4,1");
-		moves.add("5,2");
-		moves.add("2,3");
-
-		executeMoves(moves);
-
-	}
-	
 	/**
 	 * 
 	 */
-	
-	public void executeMoves(List<String> moves) {
-		
+	public boolean executeMoves(List<String> moves) {
 		for (String move : moves) {
 			try {
 				executeMove(move);
 			} catch (MovePipeLineException e) {
 				System.out.printf("not possible to execute the move: %s. Early termining the sequence.\n", move);
-				break;
+				return false;
 			}
 		}
+		
+		return true;
 	}
 	
 	public void createFreshPosition(int numberOfSprouts) {

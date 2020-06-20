@@ -2,13 +2,17 @@ package com.sprouts.menu;
 
 import java.util.List;
 
+import org.lwjgl.glfw.GLFW;
+
 import com.sprouts.SproutsMain;
 import com.sprouts.composition.Composition;
 import com.sprouts.composition.CompositionSize;
 import com.sprouts.composition.ParentComposition;
 import com.sprouts.composition.border.Margin;
 import com.sprouts.composition.drawable.TextureOverlayDrawable;
+import com.sprouts.composition.event.IKeyEventListener;
 import com.sprouts.composition.event.IMouseEventListener;
+import com.sprouts.composition.event.KeyEvent;
 import com.sprouts.composition.event.MouseEvent;
 import com.sprouts.composition.layout.CompositionFill;
 import com.sprouts.composition.layout.LayoutDirection;
@@ -37,6 +41,7 @@ public class GameMenu extends SproutsMenu {
 	private static final float MOVE_LINE_WIDTH = 3.0f;
 	
 	/* Visible for debugging only! */
+	protected final boolean withAI;
 	protected GraphicalFacade facadeG;
 	
 	protected final Font font;
@@ -50,23 +55,13 @@ public class GameMenu extends SproutsMenu {
 	private float offsetX;
 	private float offsetY;
 	
-	public GameMenu(SproutsMain main) {
+	public GameMenu(SproutsMain main, boolean withAI) {
 		super(main);
+
+		this.withAI = withAI;
 		
 		facadeG = new GraphicalFacade();
-		
-		/*
-		facadeG.createFreshPosition(8);
 
-		facadeG.executeTest1();
-		facadeG.executeTest2();
-		facadeG.executeTest3();
-		facadeG.executeTest4();
-		facadeG.executeTest5();
-		*/
-		facadeG.executeTest6();
-		//facadeG.executeTest7();
-		
 		font = getResourceManager().createFont(24.0f);
 		mousePos = new Vec2();
 		
@@ -77,6 +72,14 @@ public class GameMenu extends SproutsMenu {
 		
 		uiLayout();
 		uiEvents();
+	}
+	
+	public void reset(int initialSproutCount) {
+		facadeG.createFreshPosition(initialSproutCount);
+	}
+	
+	public boolean executeMoves(List<String> rawMoves) {
+		return facadeG.executeMoves(rawMoves);
 	}
 
 	private void uiLayout() {
@@ -158,6 +161,26 @@ public class GameMenu extends SproutsMenu {
 			public void mouseDragged(MouseEvent event) {
 				Vertex vertex = viewToWorld(event.getX(), event.getY());
 				facadeG.touchDragged(vertex.x, vertex.y);
+			}
+		});
+		
+		addKeyEventListener(new IKeyEventListener() {
+			@Override
+			public void keyTyped(KeyEvent event) {
+			}
+			
+			@Override
+			public void keyRepeated(KeyEvent event) {
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent event) {
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent event) {
+				if (event.getKeyCode() == GLFW.GLFW_KEY_ESCAPE)
+					main.setMenu(new MainSproutsMenu(main));
 			}
 		});
 		

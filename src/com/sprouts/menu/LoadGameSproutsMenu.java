@@ -25,10 +25,13 @@ import com.sprouts.composition.text.LabelComposition;
 import com.sprouts.composition.text.TextAlignment;
 import com.sprouts.composition.text.editable.TextFieldComposition;
 import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
+import com.sprouts.util.SproutUtil;
+import com.sprouts.util.SproutUtil.SproutMoves;
 
 public class LoadGameSproutsMenu extends SproutsMenu {
 
 	private final SproutsMenu prevMenu;
+	private final GameMenu gameMenu;
 	
 	private final TextFieldComposition pathField;
 	private final ButtonComposition browseButton;
@@ -38,10 +41,11 @@ public class LoadGameSproutsMenu extends SproutsMenu {
 	private final ButtonComposition cancelButton;
 	private final ButtonComposition loadButton;
 	
-	public LoadGameSproutsMenu(SproutsMain main, SproutsMenu prevMenu) {
+	public LoadGameSproutsMenu(SproutsMain main, SproutsMenu prevMenu, GameMenu gameMenu) {
 		super(main);
 		
 		this.prevMenu = prevMenu;
+		this.gameMenu = gameMenu;
 		
 		pathField = new TextFieldComposition();
 		browseButton = new ButtonComposition("Browse");
@@ -163,7 +167,16 @@ public class LoadGameSproutsMenu extends SproutsMenu {
 		});
 		
 		loadButton.addButtonListener((source) -> {
-			main.setMenu(new GameMenu(main));
+			SproutMoves moves;
+			try {
+				moves = SproutUtil.loadMovesFromFile(new File(pathField.getText()));
+			} catch (IOException e) {
+				return;
+			}
+			
+			gameMenu.reset(moves.initialSproutCount);
+			if (gameMenu.executeMoves(moves.rawMoves))
+				main.setMenu(gameMenu);
 		});
 	}
 	

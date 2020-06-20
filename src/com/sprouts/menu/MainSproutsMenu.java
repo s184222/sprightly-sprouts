@@ -12,15 +12,17 @@ import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 
 public class MainSproutsMenu extends SproutsMenu {
 
-	private final ButtonComposition playButton;
-	private final ButtonComposition loadButton;
+	private final ButtonComposition playFriendButton;
+	private final ButtonComposition playAIButton;
+	private final ButtonComposition extrasButton;
 	private final ButtonComposition quitButton;
 	
 	public MainSproutsMenu(SproutsMain main) {
 		super(main);
 
-		playButton = new ButtonComposition("Play Game");
-		loadButton = new ButtonComposition("Load Game");
+		playFriendButton = new ButtonComposition("Play with Friend");
+		playAIButton = new ButtonComposition("Play with AI");
+		extrasButton = new ButtonComposition("Extras");
 		quitButton = new ButtonComposition("Quit");
 		
 		uiLayout();
@@ -34,15 +36,18 @@ public class MainSproutsMenu extends SproutsMenu {
 		
 		Margin buttonPadding = new Margin(60, 60, 25, 25);
 		
-		playButton.setPadding(buttonPadding);
-		playButton.setTextAlignment(TextAlignment.CENTER);
-		loadButton.setPadding(buttonPadding);
-		loadButton.setTextAlignment(TextAlignment.CENTER);
+		playFriendButton.setPadding(buttonPadding);
+		playFriendButton.setTextAlignment(TextAlignment.CENTER);
+		playAIButton.setPadding(buttonPadding);
+		playAIButton.setTextAlignment(TextAlignment.CENTER);
+		extrasButton.setPadding(buttonPadding);
+		extrasButton.setTextAlignment(TextAlignment.CENTER);
 		quitButton.setPadding(buttonPadding);
 		quitButton.setTextAlignment(TextAlignment.CENTER);
 
-		buttonPanel.add(wrapOverlay(playButton));
-		buttonPanel.add(wrapOverlay(loadButton));
+		buttonPanel.add(wrapOverlay(playFriendButton));
+		buttonPanel.add(wrapOverlay(playAIButton));
+		buttonPanel.add(wrapOverlay(extrasButton));
 		buttonPanel.add(wrapOverlay(quitButton));
 	
 		spec.setHorizontalFill(CompositionFill.FILL_MINIMUM);
@@ -54,12 +59,15 @@ public class MainSproutsMenu extends SproutsMenu {
 	}
 	
 	private void uiEvents() {
-		playButton.addButtonListener((source) -> {
-			main.setMenu(new GameMenu(main));
+		playFriendButton.addButtonListener((source) -> {
+			main.setMenu(new PlayChoosingSproutsMenu(main, new GameMenu(main, false)));
 		});
 
-		loadButton.addButtonListener((source) -> {
-			main.setMenu(new LoadGameSproutsMenu(main, this));
+		playAIButton.addButtonListener((source) -> {
+			main.setMenu(new PlayChoosingSproutsMenu(main, new GameMenu(main, true)));
+		});
+
+		extrasButton.addButtonListener((source) -> {
 		});
 
 		quitButton.addButtonListener((source) -> {
