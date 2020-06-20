@@ -67,12 +67,12 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		List<Triangle> slithering = slither(graph, from, to, fromEdge, toEdge);
 		List<Triangle> wrapping = wrapAroundContaining(slithering, inner, graph, region, from.position, to.position, position);
 
-		if (!canCreatePath(slithering, from.position, to.position)) throw new MoveException("");
+		if (!canCreatePath(slithering, from.position, to.position)) throw new MoveException("could not create path");
 
 		condense(slithering, region);
 		
 		List<Vertex> path = createPathFromTriangles(slithering, from.position, to.position);
-		if (!canCreatePath(slithering, from.position, to.position)) throw new MoveException("");
+		if (!canCreatePath(slithering, from.position, to.position)) throw new MoveException("could not create path");
 
 		Line line = new Line();
 		line.addAll(path);

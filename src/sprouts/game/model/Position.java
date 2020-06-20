@@ -142,14 +142,6 @@ public class Position {
 		return move;
 	}
 	
-	/*
-	 * @TODO:
-	 * 
-	 * - bug with outerboundary orientation. See bugNew.png 
-	 * 
-	 * 
-	 */
-	
 	private IdMove getOneBoundaryMove(Sprout from, Sprout to, Region region, Line line) {
 		IdMove move = new IdMove();
 		move.fromId = from.id;

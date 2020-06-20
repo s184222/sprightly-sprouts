@@ -28,21 +28,15 @@ public class StressTest {
 
 			while (!g.isGameOver()) {
 				IdMove aiMove = ai.getMove(a.getPosition());
-				
 				if (aiMove == null) break;
+
 				System.out.printf("ai: %s\n", aiMove.toString());
 				
 				try {
 					String result = g.executeMove(aiMove.toString());
-					if (result != null)  {
-						a.makeMove(aiMove.toString());
-						
-						// 4<,4<,[0,1,7]
-					} else {
-						break;
-						
-					}
-					
+					if (result == null) break;
+
+					a.makeMove(aiMove.toString());
 				} catch (MovePipeLineException e) {
 					break;
 				}

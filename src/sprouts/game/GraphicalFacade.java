@@ -95,7 +95,6 @@ public class GraphicalFacade {
 				return result;
 			} catch (MoveException | MoveNotationException e) {
 				//System.out.printf("%s\n", e.getMessage());
-				// @TODO: early stop if move exception?
 			}
 		}
 		
@@ -190,25 +189,6 @@ public class GraphicalFacade {
 				}
 				
 			} else {
-				
-				// @TODO: do max rotation her?
-				/*
-				// the line cannot rotate more than 175 degrees
-				Vertex v1 = currentLine.getLast();
-				Vertex v2 = currentLine.getSemiLast();
-				
-				Vector2 angler = new Vector2();
-				angler.set(v2.x, v2.y).sub(v1.x, v1.y);
-
-				Vector2 angler2 = new Vector2();
-				angler2.set(at.x, at.y).sub(v1.x, v1.y);
-
-				double angle = angler2.angle(angler);
-				if (angle < 0) angle += 180;
-				
-				double minAngle = 90;
-				if (angle <= minAngle) return;
-				*/
 	
 				for (Line line : position.getLines()) {
 					if (line.intersects(at.x, at.y, worldX, worldY)) return;
@@ -268,8 +248,6 @@ public class GraphicalFacade {
 			line.removeLast();
 			
 			if (line.intersects(at.x, at.y, worldX, worldY)) return null;
-			
-			//if (intersects) return;	// @TODO: do max rotation her?
 			
 			if (!at.equals(to.position)) lineToAdd.add(to.position);
 			
@@ -350,23 +328,6 @@ public class GraphicalFacade {
 	
 	public Position getPosition() {
 		return position;
-	}
-
-	public void printLives() {
-		System.out.printf("=== lives G ===\n");
-		for (int i = 0; i < position.getSprouts().size(); i++) {
-			Sprout s = null;
-			for (Sprout sprout : position.getSprouts()) {
-				if (sprout.id == i) {
-					s = sprout;
-					break;
-				}
-			}
-			
-			System.out.printf("%d\n", s.getLives());
-		}
-		
-		System.out.printf("\n");
 	}
 
 	public boolean isGameOver() {
