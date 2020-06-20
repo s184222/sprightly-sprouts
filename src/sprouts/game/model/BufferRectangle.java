@@ -12,18 +12,24 @@ public class BufferRectangle {
 	
 	private Vertex lowerLeft, lowerRight, upperLeft, upperRight;
 	private List<Vertex> corners;
-	private float bufferX, bufferY;
+
+	private double bufferX, bufferY;
+	private double minimumWidth, minimumHeight;
 	
 	public BufferRectangle() {
-		bufferX = 40;
+		minimumWidth = 300;
+		minimumHeight = 200;
+		
+		bufferX = 35;
 		bufferY = 25;
 		
-		lowerLeft = new Vertex(Float.MAX_VALUE, Float.MAX_VALUE);
-		lowerRight = new Vertex(Float.MIN_VALUE, Float.MAX_VALUE);
-		upperLeft = new Vertex(Float.MAX_VALUE, Float.MIN_VALUE);
-		upperRight = new Vertex(Float.MIN_VALUE, Float.MIN_VALUE);
+		lowerLeft = new Vertex(Double.MAX_VALUE, Double.MAX_VALUE);
+		lowerRight = new Vertex(Double.MAX_VALUE, Double.MIN_VALUE);
+		upperLeft = new Vertex(Double.MIN_VALUE, Double.MAX_VALUE);
+		upperRight = new Vertex(Double.MIN_VALUE, Double.MIN_VALUE);
 		
 		corners = new ArrayList<>();
+		
 		corners.add(lowerLeft);
 		corners.add(lowerRight);
 		corners.add(upperLeft);
@@ -36,12 +42,12 @@ public class BufferRectangle {
 	 * @param x
 	 * @param y
 	 */
-	public void update(float x, float y) {
-		float minX = lowerLeft.x + bufferX;
-		float minY = lowerLeft.y + bufferY;
+	public void update(double x, double y) {
+		double minX = lowerLeft.x + bufferX;
+		double minY = lowerLeft.y + bufferY;
 		
-		float maxX = upperRight.x - bufferX;
-		float maxY = upperRight.y - bufferY;
+		double maxX = upperRight.x - bufferX;
+		double maxY = upperRight.y - bufferY;
 		
 		if (x < minX) lowerLeft.x = upperLeft.x = x - bufferX;
 		if (y < minY) lowerLeft.y = lowerRight.y = y - bufferY;

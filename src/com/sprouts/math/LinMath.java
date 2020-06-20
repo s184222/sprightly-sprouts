@@ -1,13 +1,12 @@
 package com.sprouts.math;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import sprouts.game.model.Vertex;
 
 public final class LinMath {
 	
-	public static final float EPSILON = 0.01f;
+	public static final double EPSILON = 0.01f;
 	
 	private LinMath() {
 	}
@@ -16,7 +15,7 @@ public final class LinMath {
 		return v < mn ? mn : (v > mx ? mx : v);
 	}
 
-	public static float clamp(float v, float mn, float mx) {
+	public static double clamp(double v, double mn, double mx) {
 		return v < mn ? mn : (v > mx ? mx : v);
 	}
 
@@ -24,7 +23,7 @@ public final class LinMath {
 		return v < mn ? mn : (v > mx ? mx : v);
 	}
 	
-	public static double clamp(double v, double mn, double mx) {
+	public static float clamp(float v, float mn, float mx) {
 		return v < mn ? mn : (v > mx ? mx : v);
 	}
 	
@@ -45,9 +44,28 @@ public final class LinMath {
 	 * source: https://www.youtube.com/watch?v=A86COO8KC58
 	 */
 	
-	public static boolean intersect(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3) {
+	public static boolean intersect(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3) {
 		return intersect(x0, y0, x1, y1, x2, y2, x3, y3, null);
 	}
+	
+	public static boolean intersect (double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4,
+			Vec2d intersection) {
+			double d = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+			if (d == 0) return false;
+
+			double yd = y1 - y3;
+			double xd = x1 - x3;
+			double ua = ((x4 - x3) * yd - (y4 - y3) * xd) / d;
+			if (ua < 0 || ua > 1) return false;
+
+			double ub = ((x2 - x1) * yd - (y2 - y1) * xd) / d;
+			if (ub < 0 || ub > 1) return false;
+
+			if (intersection != null) intersection.set(x1 + (x2 - x1) * ua, y1 + (y2 - y1) * ua);
+			return true;
+		}
+	
+	/*
 
 	public static boolean intersect(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3, Vec2 intersection) {
 		double a1 = y1 - y0;
@@ -80,35 +98,36 @@ public final class LinMath {
 		
 		return false;
 	}
+	*/
 	
 	//this intersect is only used for the function contains 
 	public static Vec2 intersectContains(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3) {
-		float a1 = p1.y - p0.y;
-		float b1 = p0.x - p1.x;
-		float c1 = a1 * p1.x + b1 * p1.y;
-		float a2 = p3.y - p2.y;
-		float b2 =p2.x - p3.x;
-		float c2 =a2 * p2.x + b2 * p2.y;
-		float divisor = a1 * b2 - a2 * b1;
+		double a1 = p1.y - p0.y;
+		double b1 = p0.x - p1.x;
+		double c1 = a1 * p1.x + b1 * p1.y;
+		double a2 = p3.y - p2.y;
+		double b2 =p2.x - p3.x;
+		double c2 =a2 * p2.x + b2 * p2.y;
+		double divisor = a1 * b2 - a2 * b1;
 		
 		if (Math.abs(divisor) < EPSILON*EPSILON) {
 			return null; // if divide == 0 it means the lines are parallel
 		}
 		
-		float x = (b2*c1-b1*c2)/divisor;
-		float y = (a1*c2-a2*c1)/divisor;
+		double x = (b2*c1-b1*c2)/divisor;
+		double y = (a1*c2-a2*c1)/divisor;
 		
 		//if x and y is the same as the point we want to check, return the vec2, so that we can catch it in the function Contains
-		if (x==p2.x && y==p2.y) return new Vec2(x, y); 
+		if (x==p2.x && y==p2.y) return new Vec2((float)x, (float)y); 
 		
-		float ratiox1 = (x - p0.x) / (p1.x - p0.x); //if p1x == p0x then ratiox1 will be NaN
-		float ratioy1 = (y - p0.y) / (p1.y - p0.y); //if p1y == p0y then ratioy1 will be NaN
-		float ratiox2 = (x - p2.x) / (p3.x - p2.x); //if p3x == p2x then ratiox2 will be NaN
-		float ratioy2 = (y - p2.y) / (p3.y - p2.y); //if p3y == p2y then ratioy2 will be NaN
+		double ratiox1 = (x - p0.x) / (p1.x - p0.x); //if p1x == p0x then ratiox1 will be NaN
+		double ratioy1 = (y - p0.y) / (p1.y - p0.y); //if p1y == p0y then ratioy1 will be NaN
+		double ratiox2 = (x - p2.x) / (p3.x - p2.x); //if p3x == p2x then ratiox2 will be NaN
+		double ratioy2 = (y - p2.y) / (p3.y - p2.y); //if p3y == p2y then ratioy2 will be NaN
 		if (((ratiox1 > 0 && ratiox1 <=1) || (ratioy1 > 0 && ratioy1 <= 1)) && 
 				((ratiox2 > 0 && ratiox2 <=1) || (ratioy2 > 0 && ratioy2 <= 1))){
 			
-			return new Vec2(x, y);
+			return new Vec2((float)x, (float)y);
 		}
 		return null;
 	}
@@ -141,19 +160,19 @@ public final class LinMath {
 	}
 
 	public static boolean contains(Vec2 a, Vec2 b, Vec2 c, Vec2 p) {
-		float bx = b.x - a.x;
-		float by = b.y - a.y;
-		float cx = c.x - a.x;
-		float cy = c.y - a.y;
-		float divisor = -((bx * cy) - (by * cx));
+		double bx = b.x - a.x;
+		double by = b.y - a.y;
+		double cx = c.x - a.x;
+		double cy = c.y - a.y;
+		double divisor = -((bx * cy) - (by * cx));
 
 		if (Math.abs(divisor) < EPSILON * EPSILON)
 			return false;
 
-		float px = p.x - a.x;
-		float py = p.y - a.y;
-		float w1 = ((cx * py) - (cy * px)) / divisor;
-		float w2 = -((bx * py) - (by * px)) / divisor;
+		double px = p.x - a.x;
+		double py = p.y - a.y;
+		double w1 = ((cx * py) - (cy * px)) / divisor;
+		double w2 = -((bx * py) - (by * px)) / divisor;
 
 		return (w1 >= 0.0f && w2 >= 0.0f && (w1 + w2) <= 1.0f);
 	}
@@ -183,7 +202,7 @@ public final class LinMath {
 	
 	public static boolean isPointInPolygon (Vertex point, List<Vertex> polygon) {
 		Vertex last = polygon.get(polygon.size()-1);
-		float x = point.x, y = point.y;
+		double x = point.x, y = point.y;
 		boolean oddNodes = false;
 		for (int i = 0; i < polygon.size(); i++) {
 			Vertex vertex = polygon.get(i);
@@ -197,7 +216,7 @@ public final class LinMath {
 	
 	public static boolean isPointInPolygon (Vertex point, Vertex[] polygon) {
 		Vertex last = polygon[polygon.length-1];
-		float x = point.x, y = point.y;
+		double x = point.x, y = point.y;
 		boolean oddNodes = false;
 		for (int i = 0; i < polygon.length; i++) {
 			Vertex vertex = polygon[i];

@@ -24,7 +24,7 @@ import sprouts.game.util.MathUtil;
 
 public class TwoBoundaryMoveGenerator implements MovePathGenerator {
 	
-	private BiFunction<Vertex, Vertex, Float> costFunction;
+	private BiFunction<Vertex, Vertex, Double> costFunction;
 
 	private PathFinder pathFinder;
 	private TriangleGenerator triangleGenerator;
@@ -89,7 +89,7 @@ public class TwoBoundaryMoveGenerator implements MovePathGenerator {
 				}
 				
 				if (!position.isLineSegmentOnLine(segment.from, segment.to)) {
-					// due to floating precision, 2 linesegment which are reversed may yield different middle vertices, so linesegments are canonized:
+					// due to doubleing precision, 2 linesegment which are reversed may yield different middle vertices, so linesegments are canonized:
 					// the same orientation of the linesegment is always selected.
 					if (shouldReverse(segment)) segment.reverse();
 					Vertex vertex = segment.getMiddle();

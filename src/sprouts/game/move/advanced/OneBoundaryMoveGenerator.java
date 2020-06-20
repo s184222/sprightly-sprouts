@@ -19,8 +19,8 @@ import sprouts.game.model.Position;
 import sprouts.game.model.Region;
 import sprouts.game.model.Sprout;
 import sprouts.game.model.Vertex;
-import sprouts.game.move.MoveException;
 import sprouts.game.move.Move;
+import sprouts.game.move.MoveException;
 import sprouts.game.move.pathfinder.PathFinder;
 import sprouts.game.move.pipe.MovePathGenerator;
 import sprouts.game.move.pipe.MovePathResult;
@@ -66,20 +66,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		Map<Triangle, List<Triangle>> graph = getTriangleGraph(triangles, region, position);
 		List<Triangle> slithering = slither(graph, from, to, fromEdge, toEdge);
 		List<Triangle> wrapping = wrapAroundContaining(slithering, inner, graph, region, from.position, to.position, position);
-		
-		/*
-		if (true) {
-			
-			OneBoundaryMoveGeneratorData data = new OneBoundaryMoveGeneratorData();
-			data.triangles = triangles;
-			data.oneBoundaryGraph = graph;
-			data.slither = slithering;
-			data.wrapper = wrapping;
-			
-			result.customData = data;
-		}
-		*/
-		
+
 		Assert.that(canCreatePath(slithering, from.position, to.position));
 
 		condense(slithering, region);
@@ -145,11 +132,11 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 
 		List<Triangle> lastWrapping = new ArrayList<>();
 		
-		BiFunction<Triangle, Triangle, Float> costFunction = new BiFunction<Triangle, Triangle, Float>() {
+		BiFunction<Triangle, Triangle, Double> costFunction = new BiFunction<Triangle, Triangle, Double>() {
 
 			@Override
-			public Float apply(Triangle from, Triangle to) {
-				if (slithering.contains(from) && slithering.contains(to)) return 0f;
+			public Double apply(Triangle from, Triangle to) {
+				if (slithering.contains(from) && slithering.contains(to)) return 0.;
 				
 				Vertex fromCenter = from.getCenter();
 				Vertex toCenter = to.getCenter();
@@ -228,8 +215,8 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 			
 		}
 		
-		Assert.that(at != -1);
-		//if (at == -1) return -1;
+		//if (at == -1) return candidateIndices.get(1);
+		//Assert.that(at != -1);
 		
 		return at;
 	}
@@ -444,7 +431,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 			at += 1;
 			ats.put(segment, at);
 			
-			float ratio = at * 1f / (total + 1f);
+			double ratio = at * 1d / (total + 1d);
 			
 			Vertex vertex = segment.getVertexAt(ratio);
 			
@@ -468,8 +455,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 			
 			Assert.that(points.size() > 0);
 			
-			Vertex point = points.remove(0);
-			path.add(point);
+			path.add(points.remove(0));
 		}
 	
 		path.add(to);
@@ -512,6 +498,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 					if (p1 == q1) continue;
 					
 					if (LinMath.intersect(p0.x, p0.y, p1.x, p1.y, q0.x, q0.y, q1.x, q1.y)) {
+						
 						if (p1s.equals(q0s)) {
 							Collections.swap(path, i+1, j);
 						}	else if (p1s.equals(q1s)){
@@ -527,7 +514,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		return path;
 	}
 
-	private float dst(Vertex p0, Vertex p1) {
+	private double dst(Vertex p0, Vertex p1) {
 		return MathUtil.distance(p0.x, p0.y, p1.x, p1.y);
 	}
 

@@ -30,12 +30,12 @@ public class AStarPathFinder implements PathFinder {
 	private static class Node<T> {
 
 		public T parent;
-		public float minimumCost;	// also known as the heuristic
-		public float traveled;
+		public double minimumCost;	// also known as the heuristic
+		public double traveled;
 		
 		private Node() {}
 
-		public static <T> Node<T> root(float minimumCost) {
+		public static <T> Node<T> root(double minimumCost) {
 			Node<T> root = new Node<>();
 			root.minimumCost = minimumCost;
 			root.traveled = 0;
@@ -43,7 +43,7 @@ public class AStarPathFinder implements PathFinder {
 			return root;
 		}
 
-		public static <T> Node<T> child(float traveled, float minimumCost, T parent) {
+		public static <T> Node<T> child(double traveled, double minimumCost, T parent) {
 			Node<T> child = new Node<>();
 			child.minimumCost = minimumCost;
 			child.traveled = traveled;
@@ -67,7 +67,7 @@ public class AStarPathFinder implements PathFinder {
 	 *  @return the path from source to goal, if no path exist return an empty list.
 	 * 
 	 */
-	public <T> List<T> find(T source, T goal, Map<T, List<T>> graph, BiFunction<T, T, Float> stepCostFunction, BiFunction<T, T, Float> minimumCostFunction) {
+	public <T> List<T> find(T source, T goal, Map<T, List<T>> graph, BiFunction<T, T, Double> stepCostFunction, BiFunction<T, T, Double> minimumCostFunction) {
 		Map<T, Node<T>> tToNode = new HashMap<>();
 		List<T> explored = new ArrayList<>();
 
@@ -75,8 +75,8 @@ public class AStarPathFinder implements PathFinder {
 			Node<T> n1 = tToNode.get(t1);
 			Node<T> n2 = tToNode.get(t2);
 
-			float c1 = n1.traveled + n1.minimumCost;
-			float c2 = n2.traveled + n2.minimumCost;
+			double c1 = n1.traveled + n1.minimumCost;
+			double c2 = n2.traveled + n2.minimumCost;
 			int sign = MathUtil.sign(c1 - c2);
 
 			return sign;
@@ -98,8 +98,8 @@ public class AStarPathFinder implements PathFinder {
 			for (T child : children) {
 				if (explored.contains(child)) continue;
 
-				float stepCost = stepCostFunction.apply(current, child);
-				float newTraveled = stepCost + currentNode.traveled;
+				double stepCost = stepCostFunction.apply(current, child);
+				double newTraveled = stepCost + currentNode.traveled;
 
 				if (frontier.contains(child)) {
 					Node<T> childNode = tToNode.get(child);
@@ -112,7 +112,7 @@ public class AStarPathFinder implements PathFinder {
 						frontier.add(child);
 					}
 				} else {
-					float minimumCost = minimumCostFunction.apply(child, goal);
+					double minimumCost = minimumCostFunction.apply(child, goal);
 					Node<T> childNode = Node.child(newTraveled, minimumCost, current);
 					tToNode.put(child, childNode);
 					frontier.add(child);

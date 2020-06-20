@@ -7,12 +7,12 @@ package sprouts.game.model;
  */
 public class Vertex {
 
-	public float x, y;
+	public double x, y;
 
 	public Vertex() {
 	}
 
-	public Vertex(float x, float y) {
+	public Vertex(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
@@ -30,8 +30,11 @@ public class Vertex {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + Float.floatToIntBits(x);
-		result = prime * result + Float.floatToIntBits(y);
+		long temp;
+		temp = Double.doubleToLongBits(x);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(y);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
 		return result;
 	}
 
@@ -44,9 +47,9 @@ public class Vertex {
 		if (getClass() != obj.getClass())
 			return false;
 		Vertex other = (Vertex) obj;
-		if (Float.floatToIntBits(x) != Float.floatToIntBits(other.x))
+		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
 			return false;
-		if (Float.floatToIntBits(y) != Float.floatToIntBits(other.y))
+		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
 			return false;
 		return true;
 	}

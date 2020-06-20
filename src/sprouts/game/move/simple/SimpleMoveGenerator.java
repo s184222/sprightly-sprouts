@@ -27,7 +27,7 @@ import sprouts.game.util.MathUtil;
  */
 public class SimpleMoveGenerator implements MovePathGenerator {
 	
-	private BiFunction<Vertex, Vertex, Float> costFunction;
+	private BiFunction<Vertex, Vertex, Double> costFunction;
 
 	private PathFinder pathFinder;
 	private TriangleGenerator triangleGenerator;
@@ -50,7 +50,7 @@ public class SimpleMoveGenerator implements MovePathGenerator {
 		
 		Sprout from = move.from;
 		Sprout to = move.to;
-
+		
 		List<Triangle> triangles = triangleGenerator.getTriangles(position);
 		Map<Vertex, List<Vertex>> graph = getGraph(from.position, to.position, triangles, position);
 		
@@ -97,6 +97,8 @@ public class SimpleMoveGenerator implements MovePathGenerator {
 	private Map<Vertex, List<Vertex>> getGraph(Vertex source, Vertex target, List<Triangle> triangles, Position position) {
 		Map<Vertex, List<Vertex>> graph = new HashMap<>();
 		
+		boolean isSameSourceAndTarget = source.equals(target);
+		
 		for (Triangle triangle : triangles) {
 			List<Vertex> adjacent = new ArrayList<>();
 	
@@ -104,15 +106,18 @@ public class SimpleMoveGenerator implements MovePathGenerator {
 			for (int i = 0; i < corners.length; i++) {
 				Vertex v0 = corners[i];
 				Vertex v1 = corners[MathUtil.wrap(i+1, corners.length)];
-				
+
 				LineSegment segment = new LineSegment(v0, v1);
+				if (segment.from.equals(source) && segment.to.equals(target)) {
+					int k = 1;
+				}
 				
-				if (segment.from.equals(source) || segment.from.equals(target)) {
-					adjacent.add(segment.from);
+				if (segment.from.equals(target) && segment.to.equals(source)) {
+					int k = 1;
 				}
 				
 				if (!position.isLineSegmentOnLine(segment.from, segment.to)) {
-					// due to floating precision, 2 linesegment which are reversed may yield different middle vertices, so linesegments are canonized
+					// due to doubleing precision, 2 linesegment which are reversed may yield different middle vertices, so linesegments are canonized
 					// so select the same orientation of the linesegment.
 					if (shouldReverse(segment)) segment.reverse();
 					Vertex vertex = segment.getMiddle();
@@ -120,27 +125,38 @@ public class SimpleMoveGenerator implements MovePathGenerator {
 				}
 			}
 			
-			List<Vertex> neighbours = new ArrayList<>();
-			neighbours.addAll(adjacent);
+			boolean hasSource = triangle.isCorner(source);
+			boolean hasTarget = triangle.isCorner(target);
 			
+			if (hasSource) adjacent.add(source);
+			if (hasTarget) adjacent.add(target);
+			
+			boolean danger = !isSameSourceAndTarget && hasSource && hasTarget;
+
 			for (Vertex vertex : adjacent) {
+				List<Vertex> neighbours = new ArrayList<>();
+				neighbours.addAll(adjacent);
 				neighbours.remove(vertex);
 				
 				List<Vertex> adjacencyList = graph.remove(vertex);
 				if (adjacencyList == null) adjacencyList = new ArrayList<>();
 				
+				if (danger) {
+					if (vertex.equals(source)) neighbours.remove(target);
+					else if (vertex.equals(target)) neighbours.remove(source);
+				}
+
 				for (Vertex neighbour : neighbours) {
+					// don't add duplicates.
 					if (!adjacencyList.contains(neighbour)) {
 						adjacencyList.add(neighbour);
 					}
 				}
 				
 				graph.put(vertex, adjacencyList);
-				
-				neighbours.add(vertex);
 			}
 		}
-					
+		
 		return graph;
 	}
 	

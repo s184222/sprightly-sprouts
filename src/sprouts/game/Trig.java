@@ -3,7 +3,7 @@ package sprouts.game;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sprouts.math.Vec2;
+import com.sprouts.math.Vec2d;
 
 import sprouts.game.model.Edge;
 import sprouts.game.model.Sprout;
@@ -36,12 +36,12 @@ public class Trig {
 	 * 		   as the initial direction of the scanline.
 	 */
 	public static int getFirstOnRotation(Vertex origin, Vertex reference, List<Vertex> candidateTos, boolean clockwise) {
-		Vec2 vec = new Vec2();
+		Vec2d vec = new Vec2d();
 		vec.set(reference.x, reference.y)
 		 	 .sub(origin.x, origin.y);
 
-		float initialAngle = vec.angle();
-		float smallestAngle = 360;
+		double initialAngle = vec.angle();
+		double smallestAngle = 360;
 
 		int smallestAngleIndex = -1;
 		
@@ -51,9 +51,9 @@ public class Trig {
 			vec.set(to2.x, to2.y)
 				 .sub(origin.x, origin.y);
 		
-			float currentAngle = vec.angle();
+			double currentAngle = vec.angle();
 			
-			float deltaAngle = clockwise ? initialAngle - currentAngle : currentAngle - initialAngle;
+			double deltaAngle = clockwise ? initialAngle - currentAngle : currentAngle - initialAngle;
 			if (deltaAngle <= 0) deltaAngle += 360;
 			
 			if (deltaAngle <= smallestAngle) {

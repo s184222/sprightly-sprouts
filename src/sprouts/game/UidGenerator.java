@@ -5,7 +5,7 @@ public class UidGenerator {
 	private int nextUid;
 	
 	public UidGenerator() {
-		nextUid = 0;
+		nextUid = 1;
 	}
 	
 	public int generate() {
@@ -15,7 +15,7 @@ public class UidGenerator {
 	}
 	
 	public void reset() {
-		nextUid = 0;
+		nextUid = 1;
 	}
 
 	public void update(int id) {

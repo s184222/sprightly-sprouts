@@ -20,5 +20,5 @@ public interface PathFinder {
 	 *  
 	 *  @return the path from source to goal, if no path exist return an empty list.
 	 */
-	public <T> List<T> find(T source, T goal, Map<T, List<T>> graph, BiFunction<T, T, Float> stepCostFunction, BiFunction<T, T, Float> minimumCostFunction);
+	public <T> List<T> find(T source, T goal, Map<T, List<T>> graph, BiFunction<T, T, Double> stepCostFunction, BiFunction<T, T, Double> minimumCostFunction);
 }

@@ -31,7 +31,7 @@ public class TriangleGenerator {
 	 * @return triangulation of the position
 	 */
 	public List<Triangle> getTriangles(Position position) {
-
+		
 		try {
 			ConstrainedMesh positionMesh = new ConstrainedMesh();
 			
@@ -40,7 +40,6 @@ public class TriangleGenerator {
 				for (int i = 0; i < line.size() - 1; i++) {
 					Vertex from = line.get(i);
 					Vertex to = line.get(i+1);
-					
 					DEdge edge = new DEdge(from.x, from.y, 0, to.x, to.y, 0);
 					positionMesh.addConstraintEdge(edge);
 				}
@@ -79,12 +78,13 @@ public class TriangleGenerator {
 			return triangles;
 
 		} catch (DelaunayError e) {
+			e.printStackTrace();
 			throw new IllegalStateException("triangulation is broken!");
 		}
 	}
 	
 	private Vertex asVertex(DPoint point) {
-		return new Vertex((float) point.getX(), (float) point.getY());
+		return new Vertex(point.getX(), point.getY());
 	}
 	
   private boolean isCounterClockwise(DTriangle dtriangle) {

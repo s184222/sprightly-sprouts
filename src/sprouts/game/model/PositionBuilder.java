@@ -1,6 +1,9 @@
 package sprouts.game.model;
 
-import com.sprouts.math.Vec2;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.sprouts.math.Vec2d;
 
 /**
  * 
@@ -12,43 +15,43 @@ import com.sprouts.math.Vec2;
 
 public class PositionBuilder {
 	
-	private Position position;
+	private List<Vertex> pendingSprouts;
 	
 	public PositionBuilder() {
-		position = new Position();
+		pendingSprouts = new ArrayList<>();
 	}
 
-	public PositionBuilder createSproutsCircle(int initialNumberOfSprouts, float centerX, float centerY, float radius) {
-		Vec2 rotater = new Vec2();
+	public PositionBuilder createSproutsCircle(int initialNumberOfSprouts, double centerX, double centerY, double radius) {
+		Vec2d rotater = new Vec2d();
 
-		float deltaDegrees = 360 / (float) initialNumberOfSprouts;
+		double deltaDegrees = 360 / (double) initialNumberOfSprouts;
 		
 		rotater.set(1,0);
 		for (int i = 0; i < initialNumberOfSprouts; i++) {
 			rotater.normalize().setAngle(deltaDegrees * i);
 			rotater.mul(radius);
 			
-			float x = centerX + rotater.x;
-			float y = centerY + rotater.y;
+			double x = centerX + rotater.x;
+			double y = centerY + rotater.y;
 			
-			createFreshSprout(x, y);
+			Vertex vertex = new Vertex(x, y);
+			pendingSprouts.add(vertex);
 		}
 		
 		return this;
 	}
 	
-	public PositionBuilder createFreshSprout(float x, float y) {
-		Vertex vertex = new Vertex(x, y);
-		position.addVertex(vertex);
-		Sprout sprout = position.createSprout(vertex);
-		Region outer = position.getOuterRegion();
-		outer.innerSprouts.add(sprout);
-		return this;
-	}
-	
 	public Position build() {
-		Position output = position;
-		position = new Position();
-		return output;
+		Position position = new Position();
+		
+		for (Vertex vertex : pendingSprouts) {
+			position.addVertex(vertex);
+			Sprout sprout = position.createSprout(vertex);
+			position.getOuterRegion().innerSprouts.add(sprout);
+		}
+		
+		pendingSprouts.clear();
+		
+		return position;
 	}
 }

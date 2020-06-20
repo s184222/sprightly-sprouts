@@ -1,5 +1,6 @@
 package sprouts.game.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -21,15 +22,6 @@ public class Line extends ArrayList<Vertex> {
 	}
 	
 	
-	/*
-	 * 
-	 * 5,7
->move:
-5,8
->move:
-5,9
-	 * 
-	 */
 	public Vertex getSemiFirst() {
 		return get(1);
 	}
@@ -65,21 +57,21 @@ public class Line extends ArrayList<Vertex> {
 	public Line[] splitMiddle() {
 		Assert.that(size() >= 3);
 		
-		float closest = Float.MAX_VALUE;
+		double closest = Double.MAX_VALUE;
 		int centerIndex = -1;
 		
-		float totalDistance = getDistance();
-		float centerDistance = totalDistance / 2f;
-		float accumulatedDistance = 0;
+		double totalDistance = getDistance();
+		double centerDistance = totalDistance / 2d;
+		double accumulatedDistance = 0;
 		
 		for (int i = 1; i < size() - 1; i++) {
 			Vertex v1 = get(i - 1);
 			Vertex v2 = get(i);
 			
-			float distance = MathUtil.distance(v2.x, v2.y, v1.x, v1.y);
+			double distance = MathUtil.distance(v2.x, v2.y, v1.x, v1.y);
 			accumulatedDistance += distance;
 			
-			float dt = Math.abs(accumulatedDistance - centerDistance);
+			double dt = Math.abs(accumulatedDistance - centerDistance);
 			if (dt <= closest) {
 				closest = dt;
 				centerIndex = i;
@@ -116,22 +108,22 @@ public class Line extends ArrayList<Vertex> {
 		return new LineSegment(get(center), get(center+1));
 	}
 
-	public void removeLast() {
-		remove(size() - 1);
+	public Vertex removeLast() {
+		return remove(size() - 1);
 	}
 
-	public void removeFirst() {
-		remove(0);
+	public Vertex removeFirst() {
+		return remove(0);
 	}
 	
-	public float getDistance() {
-		float totalDistance = 0;
+	public double getDistance() {
+		double totalDistance = 0;
 		
 		for (int i = 0; i < size() - 1; i++) {
 			Vertex v1 = get(i);
 			Vertex v2 = get(i + 1);
 			
-			float distance = MathUtil.distance(v2.x, v2.y, v1.x, v1.y);
+			double distance = MathUtil.distance(v2.x, v2.y, v1.x, v1.y);
 			totalDistance += distance;
 		}
 		
@@ -139,22 +131,22 @@ public class Line extends ArrayList<Vertex> {
 	}
 	
 	public int addMiddlePoint() {
-		float totalDistance = getDistance();
-		float centerDistance = totalDistance / 2f;
-		float accumulatedDistance = 0;
+		double totalDistance = getDistance();
+		double centerDistance = totalDistance / 2d;
+		double accumulatedDistance = 0;
 		
 		for (int i = 0; i < size() - 1; i++) {
 			Vertex v1 = get(i);
 			Vertex v2 = get(i + 1);
 			
-			float distance = MathUtil.distance(v2.x, v2.y, v1.x, v1.y);
+			double distance = MathUtil.distance(v2.x, v2.y, v1.x, v1.y);
 			accumulatedDistance += distance;
 			
 			if (accumulatedDistance >= centerDistance) {
-				float scale = 1f - (accumulatedDistance - centerDistance) / distance;
+				double scale = 1d - (accumulatedDistance - centerDistance) / distance;
 				
-				float vx = (v2.x - v1.x) * scale + v1.x;
-				float vy = (v2.y - v1.y) * scale + v1.y;
+				double vx = (v2.x - v1.x) * scale + v1.x;
+				double vy = (v2.y - v1.y) * scale + v1.y;
 				
 				Vertex vertex = new Vertex(vx, vy);
 				
@@ -196,7 +188,7 @@ public class Line extends ArrayList<Vertex> {
 		addAll(line);
 	}
 	
-	public boolean intersects(float x1, float y1, float x2, float y2) {
+	public boolean intersects(double x1, double y1, double x2, double y2) {
 		for (int i = 0; i < size() - 1; i++) {
 			Vertex v1 = get(i);
 			Vertex v2 = get(i + 1);

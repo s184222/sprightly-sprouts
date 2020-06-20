@@ -20,14 +20,22 @@ public class LineSegment {
 	}
 	
 	public Vertex getMiddle() {
-		return getVertexAt(0.5f);
-	}
-
-	public Vertex getVertexAt(float ratio) {
 		Vertex vertex = new Vertex();
 		
-		float dx = to.x - from.x;
-		float dy = to.y - from.y;
+		double dx = to.x - from.x;
+		double dy = to.y - from.y;
+		
+		vertex.x = from.x + dx / 2d;
+		vertex.y = from.y + dy / 2d;
+		
+		return vertex;
+	}
+
+	public Vertex getVertexAt(double ratio) {
+		Vertex vertex = new Vertex();
+		
+		double dx = to.x - from.x;
+		double dy = to.y - from.y;
 		
 		vertex.x = from.x + dx * ratio;
 		vertex.y = from.y + dy * ratio;

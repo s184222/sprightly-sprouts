@@ -13,6 +13,7 @@ import sprouts.game.model.Vertex;
 import sprouts.game.move.IdMove;
 import sprouts.game.move.MoveException;
 import sprouts.game.move.MoveNotationException;
+import sprouts.game.move.MovePipeLineException;
 import sprouts.game.move.advanced.AdvancedMoveGenerationPipeline;
 import sprouts.game.move.pathfinder.AStarPathFinder;
 import sprouts.game.move.pathfinder.PathFinder;
@@ -33,7 +34,7 @@ public class GraphicalFacade {
 	public Line currentLine;
 	boolean drawingLine;
 	public Sprout from;
-	public float minimumLineSegmentDistance;
+	public double minimumLineSegmentDistance;
 	public int sproutRadius;
 	
 	public GraphicalFacade() {
@@ -59,15 +60,141 @@ public class GraphicalFacade {
 		sproutRadius = 12;
 	}
 	
+	public void executeTest1() {
+		List<String> moves = new ArrayList<>();
+		createFreshPosition(4);
+		
+		moves.add("1,2");
+		moves.add("5,3");
+		moves.add("6,4");
+		moves.add("1,2");
+		moves.add("2,1");
+		moves.add("8,9");
+		moves.add("7,3");
+		moves.add("3,11");
+		moves.add("12,4");
+		moves.add("4,13");
+		moves.add("10,4");
+		
+		executeMoves(moves);
+	}
+	
+	
+	public void executeTest2() {
+		List<String> moves = new ArrayList<>();
+		createFreshPosition(2);
+
+		moves.add("1,2");
+		moves.add("2,3");
+		moves.add("3,1");
+		moves.add("5,4");
+		moves.add("6,2");
+		
+		executeMoves(moves);
+	}
+	
+	public void executeTest3() {
+		List<String> moves = new ArrayList<>();
+		createFreshPosition(2);
+		
+		moves.add("1,2");
+		moves.add("2,3");
+		moves.add("4,1");
+		moves.add("2,5");
+		moves.add("6,1");
+		
+		executeMoves(moves);
+	}
+	
+	public void executeTest4() {
+		List<String> moves = new ArrayList<>();
+		createFreshPosition(2);
+		
+		moves.add("1,1");
+		moves.add("2,2");
+		moves.add("1,2");
+		moves.add("5,4");
+		moves.add("6,3");
+		
+		executeMoves(moves);
+	}
+	
+	public void executeTest5() {
+		List<String> moves = new ArrayList<>();
+		createFreshPosition(5);
+		
+		moves.add("1,2");
+		moves.add("2,3");
+		moves.add("3,4");
+		moves.add("4,5");
+		moves.add("1,6");
+		moves.add("2,7");
+		moves.add("8,3");
+		moves.add("9,4");
+		moves.add("10,1");
+		moves.add("14,11");
+		moves.add("15,12");
+		moves.add("16,13");
+		moves.add("5,17");
+		moves.add("18,15");
+
+		executeMoves(moves);
+	}
+	
+	public void executeTest6() {
+		List<String> moves = new ArrayList<>();
+		createFreshPosition(4);
+		
+		moves.add("1,3");
+		moves.add("2,4");
+		moves.add("2,2");
+		moves.add("7,6");
+		moves.add("8,4");
+		moves.add("3,9");
+		moves.add("4,10");
+		moves.add("5,3");
+		moves.add("12,1");
+		moves.add("1,13");
+		moves.add("11,14");
+
+		executeMoves(moves);
+	}
+	
+	public void executeTest7() {
+		List<String> moves = new ArrayList<>();
+		createFreshPosition(2);
+		
+		moves.add("1,2");
+		moves.add("3,1");
+		moves.add("4,1");
+		moves.add("5,2");
+		moves.add("2,3");
+
+		executeMoves(moves);
+
+	}
+	
+	public void executeMoves(List<String> moves) {
+		
+		for (String move : moves) {
+			try {
+				executeMove(move);
+			} catch (MovePipeLineException e) {
+				System.out.printf("not possible to execute the move: %s. Early termining the sequence.\n", move);
+				break;
+			}
+		}
+	}
+	
 	public void createFreshPosition(int numberOfSprouts) {
-		float cx = 320;
-		float cy = 240;
-		//float radius = 80 + numberOfSprouts * 12;
-		float radius = 150f;
+		double cx = 320;
+		double cy = 240;
+		//double radius = 80 + numberOfSprouts * 12;
+		double radius = 150;
 		position = builder.createSproutsCircle(numberOfSprouts, cx, cy, radius).build();
 	}
 	
-	public void createFreshPosition(int numberOfSprouts, float x, float y, float radius) {
+	public void createFreshPosition(int numberOfSprouts, double x, double y, double radius) {
 		position = builder.createSproutsCircle(numberOfSprouts, x, y, radius).build();
 	}
 
@@ -77,17 +204,17 @@ public class GraphicalFacade {
 				MovePathResult result = pipe.process(rawMove, position);
 				return result;
 			} catch (MoveException | MoveNotationException e) {
-				System.out.printf("%s\n", e.getMessage());
+				//System.out.printf("%s\n", e.getMessage());
+				// @TODO: early stop if move exception?
 			}
 		}
 
-		System.out.println("could not parse move!");
-		
-		return null;
+		throw new MovePipeLineException("no pipe line could execute the move: %s", rawMove);
 	}
 	
 	public String executeMove(String rawMove) {
 		MovePathResult result = generateMove(rawMove);
+		
 		IdMove actualMove = position.update(result.line);
 		return actualMove.toString();
 	}
@@ -97,15 +224,30 @@ public class GraphicalFacade {
 		IdMove move = position.update(line);
 		return move.toString();
 	}
+	
+	public String executeLineish(Line line) {
+		Vertex first = line.removeFirst();
+		Vertex last = line.removeLast();
+		
+		Sprout fromSprout = getSproutClicked(first.x, first.y);
+		Sprout toSprout = getSproutClicked(last.x, last.y);
+		
+		line.add(0, fromSprout.position);
+		line.add(toSprout.position);
+		
+		//Util.require(!intersectsNewLine(line));
+		IdMove move = position.update(line);
+		return move.toString();
+	}
 
-	public Sprout getSproutClicked(float mx, float my) {
-		float minimumDistance = Float.MAX_VALUE;
+	public Sprout getSproutClicked(double mx, double my) {
+		double minimumDistance = Double.MAX_VALUE;
 		Sprout closest = null;
 
 		for (Sprout sprout : position.getSprouts()) {
 			if (sprout.getNeighbourCount() > 2) continue;
 			
-			float distance = MathUtil.distance(mx, my, sprout.position.x, sprout.position.y);
+			double distance = MathUtil.distance(mx, my, sprout.position.x, sprout.position.y);
 			
 			if (distance <= sproutRadius && distance < minimumDistance) {
 				distance = minimumDistance;
@@ -116,8 +258,7 @@ public class GraphicalFacade {
 		return closest;
 	}
 
-	// @todo: move into handler.
-	public void touchDown(float worldX, float worldY) {
+	public void touchDown(double worldX, double worldY) {
 		Sprout sprout = getSproutClicked(worldX, worldY);
 		
 		if (sprout != null) {
@@ -127,7 +268,7 @@ public class GraphicalFacade {
 		}
 	}
 
-	public void touchDragged(float worldX, float worldY) {
+	public void touchDragged(double worldX, double worldY) {
 		if (!drawingLine) return;
 	
 		Vertex at = currentLine.getLast();
@@ -172,10 +313,10 @@ public class GraphicalFacade {
 				Vector2 angler2 = new Vector2();
 				angler2.set(at.x, at.y).sub(v1.x, v1.y);
 
-				float angle = angler2.angle(angler);
+				double angle = angler2.angle(angler);
 				if (angle < 0) angle += 180;
 				
-				float minAngle = 90;
+				double minAngle = 90;
 				if (angle <= minAngle) return;
 				*/
 	
@@ -196,7 +337,7 @@ public class GraphicalFacade {
 		}
 	}
 
-	public void touchUp(float worldX, float worldY) {
+	public void touchUp(double worldX, double worldY) {
 		if (!drawingLine) return;
 		drawingLine = false;
 		

@@ -32,10 +32,11 @@ public class Position {
 		lines = new ArrayList<>();
 		regions = new ArrayList<>();
 		vertices = new ArrayList<>();
-
-		outerRegion = new Region();
-		regions.add(outerRegion);
 		
+		Region region = new Region();
+		regions.add(region);
+		outerRegion = region;
+
 		outerRectangle = new BufferRectangle();
 	}
 	
@@ -140,6 +141,14 @@ public class Position {
 		
 		return move;
 	}
+	
+	/*
+	 * @TODO:
+	 * 
+	 * - bug with outerboundary orientation. See bugNew.png 
+	 * 
+	 * 
+	 */
 	
 	private IdMove getOneBoundaryMove(Sprout from, Sprout to, Region region, Line line) {
 		IdMove move = new IdMove();
@@ -327,14 +336,14 @@ public class Position {
 			throw new IllegalStateException("could not determine the orientation!");
 		}
 		
-		float accumulated = 0;
+		double accumulated = 0;
 		for (int i = 0; i < vertices.size() - 1; i++) {
 			Vertex v1 = vertices.get(i);
 			Vertex v2 = vertices.get(i+1);
 			
 			// no need to divide by 2, because all areas under the curve do it, so it just corresponds to
 			// the trueAccumulated = accumulated / 2
-			float areaUnderTriangle = (v2.x - v1.x) * (v2.y + v1.y);
+			double areaUnderTriangle = (v2.x - v1.x) * (v2.y + v1.y);
 			accumulated += areaUnderTriangle;
 		}
 		
@@ -342,7 +351,7 @@ public class Position {
 		Vertex v1 = vertices.get(vertices.size() - 1);
 		Vertex v2 = vertices.get(0);
 		
-		float areaUnderTriangle = (v2.x - v1.x) * (v2.y + v1.y);
+		double areaUnderTriangle = (v2.x - v1.x) * (v2.y + v1.y);
 		accumulated += areaUnderTriangle;
 		
 		return accumulated > 0;
@@ -441,7 +450,6 @@ public class Position {
 		outerRectangle.update(vertex.x, vertex.y);
 		vertices.add(vertex);
 	}
-	
 	
 	public List<Vertex> getVertices() {
 		return vertices;

@@ -2,14 +2,14 @@ package sprouts.game.util;
 
 public class MathUtil {
 	
-	public static float distance(float x1, float y1, float x2, float y2) {
-		float dx = x1 - x2;
-		float dy = y1 - y2;
-		return (float)Math.sqrt(dx*dx+dy*dy);
+	public static double distance(double x1, double y1, double x2, double y2) {
+		double dx = x1 - x2;
+		double dy = y1 - y2;
+		return (double)Math.sqrt(dx*dx+dy*dy);
 	}
 	
 		
-	public static int sign (float value) {
+	public static int sign (double value) {
 		if (value < 0) return -1;
 		else if (value > 0) return 1;
 		return 0;

@@ -5,12 +5,13 @@ import sprouts.ai.player.Player;
 import sprouts.ai.player.RandomPlayer;
 import sprouts.game.GraphicalFacade;
 import sprouts.game.move.IdMove;
+import sprouts.game.move.MovePipeLineException;
 import sprouts.game.util.Assert;
 
 public class StressTest {
 	
 	public static void main(String[] args) {
-		
+
 		int iterations = 100;
 		for (int i = 0; i < iterations; i++) {
 			
@@ -28,16 +29,24 @@ public class StressTest {
 
 			while (!g.isGameOver()) {
 				IdMove aiMove = ai.getMove(a.getPosition());
+				
+				if (aiMove == null) break;
 				System.out.printf("ai: %s\n", aiMove.toString());
 				
-				String result = g.executeMove(aiMove.toString());
-				if (result != null)  {
-					a.makeMove(aiMove.toString());
+				try {
+					String result = g.executeMove(aiMove.toString());
+					if (result != null)  {
+						a.makeMove(aiMove.toString());
+						
+						// 4<,4<,[0,1,7]
+					} else {
+						break;
+						
+					}
 					
-					// 4<,4<,[0,1,7]
-				} else {
+				} catch (MovePipeLineException e) {
+					System.out.println("rip");
 					break;
-					
 				}
 
 				if (aiMove == null) Assert.that(g.isGameOver());

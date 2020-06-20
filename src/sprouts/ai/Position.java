@@ -148,24 +148,24 @@ public class Position {
 	
 	private <T> Set<List<T>> powerSet(List<T> originalSet) {
 		Set<List<T>> sets = new HashSet<List<T>>();
-    if (originalSet.isEmpty()) {
-        sets.add(new LinkedList<>());
-        return sets;
-    }
-    
-    List<T> list = new ArrayList<T>(originalSet);
-    T head = list.get(0);
-    List<T> rest = new ArrayList<T>(list.subList(1, list.size()));
-    
-    for (List<T> set : powerSet(rest)) {
-        List<T> newSet = new LinkedList<T>();
-        newSet.add(head);
-        newSet.addAll(set);
-        sets.add(newSet);
-        sets.add(set);
-    }
-    
-    return sets;
+	    if (originalSet.isEmpty()) {
+	        sets.add(new LinkedList<>());
+	        return sets;
+	    }
+	    
+	    List<T> list = new ArrayList<T>(originalSet);
+	    T head = list.get(0);
+	    List<T> rest = new ArrayList<T>(list.subList(1, list.size()));
+	    
+	    for (List<T> set : powerSet(rest)) {
+	        List<T> newSet = new LinkedList<T>();
+	        newSet.add(head);
+	        newSet.addAll(set);
+	        sets.add(newSet);
+	        sets.add(set);
+	    }
+	    
+	    return sets;
 	}
 	
 	
