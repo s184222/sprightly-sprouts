@@ -74,12 +74,5 @@ public class AbstractFacade {
 			
 			position.add(region);
 		}
-		
-		// @TODO: remove sanity check
-		Assert.that(getPositionString().equals(raw));
-	}
-
-	public void printLives() {
-		position.printLives();
 	}
 }

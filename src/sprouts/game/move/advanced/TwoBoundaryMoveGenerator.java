@@ -57,6 +57,7 @@ public class TwoBoundaryMoveGenerator implements MovePathGenerator {
 		Map<Vertex, List<Vertex>> graph = getVertexGraph(from.position, to.position, fromEdge, toEdge, triangles, position);
 		
 		List<Vertex> path = pathFinder.find(from.position, to.position, graph, costFunction, costFunction);
+		if (path.size() == 0) throw new MoveException("could not generate the path");
 		
 		Line line = new Line();
 		line.addAll(path);

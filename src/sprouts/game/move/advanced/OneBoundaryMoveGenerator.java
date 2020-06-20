@@ -67,7 +67,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		List<Triangle> slithering = slither(graph, from, to, fromEdge, toEdge);
 		List<Triangle> wrapping = wrapAroundContaining(slithering, inner, graph, region, from.position, to.position, position);
 
-		Assert.that(canCreatePath(slithering, from.position, to.position));
+		if (canCreatePath(slithering, from.position, to.position)) throw new MoveException("");
 
 		condense(slithering, region);
 		Assert.that(canCreatePath(slithering, from.position, to.position));
@@ -128,7 +128,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		return true;
 	}
 
-	private List<Triangle> wrapAroundContaining(List<Triangle> slithering, List<Sprout> inner, Map<Triangle, List<Triangle>> graph, Region region, Vertex from, Vertex to, Position position) {
+	private List<Triangle> wrapAroundContaining(List<Triangle> slithering, List<Sprout> inner, Map<Triangle, List<Triangle>> graph, Region region, Vertex from, Vertex to, Position position) throws MoveException {
 
 		List<Triangle> lastWrapping = new ArrayList<>();
 		
@@ -167,7 +167,7 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 			lastWrapping.addAll(wrapping);
 
 			int at = getSlitherEntryIndex(slithering, slitherEntry, from, to, path, position);
-			if (at == -1) return lastWrapping;
+			if (at == -1) throw new MoveException("could not wrap around");
 			slithering.addAll(at + 1, path);
 		}
 
@@ -199,8 +199,6 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 			}
 		}
 		
-		Assert.that(candidateIndices.size() > 0);
-		
 		int at = -1;
 		for (int index : candidateIndices) {
 			List<Triangle> slitherCopy = new ArrayList<>();
@@ -214,9 +212,6 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 			}
 			
 		}
-		
-		//if (at == -1) return candidateIndices.get(1);
-		//Assert.that(at != -1);
 		
 		return at;
 	}
