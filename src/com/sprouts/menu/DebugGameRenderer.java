@@ -16,17 +16,12 @@ import com.sprouts.graphic.tessellator2d.color.LinearColorGradient2D;
 import com.sprouts.math.LinMath;
 import com.sprouts.math.Vec2;
 
-import sprouts.ai.AIFacade;
-import sprouts.ai.player.Player;
-import sprouts.ai.player.RandomPlayer;
-import sprouts.game.GraphicalFacade;
 import sprouts.game.model.Edge;
 import sprouts.game.model.Line;
 import sprouts.game.model.LineSegment;
 import sprouts.game.model.Position;
 import sprouts.game.model.Region;
 import sprouts.game.model.Vertex;
-import sprouts.game.move.IdMove;
 import sprouts.game.move.advanced.OneBoundaryMoveGeneratorData;
 import sprouts.game.move.advanced.TwoBoundaryMoveGeneratorData;
 import sprouts.game.move.pipe.MovePathResult;
@@ -123,19 +118,8 @@ public class DebugGameRenderer implements IKeyEventListener {
 			for (Triangle triangle : triangles) {
 				VertexColor fillColor = VertexColor.LIGHT_GREEN;
 				
-				if (LinMath.isPointInPolygon(mouseVertex, triangle.getCorners())) {
+				if (LinMath.isPointInPolygon(mouseVertex, triangle.getCorners()))
 					fillColor = VertexColor.GREEN_YELLOW;
-					System.out.println(triangle.toString());
-					
-					
-					if (gameMenu.facade.getPosition().getSprouts().size() == 10) {
-						Vertex to = gameMenu.facade.getPosition().getSprout(10).position;
-						
-						System.out.println(to);
-						if (triangle.isCorner(to)) System.out.println("!!!!!!!!!");
-					}
-					
-				}
 				
 				tessellator.setColor(fillColor);
 				drawOutlinedTriangle(tessellator, triangle, fillColor, VertexColor.GREEN);
@@ -403,24 +387,6 @@ public class DebugGameRenderer implements IKeyEventListener {
 			for (Region region : position.getRegions()) {
 				region.verbose();
 			}
-	
-			break;
-		}
-		
-		case GLFW.GLFW_KEY_A: {
-			System.out.printf("thinking...\n");
-			IdMove move = gameMenu.ai.getMove(gameMenu.aiFacade.getPosition());
-			System.out.printf(">>ai: %s\n", move.toString());
-
-			MovePathResult result = gameMenu.facade.generateMove(move.toString());
-			System.out.println("here");
-			System.out.println(result.line.size());
-			
-			gameMenu.facade.executeLine(result.line);
-			gameMenu.aiFacade.makeMove(move.toString());
-			
-			if (gameMenu.facade.isGameOver())
-				System.out.printf("game over\n");
 	
 			break;
 		}

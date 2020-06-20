@@ -80,7 +80,7 @@ public class GraphicalFacade {
 		double cx = 320;
 		double cy = 240;
 		//double radius = 80 + numberOfSprouts * 12;
-		double radius = 150;
+		double radius = 300;
 		position = builder.createSproutsCircle(numberOfSprouts, cx, cy, radius).build();
 	}
 	

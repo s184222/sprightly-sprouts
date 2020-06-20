@@ -28,9 +28,6 @@ import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 import com.sprouts.graphic.tessellator2d.ITessellator2D;
 import com.sprouts.math.Vec2;
 
-import sprouts.ai.AIFacade;
-import sprouts.ai.player.Player;
-import sprouts.ai.player.RandomPlayer;
 import sprouts.game.GraphicalFacade;
 import sprouts.game.model.Line;
 import sprouts.game.model.Position;
@@ -44,11 +41,7 @@ public class GameMenu extends SproutsMenu {
 	private static final float MOVE_LINE_WIDTH = 3.0f;
 	
 	/* Visible for debugging only! */
-	protected final boolean withAI;
-	
 	protected final GraphicalFacade facade;
-	protected final AIFacade aiFacade;
-	protected final Player ai;
 	
 	protected final Font font;
 	protected final Vec2 mousePos;
@@ -61,14 +54,10 @@ public class GameMenu extends SproutsMenu {
 	private float offsetX;
 	private float offsetY;
 	
-	public GameMenu(SproutsMain main, boolean withAI) {
+	public GameMenu(SproutsMain main) {
 		super(main);
 
-		this.withAI = withAI;
-		
 		facade = new GraphicalFacade();
-		aiFacade = new AIFacade();
-		ai = new RandomPlayer();
 
 		font = getResourceManager().createFont(24.0f);
 		mousePos = new Vec2();
@@ -84,11 +73,10 @@ public class GameMenu extends SproutsMenu {
 	
 	public void reset(int initialSproutCount) {
 		facade.createFreshPosition(initialSproutCount);
-		aiFacade.createFreshPosition(initialSproutCount);
 	}
 	
 	public boolean executeMoves(List<String> rawMoves) {
-		return (facade.executeMoves(rawMoves) && aiFacade.makeMoves(rawMoves));
+		return facade.executeMoves(rawMoves);
 	}
 
 	private void uiLayout() {
@@ -144,10 +132,7 @@ public class GameMenu extends SproutsMenu {
 			@Override
 			public void mouseReleased(MouseEvent event) {
 				Vertex vertex = viewToWorld(event.getX(), event.getY());
-				
-				String move = facade.finishMove(vertex.x, vertex.y);
-				if (move != null && withAI)
-					aiFacade.makeMove(move);
+				facade.finishMove(vertex.x, vertex.y);
 			}
 			
 			@Override

@@ -16,8 +16,8 @@ public class BufferRectangle {
 	private double bufferX, bufferY;
 	
 	public BufferRectangle() {
-		bufferX = 80;
-		bufferY = 80;
+		bufferX = 55;
+		bufferY = 55;
 		
 		lowerLeft = new Vertex(Double.MAX_VALUE, Double.MAX_VALUE);
 		lowerRight = new Vertex(Double.MAX_VALUE, Double.MIN_VALUE);
