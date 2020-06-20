@@ -13,6 +13,7 @@ import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 public class MainSproutsMenu extends SproutsMenu {
 
 	private final ButtonComposition playFriendButton;
+	private final ButtonComposition playAIButton;
 	private final ButtonComposition extrasButton;
 	private final ButtonComposition quitButton;
 	
@@ -20,6 +21,7 @@ public class MainSproutsMenu extends SproutsMenu {
 		super(main);
 
 		playFriendButton = new ButtonComposition("Play Game");
+		playAIButton = new ButtonComposition("Play AI");
 		extrasButton = new ButtonComposition("Extras");
 		quitButton = new ButtonComposition("Quit");
 		
@@ -36,12 +38,15 @@ public class MainSproutsMenu extends SproutsMenu {
 		
 		playFriendButton.setPadding(buttonPadding);
 		playFriendButton.setTextAlignment(TextAlignment.CENTER);
+		playAIButton.setPadding(buttonPadding);
+		playAIButton.setTextAlignment(TextAlignment.CENTER);
 		extrasButton.setPadding(buttonPadding);
 		extrasButton.setTextAlignment(TextAlignment.CENTER);
 		quitButton.setPadding(buttonPadding);
 		quitButton.setTextAlignment(TextAlignment.CENTER);
 
 		buttonPanel.add(wrapOverlay(playFriendButton));
+		buttonPanel.add(wrapOverlay(playAIButton));
 		buttonPanel.add(wrapOverlay(extrasButton));
 		buttonPanel.add(wrapOverlay(quitButton));
 	
@@ -56,6 +61,10 @@ public class MainSproutsMenu extends SproutsMenu {
 	private void uiEvents() {
 		playFriendButton.addButtonListener((source) -> {
 			main.setMenu(new PlayChoosingSproutsMenu(main, new GameMenu(main)));
+		});
+		
+		playAIButton.addButtonListener((source) -> {
+			main.setMenu(new PlayChoosingSproutsMenu(main, new AIGameMenu(main)));
 		});
 
 		extrasButton.addButtonListener((source) -> {

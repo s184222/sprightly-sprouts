@@ -368,7 +368,7 @@ public class DebugGameRenderer implements IKeyEventListener {
 	public void keyPressed(KeyEvent event) {
 		switch (event.getKeyCode()) {
 		case GLFW.GLFW_KEY_R: {
-			gameMenu.reset(8);
+			gameMenu.reset(5);
 			break;
 		}
 		

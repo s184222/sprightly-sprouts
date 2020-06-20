@@ -58,7 +58,7 @@ public class GameMenu extends SproutsMenu {
 		super(main);
 
 		facade = new GraphicalFacade();
-
+		
 		font = getResourceManager().createFont(24.0f);
 		mousePos = new Vec2();
 		
@@ -131,14 +131,12 @@ public class GameMenu extends SproutsMenu {
 			
 			@Override
 			public void mouseReleased(MouseEvent event) {
-				Vertex vertex = viewToWorld(event.getX(), event.getY());
-				facade.finishMove(vertex.x, vertex.y);
+				finishMove(viewToWorld(event.getX(), event.getY()));
 			}
 			
 			@Override
 			public void mousePressed(MouseEvent event) {
-				Vertex vertex = viewToWorld(event.getX(), event.getY());
-				facade.startMove(vertex.x, vertex.y);
+				startMove(viewToWorld(event.getX(), event.getY()));
 			}
 			
 			@Override
@@ -156,8 +154,7 @@ public class GameMenu extends SproutsMenu {
 			
 			@Override
 			public void mouseDragged(MouseEvent event) {
-				Vertex vertex = viewToWorld(event.getX(), event.getY());
-				facade.dragMove(vertex.x, vertex.y);
+				dragMove(viewToWorld(event.getX(), event.getY()));
 			}
 		});
 		
@@ -211,13 +208,37 @@ public class GameMenu extends SproutsMenu {
 			MovePathResult result = facade.generateMove(textField.getText());
 			
 			if (result != null && result.line != null) {
-				facade.executeLine(result.line);
-				textField.setText("");
-				
+				String move = facade.executeLine(result.line);
+
+				if (move != null) {
+					onMoveExecuted(move);
+
+					textField.setText("");
+				}
+
 				debugRenderer.onMoveExecuted(result);
 			}
 		} catch (MovePipeLineException ignore) {
 		}
+	}
+	
+	protected void startMove(Vertex vertex) {
+		facade.startMove(vertex.x, vertex.y);
+	}
+
+	protected void finishMove(Vertex vertex) {
+		String move = facade.finishMove(vertex.x, vertex.y);
+		if (move != null)
+			onMoveExecuted(move);
+	}
+
+	protected void dragMove(Vertex vertex) {
+		facade.dragMove(vertex.x, vertex.y);
+	}
+	
+	protected void onMoveExecuted(String move) {
+		if (facade.isGameOver())
+			main.setMenu(new GameOverSproutsMenu(main, null));
 	}
 	
 	@Override
