@@ -6,6 +6,7 @@ package sprouts.game.move;
  * @author Rasmus Møller Larsen, s184190
  *
  */
+@SuppressWarnings("serial")
 public class MoveNotationException extends Exception {
 	
 	public MoveNotationException(String format, Object ... args) {

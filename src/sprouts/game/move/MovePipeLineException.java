@@ -6,6 +6,7 @@ package sprouts.game.move;
  * @author Rasmus Møller Larsen, s184190
  *
  */
+@SuppressWarnings("serial")
 public class MovePipeLineException extends IllegalStateException {
 	
 	public MovePipeLineException(String format, Object ... args) {

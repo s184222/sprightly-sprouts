@@ -6,6 +6,7 @@ import java.util.List;
 
 import sprouts.game.util.MathUtil;
 
+@SuppressWarnings("serial")
 public class Boundary extends LinkedList<Integer> {
 	
 	public boolean outerBoundary;

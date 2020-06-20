@@ -2,6 +2,7 @@ package sprouts.ai;
 
 import java.util.LinkedList;
 
+@SuppressWarnings("serial")
 public class Region extends LinkedList<Boundary> {
 	
 	public Boundary getBoundary(int sprout) {
