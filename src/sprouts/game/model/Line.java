@@ -13,6 +13,7 @@ import sprouts.game.util.MathUtil;
  * @author Rasmus Møller Larsen, s184190
  *
  */
+@SuppressWarnings("serial")
 public class Line extends ArrayList<Vertex> {
 	
 	public Vertex getFirst() {
