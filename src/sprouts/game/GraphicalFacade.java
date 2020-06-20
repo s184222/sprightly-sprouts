@@ -176,6 +176,10 @@ public class GraphicalFacade {
 
 	}
 	
+	/**
+	 * 
+	 */
+	
 	public void executeMoves(List<String> moves) {
 		
 		for (String move : moves) {
