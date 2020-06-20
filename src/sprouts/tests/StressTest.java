@@ -45,11 +45,8 @@ public class StressTest {
 					}
 					
 				} catch (MovePipeLineException e) {
-					System.out.println("rip");
 					break;
 				}
-
-				if (aiMove == null) Assert.that(g.isGameOver());
 			}
 		}
 	}

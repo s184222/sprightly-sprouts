@@ -67,19 +67,8 @@ public class SimpleMoveGenerator implements MovePathGenerator {
 		boolean same = from.equals(to);
 		Vertex end = same ? endings.remove(0) : to.position;
 		
-		/*
-		System.out.println(from.id + "\t" + to.id);
-		if (to.id == 10) {
-			SimpleMoveGeneratorData data = new SimpleMoveGeneratorData();
-			data.twoBoundaryGraph = graph;
-			data.triangles = triangles;
-
-			result.customData = data;
-			return result;
-		}
-		*/
-		
 		List<Vertex> path = pathFinder.find(from.position, end, graph, costFunction, costFunction);
+		if (path.size() == 0) throw new MoveException("could not generate the path");
 		
 		Line line = new Line();
 		line.addAll(path);

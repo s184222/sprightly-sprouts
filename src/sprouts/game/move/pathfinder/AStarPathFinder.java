@@ -125,6 +125,8 @@ public class AStarPathFinder implements PathFinder {
 		path.add(goal);
 		
 		Node<T> current = tToNode.get(goal);
+		if (current == null) return path;	// could not find a path.
+		
 		while (current.parent != null) {
 			path.add(current.parent);
 			current = tToNode.get(current.parent);

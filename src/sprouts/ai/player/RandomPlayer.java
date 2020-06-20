@@ -4,15 +4,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import sprouts.ai.AllMoveGenerator;
 import sprouts.ai.Position;
 import sprouts.game.move.IdMove;
 
 public class RandomPlayer implements Player {
 	
 	private Random random;
+	private AllMoveGenerator generator;
+	
+	private IdMove previousMove;
 	
 	public RandomPlayer() {
-		this(6);	//444
+		this(6);
 	}
 	
 	public RandomPlayer(int seed) {
@@ -21,25 +25,14 @@ public class RandomPlayer implements Player {
 
 	@Override
 	public IdMove getMove(Position position) {
-		List<IdMove> moves = position.getAllMoves();
-		
-		System.out.printf("moves: %d\n", moves.size());
-
-		/*
-		System.out.printf("=== moves ===\n");
-		
-		for (RawMove move : moves) {
-			System.out.printf("%s\n", move);
-		}
-		System.out.printf("\n");
-		*/
-		
+		List<IdMove> moves = generator.getAllMoves(position);
 		
 		if (moves.size() == 0) return null;
 
 		Collections.shuffle(moves, random);
 		
 		IdMove move = moves.get(0);
+		if (move.equals(previousMove)) return null;
 		
 		return move;
 	}
