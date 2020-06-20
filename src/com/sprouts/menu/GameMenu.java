@@ -54,18 +54,18 @@ public class GameMenu extends SproutsMenu {
 		super(main);
 		
 		facadeG = new GraphicalFacade();
-		facadeG.createFreshPosition(8);
-		
-		facadeG.executeTest1();
 		
 		/*
+		facadeG.createFreshPosition(8);
+
+		facadeG.executeTest1();
 		facadeG.executeTest2();
 		facadeG.executeTest3();
 		facadeG.executeTest4();
 		facadeG.executeTest5();
-		facadeG.executeTest6();
-		facadeG.executeTest7();
 		*/
+		facadeG.executeTest6();
+		//facadeG.executeTest7();
 		
 		font = getResourceManager().createFont(24.0f);
 		mousePos = new Vec2();
@@ -167,9 +167,12 @@ public class GameMenu extends SproutsMenu {
 				MovePathResult result = facadeG.generateMove(textField.getText());
 				
 				if (result != null) {
+					if (result.line != null) {
+						
 					facadeG.executeLine(result.line);
 					textField.setText("");
 					
+					}
 					debugRenderer.onMoveExecuted(result);
 				}
 			} catch (MovePipeLineException e) {

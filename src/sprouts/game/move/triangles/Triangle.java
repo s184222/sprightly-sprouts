@@ -15,10 +15,8 @@ public class Triangle {
 	private Vertex center;
 	
 	public Triangle(Vertex p1, Vertex p2, Vertex p3) {
-		center = new Vertex();
+		center = new Vertex((p1.x + p2.x + p3.x) / 3d, (p1.y + p2.y + p3.y) / 3d);
 		corners = new Vertex[] {p1, p2, p3};
-		center.x = (p1.x + p2.x + p3.x) / 3d;
-		center.y = (p1.y + p2.y + p3.y) / 3d;
 	}
 	
 	public boolean isCorner(Vertex point) {
@@ -40,13 +38,6 @@ public class Triangle {
 	}
 	
 	public Vertex getCenter() {
-		Vertex p1 = corners[0];
-		Vertex p2 = corners[1];
-		Vertex p3 = corners[2];
-		
-		center.x = (p1.x + p2.x + p3.x) / 3d;
-		center.y = (p1.y + p2.y + p3.y) / 3d;
-		
 		return center;
 	}
 	

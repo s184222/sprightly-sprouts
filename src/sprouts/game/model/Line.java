@@ -1,14 +1,12 @@
 package sprouts.game.model;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 
 import com.sprouts.math.LinMath;
 
-import sprouts.game.util.MathUtil;
 import sprouts.game.util.Assert;
+import sprouts.game.util.MathUtil;
 
 /**
  * 
@@ -20,7 +18,6 @@ public class Line extends ArrayList<Vertex> {
 	public Vertex getFirst() {
 		return get(0);
 	}
-	
 	
 	public Vertex getSemiFirst() {
 		return get(1);
@@ -130,6 +127,14 @@ public class Line extends ArrayList<Vertex> {
 		return totalDistance;
 	}
 	
+	/*
+	 * 
+	 * a --              b !--------------------- c --- d
+	 * a -!- b
+	 * 
+	 * 
+	 */
+	
 	public int addMiddlePoint() {
 		double totalDistance = getDistance();
 		double centerDistance = totalDistance / 2d;
@@ -145,12 +150,12 @@ public class Line extends ArrayList<Vertex> {
 			if (accumulatedDistance >= centerDistance) {
 				double scale = 1d - (accumulatedDistance - centerDistance) / distance;
 				
-				double vx = (v2.x - v1.x) * scale + v1.x;
-				double vy = (v2.y - v1.y) * scale + v1.y;
-				
-				Vertex vertex = new Vertex(vx, vy);
-				
-				if (!contains(vertex)) {
+				if (scale >= 0.2 && scale <= 0.8) {
+					double vx = (v2.x - v1.x) * scale + v1.x;
+					double vy = (v2.y - v1.y) * scale + v1.y;
+					
+					Vertex vertex = new Vertex(vx, vy);
+					
 					add(i + 1, vertex);
 
 					return i + 1;

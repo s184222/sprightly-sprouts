@@ -67,6 +67,18 @@ public class SimpleMoveGenerator implements MovePathGenerator {
 		boolean same = from.equals(to);
 		Vertex end = same ? endings.remove(0) : to.position;
 		
+		/*
+		System.out.println(from.id + "\t" + to.id);
+		if (to.id == 10) {
+			SimpleMoveGeneratorData data = new SimpleMoveGeneratorData();
+			data.twoBoundaryGraph = graph;
+			data.triangles = triangles;
+
+			result.customData = data;
+			return result;
+		}
+		*/
+		
 		List<Vertex> path = pathFinder.find(from.position, end, graph, costFunction, costFunction);
 		
 		Line line = new Line();
@@ -108,13 +120,6 @@ public class SimpleMoveGenerator implements MovePathGenerator {
 				Vertex v1 = corners[MathUtil.wrap(i+1, corners.length)];
 
 				LineSegment segment = new LineSegment(v0, v1);
-				if (segment.from.equals(source) && segment.to.equals(target)) {
-					int k = 1;
-				}
-				
-				if (segment.from.equals(target) && segment.to.equals(source)) {
-					int k = 1;
-				}
 				
 				if (!position.isLineSegmentOnLine(segment.from, segment.to)) {
 					// due to doubleing precision, 2 linesegment which are reversed may yield different middle vertices, so linesegments are canonized

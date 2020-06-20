@@ -131,8 +131,19 @@ public class DebugGameRenderer implements IKeyEventListener {
 			for (Triangle triangle : triangles) {
 				VertexColor fillColor = VertexColor.LIGHT_GREEN;
 				
-				if (LinMath.isPointInPolygon(mouseVertex, triangle.getCorners()))
+				if (LinMath.isPointInPolygon(mouseVertex, triangle.getCorners())) {
 					fillColor = VertexColor.GREEN_YELLOW;
+					System.out.println(triangle.toString());
+					
+					
+					if (gameMenu.facadeG.getPosition().getSprouts().size() == 10) {
+						Vertex to = gameMenu.facadeG.getPosition().getSprout(10).position;
+						
+						System.out.println(to);
+						if (triangle.isCorner(to)) System.out.println("!!!!!!!!!");
+					}
+					
+				}
 				
 				tessellator.setColor(fillColor);
 				drawOutlinedTriangle(tessellator, triangle, fillColor, VertexColor.GREEN);

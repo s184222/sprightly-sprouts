@@ -14,14 +14,10 @@ public class BufferRectangle {
 	private List<Vertex> corners;
 
 	private double bufferX, bufferY;
-	private double minimumWidth, minimumHeight;
 	
 	public BufferRectangle() {
-		minimumWidth = 300;
-		minimumHeight = 200;
-		
-		bufferX = 35;
-		bufferY = 25;
+		bufferX = 80;
+		bufferY = 80;
 		
 		lowerLeft = new Vertex(Double.MAX_VALUE, Double.MAX_VALUE);
 		lowerRight = new Vertex(Double.MAX_VALUE, Double.MIN_VALUE);

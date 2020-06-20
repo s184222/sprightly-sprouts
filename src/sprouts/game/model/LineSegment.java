@@ -20,27 +20,24 @@ public class LineSegment {
 	}
 	
 	public Vertex getMiddle() {
-		Vertex vertex = new Vertex();
 		
 		double dx = to.x - from.x;
 		double dy = to.y - from.y;
 		
-		vertex.x = from.x + dx / 2d;
-		vertex.y = from.y + dy / 2d;
+		double vx = from.x + dx / 2d;
+		double vy = from.y + dy / 2d;
 		
-		return vertex;
+		return new Vertex(vx, vy);
 	}
 
 	public Vertex getVertexAt(double ratio) {
-		Vertex vertex = new Vertex();
-		
 		double dx = to.x - from.x;
 		double dy = to.y - from.y;
 		
-		vertex.x = from.x + dx * ratio;
-		vertex.y = from.y + dy * ratio;
+		double vx = from.x + dx * ratio;
+		double vy = from.y + dy * ratio;
 		
-		return vertex;
+		return new Vertex(vx, vy);
 	}
 	
 	public void reverse() {

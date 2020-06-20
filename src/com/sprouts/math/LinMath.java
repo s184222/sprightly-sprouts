@@ -48,6 +48,7 @@ public final class LinMath {
 		return intersect(x0, y0, x1, y1, x2, y2, x3, y3, null);
 	}
 	
+	/*
 	public static boolean intersect (double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4,
 			Vec2d intersection) {
 			double d = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
@@ -64,9 +65,8 @@ public final class LinMath {
 			if (intersection != null) intersection.set(x1 + (x2 - x1) * ua, y1 + (y2 - y1) * ua);
 			return true;
 		}
+	*/
 	
-	/*
-
 	public static boolean intersect(double x0, double y0, double x1, double y1, double x2, double y2, double x3, double y3, Vec2 intersection) {
 		double a1 = y1 - y0;
 		double b1 = x0 - x1;
@@ -98,7 +98,6 @@ public final class LinMath {
 		
 		return false;
 	}
-	*/
 	
 	//this intersect is only used for the function contains 
 	public static Vec2 intersectContains(Vec2 p0, Vec2 p1, Vec2 p2, Vec2 p3) {

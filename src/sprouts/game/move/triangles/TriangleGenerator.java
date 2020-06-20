@@ -30,6 +30,7 @@ public class TriangleGenerator {
 	 * @param position - the current position
 	 * @return triangulation of the position
 	 */
+	
 	public List<Triangle> getTriangles(Position position) {
 		
 		try {
@@ -37,6 +38,7 @@ public class TriangleGenerator {
 			
 			List<Line> lines = position.getLines();
 			for (Line line : lines) {
+				
 				for (int i = 0; i < line.size() - 1; i++) {
 					Vertex from = line.get(i);
 					Vertex to = line.get(i+1);
@@ -84,7 +86,8 @@ public class TriangleGenerator {
 	}
 	
 	private Vertex asVertex(DPoint point) {
-		return new Vertex(point.getX(), point.getY());
+		Vertex v = new Vertex(point.getX(), point.getY());
+		return v;
 	}
 	
   private boolean isCounterClockwise(DTriangle dtriangle) {

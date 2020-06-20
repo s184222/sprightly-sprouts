@@ -151,13 +151,15 @@ public class GraphicalFacade {
 		moves.add("7,6");
 		moves.add("8,4");
 		moves.add("3,9");
+		/*
 		moves.add("4,10");
 		moves.add("5,3");
 		moves.add("12,1");
 		moves.add("1,13");
 		moves.add("11,14");
-
+		*/
 		executeMoves(moves);
+
 	}
 	
 	public void executeTest7() {
