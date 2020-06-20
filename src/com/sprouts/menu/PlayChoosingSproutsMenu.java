@@ -12,18 +12,22 @@ import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 
 public class PlayChoosingSproutsMenu extends SproutsMenu {
 
+	private final SproutsMenu prevMenu;
 	private final GameMenu gameMenu;
 	
 	private final ButtonComposition playButton;
 	private final ButtonComposition loadButton;
+	private final ButtonComposition backButton;
 	
-	public PlayChoosingSproutsMenu(SproutsMain main, GameMenu gameMenu) {
+	public PlayChoosingSproutsMenu(SproutsMain main, SproutsMenu prevMenu, GameMenu gameMenu) {
 		super(main);
 
+		this.prevMenu = prevMenu;
 		this.gameMenu = gameMenu;
 		
 		playButton = new ButtonComposition("New Game");
 		loadButton = new ButtonComposition("Load Game");
+		backButton = new ButtonComposition("Back");
 		
 		uiLayout();
 		uiEvents();
@@ -40,9 +44,12 @@ public class PlayChoosingSproutsMenu extends SproutsMenu {
 		playButton.setTextAlignment(TextAlignment.CENTER);
 		loadButton.setPadding(buttonPadding);
 		loadButton.setTextAlignment(TextAlignment.CENTER);
+		backButton.setPadding(buttonPadding);
+		backButton.setTextAlignment(TextAlignment.CENTER);
 
 		buttonPanel.add(wrapOverlay(playButton));
 		buttonPanel.add(wrapOverlay(loadButton));
+		buttonPanel.add(wrapOverlay(backButton));
 	
 		spec.setHorizontalFill(CompositionFill.FILL_MINIMUM);
 		spec.setVerticalFill(CompositionFill.FILL_MINIMUM);
@@ -61,6 +68,10 @@ public class PlayChoosingSproutsMenu extends SproutsMenu {
 
 		loadButton.addButtonListener((source) -> {
 			main.setMenu(new LoadGameSproutsMenu(main, this, gameMenu));
+		});
+
+		backButton.addButtonListener((source) -> {
+			main.setMenu(prevMenu);
 		});
 	}
 	

@@ -46,8 +46,8 @@ public class SproutsMain {
 	private static final String SPROUTS_TITLE = "Sprightly Sprouts";
 	
 	private static final String WINDOW_TITLE = SPROUTS_TITLE;
-	private static final int WINDOW_WIDTH  = 500;
-	private static final int WINDOW_HEIGHT = 500;
+	private static final int WINDOW_WIDTH  = 900;
+	private static final int WINDOW_HEIGHT = 600;
 
 	private final Display display;
 	private final Mouse mouse;
