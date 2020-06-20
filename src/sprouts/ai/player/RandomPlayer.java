@@ -1,6 +1,5 @@
 package sprouts.ai.player;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -30,9 +29,9 @@ public class RandomPlayer implements Player {
 		
 		if (moves.size() == 0) return null;
 
-		Collections.shuffle(moves, random);
+		//Collections.shuffle(moves, random);
 		
-		IdMove move = moves.get(0);
+		IdMove move = moves.get(1);
 		if (move.equals(previousMove)) return null;
 		
 		return move;
