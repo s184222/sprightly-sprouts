@@ -21,6 +21,7 @@ public class RandomPlayer implements Player {
 	
 	public RandomPlayer(int seed) {
 		random = new Random(seed);
+		generator = new AllMoveGenerator();
 	}
 
 	@Override

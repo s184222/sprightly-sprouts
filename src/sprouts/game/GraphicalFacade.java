@@ -176,10 +176,6 @@ public class GraphicalFacade {
 
 	}
 	
-	/**
-	 * 
-	 */
-	
 	public void executeMoves(List<String> moves) {
 		
 		for (String move : moves) {
@@ -214,7 +210,7 @@ public class GraphicalFacade {
 				// @TODO: early stop if move exception?
 			}
 		}
-
+		
 		throw new MovePipeLineException("no pipe line could execute the move: %s", rawMove);
 	}
 	

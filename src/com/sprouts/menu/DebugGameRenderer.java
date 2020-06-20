@@ -422,9 +422,12 @@ public class DebugGameRenderer implements IKeyEventListener {
 		case GLFW.GLFW_KEY_A: {
 			System.out.printf("thinking...\n");
 			IdMove move = ai.getMove(facadeA.getPosition());
-			System.out.printf("ai: %s\n", move.toString());
-			
+			System.out.printf(">>ai: %s\n", move.toString());
+
 			MovePathResult result = gameMenu.facadeG.generateMove(move.toString());
+			System.out.println("here");
+			System.out.println(result.line.size());
+			
 			gameMenu.facadeG.executeLine(result.line);
 			facadeA.makeMove(move.toString());
 			

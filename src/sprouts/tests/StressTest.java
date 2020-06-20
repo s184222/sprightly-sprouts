@@ -6,7 +6,6 @@ import sprouts.ai.player.RandomPlayer;
 import sprouts.game.GraphicalFacade;
 import sprouts.game.move.IdMove;
 import sprouts.game.move.MovePipeLineException;
-import sprouts.game.util.Assert;
 
 public class StressTest {
 	
