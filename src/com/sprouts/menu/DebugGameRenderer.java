@@ -138,23 +138,6 @@ public class DebugGameRenderer implements IKeyEventListener {
 			if (previousMove != null) {
 				tessellator.setColor(VertexColor.RED);
 				gameMenu.drawSproutLine(tessellator, previousMove);
-				
-				/*
-				Vec2 v0 = gameMenu.worldToView(previousMove.get(8));
-				Vec2 v1 = gameMenu.worldToView(previousMove.get(9));
-				Vec2 v2 = gameMenu.worldToView(previousMove.get(11));
-				Vec2 v3 = gameMenu.worldToView(previousMove.get(12));
-				
-				float width = 4;
-				
-						//boolean in = LinMath.intersect(v0.x,v0.y,v1.x,v1.y,v2.x,v2.y,v3.x,v3.y);
-						//System.out.printf("%b\n", in);
-				
-				tessellator.setColor(new VertexColor(0f, 0f, 1f));
-				tessellator.drawLine(v0, v1, width);
-				tessellator.setColor(new VertexColor(0, 1f, 0));
-				tessellator.drawLine(v2, v3, width);
-				*/
 			}
 		}
 		
@@ -203,6 +186,7 @@ public class DebugGameRenderer implements IKeyEventListener {
 					drawTriangleOutline(tessellator, target);
 			}
 			
+			/*
 			tessellator.setColor(VertexColor.BROWN);
 			
 			for (Entry<Triangle, List<Triangle>> entry : oneBoundaryGraph.entrySet()) {
@@ -212,12 +196,13 @@ public class DebugGameRenderer implements IKeyEventListener {
 				for (Triangle target : entry.getValue()) {
 					Vec2 targetPos = gameMenu.worldToView(target.getCenter());
 					
-					//tessellator.drawLine(sourcePos, targetPos, CENTER_LINE_WIDTH);
+					tessellator.drawLine(sourcePos, targetPos, CENTER_LINE_WIDTH);
 				}
 			}
+			*/
 		}
 
-		if (slither != null && false) {
+		if (slither != null) {
 			tessellator.setColor(VertexColor.ORANGE);
 			
 			for (Triangle triangle : slither)
@@ -227,7 +212,7 @@ public class DebugGameRenderer implements IKeyEventListener {
 			drawTriangleCenterLines(tessellator, slither);
 		}
 		
-		if (wrapper != null && false) {
+		if (wrapper != null) {
 			for (int i = 0; i < wrapper.size(); i++) {
 				Triangle triangle = wrapper.get(i);
 				
