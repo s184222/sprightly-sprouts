@@ -1,19 +1,38 @@
 package sprouts.ai;
 
+import java.util.List;
+
 import sprouts.game.UidGenerator;
 import sprouts.game.move.MoveNotationException;
+import sprouts.game.move.MovePipeLineException;
 import sprouts.game.move.advanced.AdvancedMoveNotationParser;
 import sprouts.game.move.pipe.MoveNotationParser;
 import sprouts.game.util.Assert;
 
-public class AbstractFacade {
+public class AIFacade {
 	
 	private UidGenerator vertexIdGenerator;
 	private Position position;
 	
 
-	public AbstractFacade() {
+	public AIFacade() {
 		vertexIdGenerator = new UidGenerator();
+	}
+	
+	/**
+	 * 
+	 */
+	public boolean makeMoves(List<String> moves) {
+		for (String move : moves) {
+			try {
+				makeMove(move);
+			} catch (MovePipeLineException e) {
+				System.out.printf("not possible to execute the move: %s. Early termining the sequence.\n", move);
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	public void makeMove(String move) {

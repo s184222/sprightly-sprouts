@@ -54,7 +54,7 @@ public class PlayChoosingSproutsMenu extends SproutsMenu {
 	
 	private void uiEvents() {
 		playButton.addButtonListener((source) -> {
-			gameMenu.reset(8);
+			gameMenu.reset(5);
 			
 			main.setMenu(gameMenu);
 		});

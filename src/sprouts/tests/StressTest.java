@@ -1,6 +1,6 @@
 package sprouts.tests;
 
-import sprouts.ai.AbstractFacade;
+import sprouts.ai.AIFacade;
 import sprouts.ai.player.Player;
 import sprouts.ai.player.RandomPlayer;
 import sprouts.game.GraphicalFacade;
@@ -15,7 +15,7 @@ public class StressTest {
 		for (int i = 0; i < iterations; i++) {
 			
 			GraphicalFacade g = new GraphicalFacade();
-			AbstractFacade a = new AbstractFacade();
+			AIFacade a = new AIFacade();
 			
 			g.createFreshPosition(8);
 			a.createFreshPosition(8);

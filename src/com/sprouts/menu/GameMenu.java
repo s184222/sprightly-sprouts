@@ -28,6 +28,9 @@ import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 import com.sprouts.graphic.tessellator2d.ITessellator2D;
 import com.sprouts.math.Vec2;
 
+import sprouts.ai.AIFacade;
+import sprouts.ai.player.Player;
+import sprouts.ai.player.RandomPlayer;
 import sprouts.game.GraphicalFacade;
 import sprouts.game.model.Line;
 import sprouts.game.model.Position;
@@ -42,7 +45,10 @@ public class GameMenu extends SproutsMenu {
 	
 	/* Visible for debugging only! */
 	protected final boolean withAI;
-	protected GraphicalFacade facadeG;
+	
+	protected final GraphicalFacade facade;
+	protected final AIFacade aiFacade;
+	protected final Player ai;
 	
 	protected final Font font;
 	protected final Vec2 mousePos;
@@ -60,7 +66,9 @@ public class GameMenu extends SproutsMenu {
 
 		this.withAI = withAI;
 		
-		facadeG = new GraphicalFacade();
+		facade = new GraphicalFacade();
+		aiFacade = new AIFacade();
+		ai = new RandomPlayer();
 
 		font = getResourceManager().createFont(24.0f);
 		mousePos = new Vec2();
@@ -75,11 +83,12 @@ public class GameMenu extends SproutsMenu {
 	}
 	
 	public void reset(int initialSproutCount) {
-		facadeG.createFreshPosition(initialSproutCount);
+		facade.createFreshPosition(initialSproutCount);
+		aiFacade.createFreshPosition(initialSproutCount);
 	}
 	
 	public boolean executeMoves(List<String> rawMoves) {
-		return facadeG.executeMoves(rawMoves);
+		return (facade.executeMoves(rawMoves) && aiFacade.makeMoves(rawMoves));
 	}
 
 	private void uiLayout() {
@@ -135,13 +144,16 @@ public class GameMenu extends SproutsMenu {
 			@Override
 			public void mouseReleased(MouseEvent event) {
 				Vertex vertex = viewToWorld(event.getX(), event.getY());
-				facadeG.touchUp(vertex.x, vertex.y);
+				
+				String move = facade.finishMove(vertex.x, vertex.y);
+				if (move != null && withAI)
+					aiFacade.makeMove(move);
 			}
 			
 			@Override
 			public void mousePressed(MouseEvent event) {
 				Vertex vertex = viewToWorld(event.getX(), event.getY());
-				facadeG.touchDown(vertex.x, vertex.y);
+				facade.startMove(vertex.x, vertex.y);
 			}
 			
 			@Override
@@ -160,7 +172,7 @@ public class GameMenu extends SproutsMenu {
 			@Override
 			public void mouseDragged(MouseEvent event) {
 				Vertex vertex = viewToWorld(event.getX(), event.getY());
-				facadeG.touchDragged(vertex.x, vertex.y);
+				facade.dragMove(vertex.x, vertex.y);
 			}
 		});
 		
@@ -185,24 +197,42 @@ public class GameMenu extends SproutsMenu {
 		});
 		
 		executeButton.addButtonListener((source) -> {
-			
-			try {
-				MovePathResult result = facadeG.generateMove(textField.getText());
-				
-				if (result != null) {
-					if (result.line != null) {
-						
-					facadeG.executeLine(result.line);
-					textField.setText("");
-					
-					}
-					debugRenderer.onMoveExecuted(result);
-				}
-			} catch (MovePipeLineException e) {
-				System.out.println(e.getMessage());
+			executeMove();
+		});
+		
+		textField.addKeyEventListener(new IKeyEventListener() {
+			@Override
+			public void keyTyped(KeyEvent event) {
 			}
 			
+			@Override
+			public void keyRepeated(KeyEvent event) {
+			}
+			
+			@Override
+			public void keyReleased(KeyEvent event) {
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent event) {
+				if (event.getKeyCode() == GLFW.GLFW_KEY_ENTER)
+					executeMove();
+			}
 		});
+	}
+	
+	private void executeMove() {
+		try {
+			MovePathResult result = facade.generateMove(textField.getText());
+			
+			if (result != null && result.line != null) {
+				facade.executeLine(result.line);
+				textField.setText("");
+				
+				debugRenderer.onMoveExecuted(result);
+			}
+		} catch (MovePipeLineException ignore) {
+		}
 	}
 	
 	@Override
@@ -219,7 +249,7 @@ public class GameMenu extends SproutsMenu {
 		float cx = 0.0f;
 		float cy = 0.0f;
 		
-		List<Vertex> corners = facadeG.getPosition().getOuterCorners();
+		List<Vertex> corners = facade.getPosition().getOuterCorners();
 		
 		int cornerCount = corners.size();
 		
@@ -247,7 +277,7 @@ public class GameMenu extends SproutsMenu {
 		debugRenderer.drawBackground(tessellator);
 		
 		drawGameState(tessellator);
-		drawCurrentMove(tessellator, facadeG.currentLine);
+		drawCurrentMove(tessellator, facade.currentLine);
 
 		debugRenderer.drawForeground(tessellator);
 		
@@ -255,7 +285,7 @@ public class GameMenu extends SproutsMenu {
 	}
 	
 	private void drawGameState(BatchedTessellator2D tessellator) {
-		Position position = facadeG.getPosition();
+		Position position = facade.getPosition();
 		
 		tessellator.setColor(VertexColor.RED);
 		for (Line line : position.getLines())
@@ -268,10 +298,10 @@ public class GameMenu extends SproutsMenu {
 	private void drawSprout(ITessellator2D tessellator, Sprout sprout) {
 		Vec2 pos = worldToView(sprout.position);
 	
-		float x0 = pos.x - facadeG.sproutRadius;
-		float y0 = pos.y - facadeG.sproutRadius;
-		float x1 = pos.x + facadeG.sproutRadius;
-		float y1 = pos.y + facadeG.sproutRadius;
+		float x0 = pos.x - facade.sproutRadius;
+		float y0 = pos.y - facade.sproutRadius;
+		float x1 = pos.x + facade.sproutRadius;
+		float y1 = pos.y + facade.sproutRadius;
 
 		tessellator.setColor(VertexColor.BLUE);
 		tessellator.drawQuad(x0, y0, x1, y1);

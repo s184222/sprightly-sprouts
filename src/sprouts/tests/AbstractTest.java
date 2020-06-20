@@ -1,12 +1,12 @@
 package sprouts.tests;
 
 import junit.framework.TestCase;
-import sprouts.ai.AbstractFacade;
+import sprouts.ai.AIFacade;
 
 public class AbstractTest extends TestCase {
 	
 	public void test1() {
-		AbstractFacade facade = new AbstractFacade();
+		AIFacade facade = new AIFacade();
 		
 		facade.createFreshPosition(3);
 		facade.makeMove("1<,2<");
@@ -21,7 +21,7 @@ public class AbstractTest extends TestCase {
 	 */
 	
 	public void test2() {
-		AbstractFacade facade = new AbstractFacade();
+		AIFacade facade = new AIFacade();
 		
 		facade.buildPosition("0.1,3,2,3.}!");
 		facade.makeMove("1<,1<,[0]");
@@ -32,7 +32,7 @@ public class AbstractTest extends TestCase {
 	}
 	
 	public void test3() {
-		AbstractFacade facade = new AbstractFacade();
+		AIFacade facade = new AIFacade();
 		
 		facade.buildPosition("0,4.1.2.3.}!");
 		facade.makeMove("0<,4<,[1,2]");
@@ -40,7 +40,7 @@ public class AbstractTest extends TestCase {
 	}
 	
 	public void test4() {
-		AbstractFacade facade = new AbstractFacade();
+		AIFacade facade = new AIFacade();
 		
 		facade.buildPosition("0,6,1,5.2.3.4.}0,5,1,6.}!");
 		facade.makeMove("0<,1>,[2,3]");
@@ -48,7 +48,7 @@ public class AbstractTest extends TestCase {
 	}
 	
 	public void test5() {
-		AbstractFacade facade = new AbstractFacade();
+		AIFacade facade = new AIFacade();
 
 		facade.createFreshPosition(5);
     facade.makeMove("0<,1<");

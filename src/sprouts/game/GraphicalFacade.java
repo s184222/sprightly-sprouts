@@ -148,7 +148,7 @@ public class GraphicalFacade {
 		return closest;
 	}
 
-	public void touchDown(double worldX, double worldY) {
+	public void startMove(double worldX, double worldY) {
 		Sprout sprout = getSproutClicked(worldX, worldY);
 		
 		if (sprout != null) {
@@ -158,7 +158,7 @@ public class GraphicalFacade {
 		}
 	}
 
-	public void touchDragged(double worldX, double worldY) {
+	public void dragMove(double worldX, double worldY) {
 		if (!drawingLine) return;
 	
 		Vertex at = currentLine.getLast();
@@ -227,8 +227,8 @@ public class GraphicalFacade {
 		}
 	}
 
-	public void touchUp(double worldX, double worldY) {
-		if (!drawingLine) return;
+	public String finishMove(double worldX, double worldY) {
+		if (!drawingLine) return null;
 		drawingLine = false;
 		
 		Vertex at = currentLine.getLast();
@@ -240,9 +240,9 @@ public class GraphicalFacade {
 		currentLine.clear();
 		
 		if (to != null) {
-			if (to.getNeighbourCount() > 2) return;
-			if (to.equals(from) && to.getNeighbourCount() > 1) return;
-			if (to.equals(from) && lineToAdd.size() < 3) return;
+			if (to.getNeighbourCount() > 2) return null;
+			if (to.equals(from) && to.getNeighbourCount() > 1) return null;
+			if (to.equals(from) && lineToAdd.size() < 3) return null;
 			
 			List<Line> nonNeighbours = new ArrayList<>();
 			nonNeighbours.addAll(position.getLines());
@@ -252,7 +252,7 @@ public class GraphicalFacade {
 			}
 			
 			for (Line line : nonNeighbours) {
-				if (line.intersects(at.x, at.y, to.position.x, to.position.y)) return;
+				if (line.intersects(at.x, at.y, to.position.x, to.position.y)) return null;
 			}
 			
 			for (Edge edge : to.neighbours) {
@@ -260,14 +260,14 @@ public class GraphicalFacade {
 				line.addAll(edge.line);
 				line.removeFirst();
 				
-				if (line.intersects(at.x, at.y, to.position.x, to.position.y)) return;
+				if (line.intersects(at.x, at.y, to.position.x, to.position.y)) return null;
 			}
 			
 			Line line = new Line();
 			line.addAll(lineToAdd);
 			line.removeLast();
 			
-			if (line.intersects(at.x, at.y, worldX, worldY)) return;
+			if (line.intersects(at.x, at.y, worldX, worldY)) return null;
 			
 			//if (intersects) return;	// @TODO: do max rotation her?
 			
@@ -275,9 +275,10 @@ public class GraphicalFacade {
 			
 			history.add(lineToAdd.copy());
 			
-			executeLine(lineToAdd);
-			
+			return executeLine(lineToAdd);
 		}
+		
+		return null;
 	}
 	
 	public boolean intersectsNewLine(Line line) {

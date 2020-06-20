@@ -16,7 +16,7 @@ import com.sprouts.graphic.tessellator2d.color.LinearColorGradient2D;
 import com.sprouts.math.LinMath;
 import com.sprouts.math.Vec2;
 
-import sprouts.ai.AbstractFacade;
+import sprouts.ai.AIFacade;
 import sprouts.ai.player.Player;
 import sprouts.ai.player.RandomPlayer;
 import sprouts.game.GraphicalFacade;
@@ -42,9 +42,6 @@ public class DebugGameRenderer implements IKeyEventListener {
 	
 	private final GameMenu gameMenu;
 	
-	private AbstractFacade facadeA;
-	private final Player ai;
-	
 	private List<Triangle> triangles;
 	private Map<Vertex, List<Vertex>> twoBoundaryGraph;
 	private Map<Triangle, List<Triangle>> oneBoundaryGraph;
@@ -64,11 +61,6 @@ public class DebugGameRenderer implements IKeyEventListener {
 	
 	public DebugGameRenderer(GameMenu gameMenu) {
 		this.gameMenu = gameMenu;
-		
-		facadeA = new AbstractFacade();
-		ai = new RandomPlayer();
-
-		facadeA.createFreshPosition(8);
 		
 		shouldDrawEdgeIndices = false;
 		showLineOrientation = false;
@@ -136,8 +128,8 @@ public class DebugGameRenderer implements IKeyEventListener {
 					System.out.println(triangle.toString());
 					
 					
-					if (gameMenu.facadeG.getPosition().getSprouts().size() == 10) {
-						Vertex to = gameMenu.facadeG.getPosition().getSprout(10).position;
+					if (gameMenu.facade.getPosition().getSprouts().size() == 10) {
+						Vertex to = gameMenu.facade.getPosition().getSprout(10).position;
 						
 						System.out.println(to);
 						if (triangle.isCorner(to)) System.out.println("!!!!!!!!!");
@@ -190,7 +182,7 @@ public class DebugGameRenderer implements IKeyEventListener {
 
 			tessellator.setColor(VertexColor.WHITE);
 
-			Position position = gameMenu.facadeG.getPosition();
+			Position position = gameMenu.facade.getPosition();
 			
 			for (Edge edge : position.getEdges()) {
 				LineSegment segment = (edge.line.size() > 2) ? edge.line.get1stQuarterSegment() : 
@@ -316,7 +308,7 @@ public class DebugGameRenderer implements IKeyEventListener {
 	private void drawLineOrientations(ITessellator2D tessellator) {
 		Vec2 rotator = new Vec2();
 		
-		for (Edge edge : gameMenu.facadeG.getPosition().getEdges()) {
+		for (Edge edge : gameMenu.facade.getPosition().getEdges()) {
 			LineSegment segment = edge.line.get1stQuarterSegment();
 			Vec2 from = gameMenu.worldToView(segment.from);
 			Vec2 to   = gameMenu.worldToView(segment.to);
@@ -392,11 +384,7 @@ public class DebugGameRenderer implements IKeyEventListener {
 	public void keyPressed(KeyEvent event) {
 		switch (event.getKeyCode()) {
 		case GLFW.GLFW_KEY_R: {
-			gameMenu.facadeG = new GraphicalFacade();
-			gameMenu.facadeG.createFreshPosition(8);
-
-			facadeA = new AbstractFacade();
-			facadeA.createFreshPosition(8);
+			gameMenu.reset(8);
 			break;
 		}
 		
@@ -406,12 +394,12 @@ public class DebugGameRenderer implements IKeyEventListener {
 		}
 		
 		case GLFW.GLFW_KEY_H: {
-			gameMenu.facadeG.printHistoryTestCode();
+			gameMenu.facade.printHistoryTestCode();
 			break;
 		}
 		
 		case GLFW.GLFW_KEY_S: {
-			Position position = gameMenu.facadeG.getPosition();
+			Position position = gameMenu.facade.getPosition();
 			for (Region region : position.getRegions()) {
 				region.verbose();
 			}
@@ -421,22 +409,17 @@ public class DebugGameRenderer implements IKeyEventListener {
 		
 		case GLFW.GLFW_KEY_A: {
 			System.out.printf("thinking...\n");
-			IdMove move = ai.getMove(facadeA.getPosition());
+			IdMove move = gameMenu.ai.getMove(gameMenu.aiFacade.getPosition());
 			System.out.printf(">>ai: %s\n", move.toString());
 
-			MovePathResult result = gameMenu.facadeG.generateMove(move.toString());
+			MovePathResult result = gameMenu.facade.generateMove(move.toString());
 			System.out.println("here");
 			System.out.println(result.line.size());
 			
-			gameMenu.facadeG.executeLine(result.line);
-			facadeA.makeMove(move.toString());
+			gameMenu.facade.executeLine(result.line);
+			gameMenu.aiFacade.makeMove(move.toString());
 			
-			//saveDebug(result);
-
-			//facadeA.printLives();
-			//facadeG.printLives();
-			
-			if (gameMenu.facadeG.isGameOver())
+			if (gameMenu.facade.isGameOver())
 				System.out.printf("game over\n");
 	
 			break;
