@@ -39,7 +39,6 @@ public class FontData {
 		float ascent;
 		float descent;
 		float lineGap;
-		float fontWidth;
 		
 		try (MemoryStack stack = stackPush()) {
 			IntBuffer bufAscent = stack.ints(0);
