@@ -175,8 +175,8 @@ public class LoadGameSproutsMenu extends SproutsMenu {
 			}
 			
 			gameMenu.reset(moves.initialSproutCount);
-			if (gameMenu.executeMoves(moves.rawMoves))
-				main.setMenu(gameMenu);
+			gameMenu.executeMoves(moves.rawMoves);
+			main.setMenu(gameMenu);
 		});
 	}
 	

@@ -60,11 +60,11 @@ public class MainSproutsMenu extends SproutsMenu {
 	
 	private void uiEvents() {
 		playFriendButton.addButtonListener((source) -> {
-			main.setMenu(new PlayChoosingSproutsMenu(main, new GameMenu(main)));
+			main.setMenu(new PlayChoosingSproutsMenu(main, this, new GameMenu(main)));
 		});
 		
 		playAIButton.addButtonListener((source) -> {
-			main.setMenu(new PlayChoosingSproutsMenu(main, new AIGameMenu(main)));
+			main.setMenu(new PlayChoosingSproutsMenu(main, this, new AIGameMenu(main)));
 		});
 
 		extrasButton.addButtonListener((source) -> {
