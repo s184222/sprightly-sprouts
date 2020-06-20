@@ -70,9 +70,9 @@ public class OneBoundaryMoveGenerator implements MovePathGenerator {
 		if (!canCreatePath(slithering, from.position, to.position)) throw new MoveException("");
 
 		condense(slithering, region);
-		Assert.that(canCreatePath(slithering, from.position, to.position));
 		
 		List<Vertex> path = createPathFromTriangles(slithering, from.position, to.position);
+		if (!canCreatePath(slithering, from.position, to.position)) throw new MoveException("");
 
 		Line line = new Line();
 		line.addAll(path);

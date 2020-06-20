@@ -9,6 +9,13 @@ import java.util.Set;
 
 import sprouts.game.move.IdMove;
 
+/**
+ * 
+ * Generates all the possible moves given the AI position
+ * 
+ * @author Rasmus
+ *
+ */
 public class AllMoveGenerator {
 	
 	public List<IdMove> getAllMoves(Position position) {
@@ -130,6 +137,4 @@ public class AllMoveGenerator {
 	    
 	    return sets;
 	}
-
-
 }

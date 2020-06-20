@@ -7,8 +7,16 @@ import sprouts.game.move.MoveNotationException;
 import sprouts.game.move.MovePipeLineException;
 import sprouts.game.move.advanced.AdvancedMoveNotationParser;
 import sprouts.game.move.pipe.MoveNotationParser;
-import sprouts.game.util.Assert;
 
+/**
+ * 
+ * Abstract representation of the Sprouts based on the paper by,<br>
+ * "Computer analysis of sprouts with nimbers"<br>
+ * http://library.msri.org/books/Book63/files/131105-LeMoine.pdf
+ * 
+ * @author Rasmus
+ *
+ */
 public class AIFacade {
 	
 	private UidGenerator vertexIdGenerator;
@@ -19,9 +27,6 @@ public class AIFacade {
 		vertexIdGenerator = new UidGenerator();
 	}
 	
-	/**
-	 * 
-	 */
 	public boolean makeMoves(List<String> moves) {
 		for (String move : moves) {
 			try {
