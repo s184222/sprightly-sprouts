@@ -33,6 +33,7 @@ import com.sprouts.graphic.texture.Texture;
 import com.sprouts.graphic.texture.TextureLoader;
 import com.sprouts.input.Keyboard;
 import com.sprouts.input.Mouse;
+import com.sprouts.math.LinMath;
 import com.sprouts.menu.MainSproutsMenu;
 import com.sprouts.menu.SproutsMenu;
 import com.sprouts.util.LibUtil;
@@ -54,6 +55,8 @@ public class SproutsMain {
 	private final Keyboard keyboard;
 	
 	private Texture menuBackground;
+	private Texture flowerTextureAtlas;
+	private ITextureRegion[] flowerTextures;
 	
 	private FrameBuffer targetFrameBuffer;
 	private FrameBuffer resolvedFrameBuffer;
@@ -79,7 +82,8 @@ public class SproutsMain {
 		loop();
 		
 		menuBackground.dispose();
-
+		flowerTextureAtlas.dispose();
+		
 		targetFrameBuffer.dispose();
 		resolvedFrameBuffer.dispose();
 		postManager.dispose();
@@ -111,7 +115,13 @@ public class SproutsMain {
 	}
 
 	private void loadResources() throws IOException {
-		menuBackground = TextureLoader.loadTexture("/textures/forest_background.png");
+		menuBackground = TextureLoader.loadTexture("/textures/background.png");
+		flowerTextureAtlas = TextureLoader.loadTexture("/textures/flowers.png");
+		flowerTextures = new ITextureRegion[4];
+		for (int i = 0; i < 4; i++) {
+			float u = 0.25f * i;
+			flowerTextures[i] = flowerTextureAtlas.getRegion(u, 0.0f, u + 0.25f, 1.0f);
+		}
 		
 		targetFrameBuffer = new FrameBuffer(FrameBufferType.MULTISAMPLED_DEPTH_AND_COLOR, 0, 0);
 		resolvedFrameBuffer = new FrameBuffer(FrameBufferType.DEPTH_AND_COLOR, 0, 0);
@@ -225,6 +235,10 @@ public class SproutsMain {
 		return postManager.getOutputTexture();
 	}
 
+	public ITextureRegion getFlowerTexture(int flowerIndex) {
+		return flowerTextures[LinMath.clamp(flowerIndex, 0, flowerTextures.length - 1)];
+	}
+	
 	public void stop() {
 		running = false;
 	}

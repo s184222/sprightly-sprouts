@@ -304,22 +304,26 @@ public class GameMenu extends SproutsMenu {
 	private void drawSprout(ITessellator2D tessellator, Sprout sprout) {
 		Vec2 pos = worldToView(sprout.position);
 	
-		float x0 = pos.x - facade.sproutRadius;
-		float y0 = pos.y - facade.sproutRadius;
-		float x1 = pos.x + facade.sproutRadius;
-		float y1 = pos.y + facade.sproutRadius;
+		float x0 = pos.x - facade.sproutRadius * 2.0f;
+		float y0 = pos.y - facade.sproutRadius * 2.0f;
+		float x1 = pos.x + facade.sproutRadius * 2.0f;
+		float y1 = pos.y + facade.sproutRadius * 2.0f;
 
-		tessellator.setColor(VertexColor.BLUE);
-		tessellator.drawQuad(x0, y0, x1, y1);
-		
-		String idText = Integer.toString(sprout.id);
-		TextBounds textBounds = font.getTextBounds(idText);
-		
-		float tx = pos.x - textBounds.width  * 0.5f - textBounds.x;
-		float ty = pos.y - textBounds.height * 0.5f - textBounds.y;
-		
 		tessellator.setColor(VertexColor.WHITE);
-		font.drawString(tessellator, idText, tx, ty);
+		tessellator.setTextureRegion(main.getFlowerTexture(sprout.getNeighbourCount()));
+		tessellator.drawQuad(x0, y0, x1, y1);
+		tessellator.setTextureRegion(null);
+		
+		if (mousePos.x >= x0 && mousePos.y >= y0 && mousePos.x < x1 && mousePos.y < y1) {
+			String idText = Integer.toString(sprout.id);
+			TextBounds textBounds = font.getTextBounds(idText);
+			
+			float tx = pos.x - textBounds.width  * 0.5f - textBounds.x;
+			float ty = pos.y - textBounds.height * 0.5f - textBounds.y;
+			
+			tessellator.setColor(VertexColor.BLACK);
+			font.drawString(tessellator, idText, tx, ty);
+		}
 	}
 	
 	private void drawCurrentMove(BatchedTessellator2D tessellator, Line currentLine) {
