@@ -5,6 +5,10 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.glClear;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.lwjgl.Version;
 import org.lwjgl.opengl.GL11;
 
@@ -42,13 +46,26 @@ public class SproutsMain3 {
 	private final Keyboard keyboard;
 	
 	private ObjShader objShader;
-	private ObjData testObj;
-	private Texture testTexture;
+	private ObjData sproutStage0;
+	private Texture sproutStage0Texture;
+	private ObjData sproutStage1;
+	private Texture sproutStage1Texture;
+	private ObjData sproutStage2;
+	private Texture sproutStage2Texture;
+	private ObjData sproutStage3;
+	private Texture sproutStage3Texture;
+	private ObjData groundObj;
+	private Texture groundTexture;
+	private List<ObjData> sprouts;
 	private Tessellator2DShader tessellator2DShader;
 	private BatchedTessellator2D batchedTessellator2D;
 	private Texture spongeBobTexture;
 	private Font arialFont;
 
+	float[] radOffsetX = new float[400];
+	float[] radOffsetY = new float[400];
+	float[] xOffset = new float[400];
+	
 	public SproutsMain3() {
 		display = new Display();
 		mouse = new Mouse(display);
@@ -81,13 +98,44 @@ public class SproutsMain3 {
 		objShader.enable();
 		objShader.setTextureSampler(0);
 		
-		testObj = ObjLoader.loadObj("/models/Test.obj");
+		sprouts = new ArrayList<ObjData>();
 		
-		testObj.initBuffers(objShader);
+		sproutStage0 = ObjLoader.loadObj("/models/sproutStage0.obj");
+		sproutStage0.initBuffers(objShader);
+		sproutStage0Texture = TextureLoader.loadTexture("/textures/sproutStage0Texture.png");
+		sproutStage0.setTexture(sproutStage0Texture);
+		sprouts.add(sproutStage0);
 		
-		testTexture = TextureLoader.loadTexture("/textures/Test.png");
+		sproutStage1 = ObjLoader.loadObj("/models/sproutStage1.obj");
+		sproutStage1.initBuffers(objShader);
+		sproutStage1Texture = TextureLoader.loadTexture("/textures/sproutStage1Texture.png");
+		sproutStage1.setTexture(sproutStage1Texture);
+		sprouts.add(sproutStage1);
 		
-		testObj.setTexture(testTexture);
+		sproutStage2 = ObjLoader.loadObj("/models/sproutStage2.obj");
+		sproutStage2.initBuffers(objShader);
+		sproutStage2Texture = TextureLoader.loadTexture("/textures/sproutStage2Texture.png");
+		sproutStage2.setTexture(sproutStage2Texture);
+		sprouts.add(sproutStage2);
+		
+		sproutStage3 = ObjLoader.loadObj("/models/sproutStage3.obj");
+		sproutStage3.initBuffers(objShader);
+		sproutStage3Texture = TextureLoader.loadTexture("/textures/sproutStage3Texture.png");
+		sproutStage3.setTexture(sproutStage3Texture);
+		sprouts.add(sproutStage3);
+		
+		Random random = new Random();
+		
+		for(int i = 0; i < 400; i++) {
+			radOffsetX[i] = random.nextFloat() * ((float) (Math.PI) * 2);
+			radOffsetY[i] = random.nextFloat() * ((float) (Math.PI) * 2);
+			xOffset[i] = random.nextFloat() * 50f - 25f;
+		}
+		
+		groundObj = ObjLoader.loadObj("/models/ground.obj");
+		groundObj.initBuffers(objShader);
+		groundTexture = TextureLoader.loadTexture("/textures/groundTexture.png");
+		groundObj.setTexture(groundTexture);
 	}
 	
 	private void init() {
@@ -145,17 +193,33 @@ public class SproutsMain3 {
 		objShader.enable();
 
 		Mat4 viewMat = new Mat4();
-		viewMat.translate(0, 0, -5.0f);
-		viewMat.rotateY(rads += 0.01f);
+		viewMat.translate(0f, 0f, -38.0f);
+		viewMat.rotateX(rads += 0.001f);
+
+
+		objShader.setViewMat(viewMat);
+		
+		groundObj.drawBuffer();
 
 		Mat4 modlMat = new Mat4();
-		modlMat.translate(0.0f, 0.0f, 0.0f);
-		modlMat.scale(100.0f, 100.0f, 100.0f);
 		
-		objShader.setViewMat(viewMat);
-		objShader.setModlMat(modlMat);
+		for (int i = 0; i < 400; i++) {
+			modlMat.rotateX(radOffsetX[i]);
+			modlMat.translate(xOffset[i], 24.0f, 0);
+			modlMat.rotateY(radOffsetY[i]);
+			
+			objShader.setModlMat(modlMat);
+			
+			sprouts.get(i%4).drawBuffer();
+			
+			modlMat.rotateY(-radOffsetY[i]);
+			modlMat.translate(-xOffset[i], -24.0f, 0);
+			modlMat.rotateX(-radOffsetX[i]);
+			
+			objShader.setModlMat(modlMat);
+		}
 		
-		testObj.drawBuffer();
+		
 	}
 	
 	private void checkGLErrors() {
