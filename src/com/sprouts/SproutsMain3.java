@@ -41,6 +41,10 @@ public class SproutsMain3 {
 	private static final int WINDOW_WIDTH  = 500;
 	private static final int WINDOW_HEIGHT = 500;
 
+	private static final float PI2 = (float)(2.0 * Math.PI);
+	private static final float OBJ_FOV = 70.0f * PI2 / 360.0f;
+	private static final int NUM_SPROUTS = 400;
+	
 	private final Display display;
 	private final Mouse mouse;
 	private final Keyboard keyboard;
@@ -62,9 +66,9 @@ public class SproutsMain3 {
 	private Texture spongeBobTexture;
 	private Font arialFont;
 
-	float[] radOffsetX = new float[400];
-	float[] radOffsetY = new float[400];
-	float[] xOffset = new float[400];
+	private final float[] radOffsetX = new float[NUM_SPROUTS];
+	private final float[] radOffsetY = new float[NUM_SPROUTS];
+	private final float[] xOffset = new float[NUM_SPROUTS];
 	
 	public SproutsMain3() {
 		display = new Display();
@@ -126,10 +130,10 @@ public class SproutsMain3 {
 		
 		Random random = new Random();
 		
-		for(int i = 0; i < 400; i++) {
+		for(int i = 0; i < NUM_SPROUTS; i++) {
 			radOffsetX[i] = random.nextFloat() * ((float) (Math.PI) * 2);
 			radOffsetY[i] = random.nextFloat() * ((float) (Math.PI) * 2);
-			xOffset[i] = random.nextFloat() * 50f - 25f;
+			xOffset[i] = random.nextFloat() * 35.0f - 17.5f;
 		}
 		
 		groundObj = ObjLoader.loadObj("/models/ground.obj");
@@ -165,7 +169,7 @@ public class SproutsMain3 {
 		batchedTessellator2D.setViewport(0, 0, width, height);
 	
 		objShader.enable();
-		objShader.setProjMat(new Mat4().toPerspective((float)Math.toRadians(70.0), (float)width / height, 0.01f, 100.0f));
+		objShader.setProjMat(new Mat4().toPerspective(OBJ_FOV, (float)width / height, 0.01f, 100.0f));
 	}
 	
 	private void loop() {
@@ -195,31 +199,30 @@ public class SproutsMain3 {
 		Mat4 viewMat = new Mat4();
 		viewMat.translate(0f, 0f, -38.0f);
 		viewMat.rotateX(rads += 0.001f);
-
-
-		objShader.setViewMat(viewMat);
 		
-		groundObj.drawBuffer();
+		if (rads >= PI2)
+			rads %= PI2;
 
 		Mat4 modlMat = new Mat4();
+
+		objShader.setViewMat(viewMat);
+		objShader.setModlMat(modlMat);
 		
-		for (int i = 0; i < 400; i++) {
-			modlMat.rotateX(radOffsetX[i]);
-			modlMat.translate(xOffset[i], 24.0f, 0);
-			modlMat.rotateY(radOffsetY[i]);
-			
-			objShader.setModlMat(modlMat);
-			
-			sprouts.get(i%4).drawBuffer();
-			
-			modlMat.rotateY(-radOffsetY[i]);
-			modlMat.translate(-xOffset[i], -24.0f, 0);
-			modlMat.rotateX(-radOffsetX[i]);
-			
-			objShader.setModlMat(modlMat);
+		groundObj.drawBuffer();
+		
+		for (int i = 0; i < NUM_SPROUTS; i++) {
+			float dr = (rads + radOffsetX[i] + 0.75f * PI2 + 0.5f * OBJ_FOV) % PI2;
+			if (dr < OBJ_FOV) {
+				modlMat.toIdentity();
+				modlMat.rotateX(radOffsetX[i]);
+				modlMat.translate(xOffset[i], 24.0f, 0);
+				modlMat.rotateY(radOffsetY[i]);
+				
+				objShader.setModlMat(modlMat);
+				
+				sprouts.get(i % 4).drawBuffer();
+			}
 		}
-		
-		
 	}
 	
 	private void checkGLErrors() {
