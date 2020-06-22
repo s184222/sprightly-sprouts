@@ -7,6 +7,7 @@ import static org.lwjgl.opengl.GL11.glClearColor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import org.lwjgl.Version;
@@ -14,16 +15,10 @@ import org.lwjgl.opengl.GL11;
 
 import com.sprouts.graphic.Display;
 import com.sprouts.graphic.DisplaySize;
-import com.sprouts.graphic.font.Font;
-import com.sprouts.graphic.font.FontData;
-import com.sprouts.graphic.font.FontLoader;
 import com.sprouts.graphic.obj.ObjData;
 import com.sprouts.graphic.obj.ObjLoader;
 import com.sprouts.graphic.obj.shader.BasicObjShader;
 import com.sprouts.graphic.obj.shader.ObjShader;
-import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
-import com.sprouts.graphic.tessellator2d.shader.BasicTessellator2DShader;
-import com.sprouts.graphic.tessellator2d.shader.Tessellator2DShader;
 import com.sprouts.graphic.texture.Texture;
 import com.sprouts.graphic.texture.TextureLoader;
 import com.sprouts.input.Keyboard;
@@ -50,22 +45,10 @@ public class SproutsMain3 {
 	private final Keyboard keyboard;
 	
 	private ObjShader objShader;
-	private ObjData sproutStage0;
-	private Texture sproutStage0Texture;
-	private ObjData sproutStage1;
-	private Texture sproutStage1Texture;
-	private ObjData sproutStage2;
-	private Texture sproutStage2Texture;
-	private ObjData sproutStage3;
-	private Texture sproutStage3Texture;
 	private ObjData groundObj;
-	private Texture groundTexture;
+	private float groundRot;
 	private List<ObjData> sprouts;
-	private Tessellator2DShader tessellator2DShader;
-	private BatchedTessellator2D batchedTessellator2D;
-	private Texture spongeBobTexture;
-	private Font arialFont;
-
+	
 	private final float[] radOffsetX = new float[NUM_SPROUTS];
 	private final float[] radOffsetY = new float[NUM_SPROUTS];
 	private final float[] xOffset = new float[NUM_SPROUTS];
@@ -84,49 +67,34 @@ public class SproutsMain3 {
 		
 		display.dispose();
 		
-		tessellator2DShader.dispose();
-		batchedTessellator2D.dispose();
-		spongeBobTexture.dispose();
-		arialFont.dispose();
+		objShader.dispose();
+		
+		for (ObjData sprout : sprouts) {
+			sprout.getTexture().dispose();
+			sprout.dispose();
+		}
+		
+		groundObj.getTexture().dispose();
+		groundObj.dispose();
 	}
 
 	private void loadResources() throws Exception {
-		tessellator2DShader = new BasicTessellator2DShader();
-		batchedTessellator2D = new BatchedTessellator2D(tessellator2DShader);
-		spongeBobTexture = TextureLoader.loadTexture("/textures/spongebob.png");
-
-		FontData arialData = FontLoader.loadFont("/fonts/arial.ttf");
-		arialFont = arialData.createFont(12);
-		
 		objShader = new BasicObjShader();
 		objShader.enable();
 		objShader.setTextureSampler(0);
 		
 		sprouts = new ArrayList<ObjData>();
 		
-		sproutStage0 = ObjLoader.loadObj("/models/sproutStage0.obj");
-		sproutStage0.initBuffers(objShader);
-		sproutStage0Texture = TextureLoader.loadTexture("/textures/sproutStage0Texture.png");
-		sproutStage0.setTexture(sproutStage0Texture);
-		sprouts.add(sproutStage0);
-		
-		sproutStage1 = ObjLoader.loadObj("/models/sproutStage1.obj");
-		sproutStage1.initBuffers(objShader);
-		sproutStage1Texture = TextureLoader.loadTexture("/textures/sproutStage1Texture.png");
-		sproutStage1.setTexture(sproutStage1Texture);
-		sprouts.add(sproutStage1);
-		
-		sproutStage2 = ObjLoader.loadObj("/models/sproutStage2.obj");
-		sproutStage2.initBuffers(objShader);
-		sproutStage2Texture = TextureLoader.loadTexture("/textures/sproutStage2Texture.png");
-		sproutStage2.setTexture(sproutStage2Texture);
-		sprouts.add(sproutStage2);
-		
-		sproutStage3 = ObjLoader.loadObj("/models/sproutStage3.obj");
-		sproutStage3.initBuffers(objShader);
-		sproutStage3Texture = TextureLoader.loadTexture("/textures/sproutStage3Texture.png");
-		sproutStage3.setTexture(sproutStage3Texture);
-		sprouts.add(sproutStage3);
+		for (int i = 0; i < 4; i++) {
+			String objPath = String.format(Locale.ENGLISH, "/models/sproutStage%d.obj", i);
+			String texPath = String.format(Locale.ENGLISH, "/textures/sproutStage%dTexture.png", i);
+			
+			ObjData sproutStage = ObjLoader.loadObj(objPath);
+			sproutStage.initBuffers(objShader);
+			Texture sproutStageTexture = TextureLoader.loadTexture(texPath);
+			sproutStage.setTexture(sproutStageTexture);
+			sprouts.add(sproutStage);
+		}
 		
 		Random random = new Random();
 		
@@ -138,8 +106,7 @@ public class SproutsMain3 {
 		
 		groundObj = ObjLoader.loadObj("/models/ground.obj");
 		groundObj.initBuffers(objShader);
-		groundTexture = TextureLoader.loadTexture("/textures/groundTexture.png");
-		groundObj.setTexture(groundTexture);
+		groundObj.setTexture(TextureLoader.loadTexture("/textures/groundTexture.png"));
 	}
 	
 	private void init() {
@@ -166,8 +133,6 @@ public class SproutsMain3 {
 	private void onViewportChanged(int width, int height) {
 		GL11.glViewport(0, 0, width, height);
 		
-		batchedTessellator2D.setViewport(0, 0, width, height);
-	
 		objShader.enable();
 		objShader.setProjMat(new Mat4().toPerspective(OBJ_FOV, (float)width / height, 0.01f, 100.0f));
 	}
@@ -191,19 +156,18 @@ public class SproutsMain3 {
 		}
 	}
 	
-	private float rads;
-	
 	private void render() {
 		objShader.enable();
 
-		Mat4 viewMat = new Mat4();
-		viewMat.translate(0f, 0f, -38.0f);
-		viewMat.rotateX(rads += 0.001f);
-		
-		if (rads >= PI2)
-			rads %= PI2;
+		groundRot += 0.001f;
+		if (groundRot >= PI2)
+			groundRot %= PI2;
 
+		Mat4 viewMat = new Mat4();
 		Mat4 modlMat = new Mat4();
+
+		viewMat.translate(0f, 0f, -38.0f);
+		viewMat.rotateX(groundRot);
 
 		objShader.setViewMat(viewMat);
 		objShader.setModlMat(modlMat);
@@ -211,7 +175,7 @@ public class SproutsMain3 {
 		groundObj.drawBuffer();
 		
 		for (int i = 0; i < NUM_SPROUTS; i++) {
-			float dr = (rads + radOffsetX[i] + 0.75f * PI2 + 0.5f * OBJ_FOV) % PI2;
+			float dr = (groundRot + radOffsetX[i] + 0.75f * PI2 + 0.5f * OBJ_FOV) % PI2;
 			if (dr < OBJ_FOV) {
 				modlMat.toIdentity();
 				modlMat.rotateX(radOffsetX[i]);

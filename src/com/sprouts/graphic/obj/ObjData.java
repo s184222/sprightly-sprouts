@@ -42,13 +42,14 @@ public class ObjData implements IResource {
 	public void setTexture(Texture texture) {
 		this.texture = texture;
 	}
+	
+	public Texture getTexture() {
+		return texture;
+	}
 
 	@Override
 	public void dispose() {
 		vertexArray.dispose();
 		vertexBuffer.dispose();
-		
 	}
-	
-	
 }
