@@ -314,14 +314,18 @@ public class GameMenu extends SproutsMenu {
 		tessellator.drawQuad(x0, y0, x1, y1);
 		tessellator.setTextureRegion(null);
 		
-		if (mousePos.x >= x0 && mousePos.y >= y0 && mousePos.x < x1 && mousePos.y < y1) {
+		if (textField.isFocused() || mousePos.x >= x0 && mousePos.y >= y0 && mousePos.x < x1 && mousePos.y < y1) {
 			String idText = Integer.toString(sprout.id);
 			TextBounds textBounds = font.getTextBounds(idText);
 			
 			float tx = pos.x - textBounds.width  * 0.5f - textBounds.x;
 			float ty = pos.y - textBounds.height * 0.5f - textBounds.y;
+			float bx = tx + textBounds.x;
+			float by = ty + textBounds.y;
 			
-			tessellator.setColor(VertexColor.BLACK);
+			tessellator.setColor(VertexColor.BLACK.withAlpha(128));
+			tessellator.drawQuad(bx, by, bx + textBounds.width, by + textBounds.height);
+			tessellator.setColor(VertexColor.WHITE);
 			font.drawString(tessellator, idText, tx, ty);
 		}
 	}
@@ -364,5 +368,10 @@ public class GameMenu extends SproutsMenu {
 
 	protected Vertex viewToWorld(float vx, float vy) {
 		return new Vertex(vx - offsetX, vy - offsetY);
+	}
+	
+	@Override
+	public boolean isSimpleBackground() {
+		return true;
 	}
 }

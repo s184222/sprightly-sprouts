@@ -26,4 +26,7 @@ public abstract class SproutsMenu extends ParentComposition {
 
 	public abstract void drawBackground(BatchedTessellator2D tessellator);
 	
+	public boolean isSimpleBackground() {
+		return false;
+	}
 }

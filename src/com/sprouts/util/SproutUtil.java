@@ -33,10 +33,29 @@ public class SproutUtil {
 				throw new IOException("First line must start with initialSproutCount!");
 			}
 			
+			if (initialSproutCount <= 0)
+				throw new IOException("Initial sprout count must be non-negative!");
+			
 			while ((line = br.readLine()) != null) {
 				line = line.trim();
-				if (!line.isEmpty())
-					rawMoves.add(line.replace(' ', ','));
+				if (!line.isEmpty()) {
+					String[] args = line.split("[\\s+|,]");
+					if (args.length != 2)
+						throw new IOException("Invalid raw move: " + line);
+					
+					try {
+						int i0 = Integer.parseInt(args[0]);
+						int i1 = Integer.parseInt(args[1]);
+						if (i0 <= 0)
+							throw new IOException("Illegal sprout index: " + i0);
+						if (i1 <= 0)
+							throw new IOException("Illegal sprout index: " + i1);
+					} catch (NumberFormatException e) {
+						throw new IOException("Initial sprout count is not formatted correctly!");
+					}
+					
+					rawMoves.add(args[0] + "," + args[1]);
+				}
 			}
 		}
 		
