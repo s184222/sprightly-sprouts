@@ -6,7 +6,7 @@ import java.util.Map;
 import sprouts.game.model.Vertex;
 import sprouts.game.move.triangles.Triangle;
 
-public class SimpleMoveGeneratorData {
+public class SimpleLineGeneratorData {
 	
 	public List<Triangle> triangles;
 	public Map<Vertex, List<Vertex>> twoBoundaryGraph;

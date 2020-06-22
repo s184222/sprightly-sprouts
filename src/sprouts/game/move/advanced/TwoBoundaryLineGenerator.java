@@ -16,13 +16,17 @@ import sprouts.game.model.Vertex;
 import sprouts.game.move.Move;
 import sprouts.game.move.MoveException;
 import sprouts.game.move.pathfinder.PathFinder;
-import sprouts.game.move.pipe.MovePathGenerator;
-import sprouts.game.move.pipe.MovePathResult;
+import sprouts.game.move.pipe.LineGenerator;
+import sprouts.game.move.pipe.LinePathResult;
 import sprouts.game.move.triangles.Triangle;
 import sprouts.game.move.triangles.TriangleGenerator;
 import sprouts.game.util.MathUtil;
 
-public class TwoBoundaryMoveGenerator implements MovePathGenerator {
+/**
+ * @author Rasmus Møller Larsen, s184190
+ * 
+ */
+public class TwoBoundaryLineGenerator implements LineGenerator {
 	
 	private BiFunction<Vertex, Vertex, Double> costFunction;
 
@@ -31,7 +35,7 @@ public class TwoBoundaryMoveGenerator implements MovePathGenerator {
 	
 	private String name;
 	
-	public TwoBoundaryMoveGenerator(PathFinder pathFinder, TriangleGenerator triangleGenerator) {
+	public TwoBoundaryLineGenerator(PathFinder pathFinder, TriangleGenerator triangleGenerator) {
 		this.pathFinder = pathFinder;
 		this.triangleGenerator = triangleGenerator;
 		
@@ -41,8 +45,8 @@ public class TwoBoundaryMoveGenerator implements MovePathGenerator {
 	}
 	
 	@Override
-	public MovePathResult generate(Move move, Position position) throws MoveException {
-		MovePathResult result = new MovePathResult();
+	public LinePathResult generate(Move move, Position position) throws MoveException {
+		LinePathResult result = new LinePathResult();
 		result.generatorType = name;
 		
 		Sprout from = move.from;
@@ -62,7 +66,7 @@ public class TwoBoundaryMoveGenerator implements MovePathGenerator {
 		Line line = new Line();
 		line.addAll(path);
 		
-		TwoBoundaryMoveGeneratorData data = new TwoBoundaryMoveGeneratorData();
+		TwoBoundaryLineGeneratorData data = new TwoBoundaryLineGeneratorData();
 		data.twoBoundaryGraph = graph;
 		data.triangles = triangles;
 

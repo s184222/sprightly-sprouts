@@ -7,7 +7,7 @@ import sprouts.game.model.Line;
  * @author Rasmus Møller Larsen, s184190
  *
  */
-public class MovePathResult {
+public class LinePathResult {
 	
 	public Line line;
 	

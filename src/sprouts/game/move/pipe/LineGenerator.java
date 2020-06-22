@@ -9,7 +9,7 @@ import sprouts.game.move.Move;
  * @author Rasmus Møller Larsen, s184190
  *
  */
-public interface MovePathGenerator {
+public interface LineGenerator {
 	
 	/**
 	 * Generates a line which satisfies the {@code move}
@@ -19,5 +19,5 @@ public interface MovePathGenerator {
 	 * @return the line and some optimal custom data
 	 * @throws MoveException if no line satisfies the move
 	 */
-	public MovePathResult generate(Move move, Position position) throws MoveException;
+	public LinePathResult generate(Move move, Position position) throws MoveException;
 }

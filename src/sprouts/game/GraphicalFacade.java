@@ -14,12 +14,12 @@ import sprouts.game.move.IdMove;
 import sprouts.game.move.MoveException;
 import sprouts.game.move.MoveNotationException;
 import sprouts.game.move.MovePipeLineException;
-import sprouts.game.move.advanced.AdvancedMoveGenerationPipeline;
+import sprouts.game.move.advanced.AdvancedLineGenerationPipeline;
 import sprouts.game.move.pathfinder.AStarPathFinder;
 import sprouts.game.move.pathfinder.PathFinder;
-import sprouts.game.move.pipe.MoveGenerationPipeline;
-import sprouts.game.move.pipe.MovePathResult;
-import sprouts.game.move.simple.SimpleMoveGenerationPipeline;
+import sprouts.game.move.pipe.LineGenerationPipeline;
+import sprouts.game.move.pipe.LinePathResult;
+import sprouts.game.move.simple.SimpleLineGenerationPipeline;
 import sprouts.game.move.triangles.TriangleGenerator;
 import sprouts.game.util.MathUtil;
 
@@ -29,7 +29,7 @@ public class GraphicalFacade {
 	private PositionBuilder builder;
 	private MoveHistory history;
 	
-	private List<MoveGenerationPipeline> moveGenerationPipes;
+	private List<LineGenerationPipeline> moveGenerationPipes;
 	
 	public Line currentLine;
 	boolean drawingLine;
@@ -49,10 +49,10 @@ public class GraphicalFacade {
 		PathFinder pathfinder = new AStarPathFinder();
 		TriangleGenerator triangleGenerator = new TriangleGenerator();
 		
-		MoveGenerationPipeline simplePipe = new SimpleMoveGenerationPipeline(pathfinder, triangleGenerator);
+		LineGenerationPipeline simplePipe = new SimpleLineGenerationPipeline(pathfinder, triangleGenerator);
 		moveGenerationPipes.add(simplePipe);
 		
-		MoveGenerationPipeline advancedPipe = new AdvancedMoveGenerationPipeline(pathfinder, triangleGenerator);
+		LineGenerationPipeline advancedPipe = new AdvancedLineGenerationPipeline(pathfinder, triangleGenerator);
 		moveGenerationPipes.add(advancedPipe);
 		
 		minimumLineSegmentDistance = 25;
@@ -77,6 +77,8 @@ public class GraphicalFacade {
 	}
 	
 	public void createFreshPosition(int numberOfSprouts) {
+		if (numberOfSprouts < 0) numberOfSprouts = 0;
+		
 		double cx = 320;
 		double cy = 240;
 		//double radius = 80 + numberOfSprouts * 12;
@@ -88,10 +90,10 @@ public class GraphicalFacade {
 		position = builder.createSproutsCircle(numberOfSprouts, x, y, radius).build();
 	}
 
-	public MovePathResult generateMove(String rawMove) {
-		for (MoveGenerationPipeline pipe : moveGenerationPipes) {
+	public LinePathResult generateMove(String rawMove) {
+		for (LineGenerationPipeline pipe : moveGenerationPipes) {
 			try {
-				MovePathResult result = pipe.process(rawMove, position);
+				LinePathResult result = pipe.process(rawMove, position);
 				return result;
 			} catch (MoveException | MoveNotationException e) {
 				//System.out.printf("%s\n", e.getMessage());
@@ -102,7 +104,7 @@ public class GraphicalFacade {
 	}
 	
 	public String executeMove(String rawMove) {
-		MovePathResult result = generateMove(rawMove);
+		LinePathResult result = generateMove(rawMove);
 		
 		IdMove actualMove = position.update(result.line);
 		return actualMove.toString();

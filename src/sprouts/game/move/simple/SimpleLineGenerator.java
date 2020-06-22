@@ -14,8 +14,8 @@ import sprouts.game.model.Vertex;
 import sprouts.game.move.MoveException;
 import sprouts.game.move.Move;
 import sprouts.game.move.pathfinder.PathFinder;
-import sprouts.game.move.pipe.MovePathGenerator;
-import sprouts.game.move.pipe.MovePathResult;
+import sprouts.game.move.pipe.LineGenerator;
+import sprouts.game.move.pipe.LinePathResult;
 import sprouts.game.move.triangles.Triangle;
 import sprouts.game.move.triangles.TriangleGenerator;
 import sprouts.game.util.MathUtil;
@@ -25,7 +25,7 @@ import sprouts.game.util.MathUtil;
  * @author Rasmus Møller Larsen, s184190
  *
  */
-public class SimpleMoveGenerator implements MovePathGenerator {
+public class SimpleLineGenerator implements LineGenerator {
 	
 	private BiFunction<Vertex, Vertex, Double> costFunction;
 
@@ -34,7 +34,7 @@ public class SimpleMoveGenerator implements MovePathGenerator {
 	
 	private String name;
 	
-	public SimpleMoveGenerator(PathFinder pathFinder, TriangleGenerator triangleGenerator) {
+	public SimpleLineGenerator(PathFinder pathFinder, TriangleGenerator triangleGenerator) {
 		this.pathFinder = pathFinder;
 		this.triangleGenerator = triangleGenerator;
 		
@@ -44,8 +44,8 @@ public class SimpleMoveGenerator implements MovePathGenerator {
 	}
 	
 	@Override
-	public MovePathResult generate(Move move, Position position) throws MoveException {
-		MovePathResult result = new MovePathResult();
+	public LinePathResult generate(Move move, Position position) throws MoveException {
+		LinePathResult result = new LinePathResult();
 		result.generatorType = name;
 		
 		Sprout from = move.from;
@@ -75,7 +75,7 @@ public class SimpleMoveGenerator implements MovePathGenerator {
 		
 		if (same) line.add(move.to.position);
 		
-		SimpleMoveGeneratorData data = new SimpleMoveGeneratorData();
+		SimpleLineGeneratorData data = new SimpleLineGeneratorData();
 		data.twoBoundaryGraph = graph;
 		data.triangles = triangles;
 

@@ -14,27 +14,27 @@ import sprouts.game.move.MoveNotationException;
  * 
  * @see MoveNotationParser
  * @see MovePreprocessor
- * @see MovePathGenerator
+ * @see LineGenerator
  * 
  * @author Rasmus Møller Larsen, s184190
  *
  */
-public class MoveGenerationPipeline {
+public class LineGenerationPipeline {
 	
 	private MoveNotationParser parser;
 	private MovePreprocessor preprocessor;
-	private MovePathGenerator generator;
+	private LineGenerator generator;
 	
-	public MoveGenerationPipeline(MoveNotationParser parser, MovePreprocessor preprocessor, MovePathGenerator generator) {
+	public LineGenerationPipeline(MoveNotationParser parser, MovePreprocessor preprocessor, LineGenerator generator) {
 		this.parser = parser;
 		this.preprocessor = preprocessor;
 		this.generator = generator;
 	}
 	
-	public MovePathResult process(String rawMove, Position position) throws MoveNotationException, MoveException {
+	public LinePathResult process(String rawMove, Position position) throws MoveNotationException, MoveException {
 		IdMove idMove = parser.parse(rawMove);
 		Move move = preprocessor.process(idMove, position);
-		MovePathResult result = generator.generate(move, position);
+		LinePathResult result = generator.generate(move, position);
 		return result;
 	}
 }

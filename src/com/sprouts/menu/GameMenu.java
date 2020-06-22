@@ -34,7 +34,7 @@ import sprouts.game.model.Position;
 import sprouts.game.model.Sprout;
 import sprouts.game.model.Vertex;
 import sprouts.game.move.MovePipeLineException;
-import sprouts.game.move.pipe.MovePathResult;
+import sprouts.game.move.pipe.LinePathResult;
 
 public class GameMenu extends SproutsMenu {
 
@@ -205,7 +205,7 @@ public class GameMenu extends SproutsMenu {
 	
 	private void executeMove() {
 		try {
-			MovePathResult result = facade.generateMove(textField.getText());
+			LinePathResult result = facade.generateMove(textField.getText());
 			
 			if (result != null && result.line != null) {
 				String move = facade.executeLine(result.line);

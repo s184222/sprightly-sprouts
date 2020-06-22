@@ -22,10 +22,10 @@ import sprouts.game.model.LineSegment;
 import sprouts.game.model.Position;
 import sprouts.game.model.Region;
 import sprouts.game.model.Vertex;
-import sprouts.game.move.advanced.OneBoundaryMoveGeneratorData;
-import sprouts.game.move.advanced.TwoBoundaryMoveGeneratorData;
-import sprouts.game.move.pipe.MovePathResult;
-import sprouts.game.move.simple.SimpleMoveGeneratorData;
+import sprouts.game.move.advanced.OneBoundaryLineGeneratorData;
+import sprouts.game.move.advanced.TwoBoundaryLineGeneratorData;
+import sprouts.game.move.pipe.LinePathResult;
+import sprouts.game.move.simple.SimpleLineGeneratorData;
 import sprouts.game.move.triangles.Triangle;
 import sprouts.game.util.MathUtil;
 
@@ -68,7 +68,7 @@ public class DebugGameRenderer implements IKeyEventListener {
 		gameMenu.addKeyEventListener(this);
 	}
 	
-	public void onMoveExecuted(MovePathResult result) {
+	public void onMoveExecuted(LinePathResult result) {
 		previousMove = result.line;
 
 		triangles = null;
@@ -79,7 +79,7 @@ public class DebugGameRenderer implements IKeyEventListener {
 		
 		switch (result.generatorType) {
 		case "oneBoundary": {
-			OneBoundaryMoveGeneratorData data = (OneBoundaryMoveGeneratorData) result.customData;
+			OneBoundaryLineGeneratorData data = (OneBoundaryLineGeneratorData) result.customData;
 			
 			triangles = data.triangles;
 			oneBoundaryGraph = data.oneBoundaryGraph;
@@ -90,7 +90,7 @@ public class DebugGameRenderer implements IKeyEventListener {
 			break;
 		}
 		case "twoBoundary": {
-			TwoBoundaryMoveGeneratorData data = (TwoBoundaryMoveGeneratorData) result.customData;
+			TwoBoundaryLineGeneratorData data = (TwoBoundaryLineGeneratorData) result.customData;
 			
 			triangles = data.triangles;
 			twoBoundaryGraph = data.twoBoundaryGraph;
@@ -98,7 +98,7 @@ public class DebugGameRenderer implements IKeyEventListener {
 			break;
 		}
 		case "simple": {
-			SimpleMoveGeneratorData data = (SimpleMoveGeneratorData) result.customData;
+			SimpleLineGeneratorData data = (SimpleLineGeneratorData) result.customData;
 			
 			triangles = data.triangles;
 			twoBoundaryGraph = data.twoBoundaryGraph;
