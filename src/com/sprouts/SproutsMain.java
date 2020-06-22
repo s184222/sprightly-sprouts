@@ -212,14 +212,18 @@ public class SproutsMain {
 	}
 
 	private void onViewportChanged(int width, int height) {
-		targetFrameBuffer.setSize(width, height);
-		resolvedFrameBuffer.setSize(width, height);
-		postManager.setSize(width, height);
+		if (width > 0 && height > 0) {
+			// NOTE: width and height might be zero, when the
+			// window is minimized.
+			targetFrameBuffer.setSize(width, height);
+			resolvedFrameBuffer.setSize(width, height);
+			postManager.setSize(width, height);
 		
-		tessellator.setViewport(0.0f, 0.0f, width, height);
-		
-		objShader.enable();
-		objShader.setProjMat(new Mat4().toPerspective(OBJ_FOV, (float)width / height, 0.01f, 100.0f));
+			tessellator.setViewport(0.0f, 0.0f, width, height);
+			
+			objShader.enable();
+			objShader.setProjMat(new Mat4().toPerspective(OBJ_FOV, (float)width / height, 0.01f, 100.0f));
+		}
 	}
 	
 	private void loop() {
