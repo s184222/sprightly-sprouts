@@ -44,14 +44,13 @@ public class AIGameMenu extends GameMenu {
 	@Override
 	protected void onMoveExecuted(String move) {
 		if (!facade.isGameOver()) {
-			aiFacade.makeMove(move);
-			
-			IdMove aiMove = aiPlayer.getMove(aiFacade.getPosition());
-	
 			try {
+				aiFacade.makeMove(move);
+				IdMove aiMove = aiPlayer.getMove(aiFacade.getPosition());
+
 				facade.executeMove(aiMove.toString());
 				aiFacade.makeMove(aiMove.toString());
-			} catch (MovePipeLineException e) {
+			} catch (Exception e) {
 				main.setMenu(new GameOverSproutsMenu(main, "You beat the computer!"));
 			}
 

@@ -320,8 +320,12 @@ public class GameMenu extends SproutsMenu {
 			
 			float tx = pos.x - textBounds.width  * 0.5f - textBounds.x;
 			float ty = pos.y - textBounds.height * 0.5f - textBounds.y;
+			float bx = tx + textBounds.x;
+			float by = ty + textBounds.y;
 			
-			tessellator.setColor(VertexColor.BLACK);
+			tessellator.setColor(VertexColor.BLACK.withAlpha(128));
+			tessellator.drawQuad(bx, by, bx + textBounds.width, by + textBounds.height);
+			tessellator.setColor(VertexColor.WHITE);
 			font.drawString(tessellator, idText, tx, ty);
 		}
 	}
