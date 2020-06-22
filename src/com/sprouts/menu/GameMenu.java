@@ -314,7 +314,7 @@ public class GameMenu extends SproutsMenu {
 		tessellator.drawQuad(x0, y0, x1, y1);
 		tessellator.setTextureRegion(null);
 		
-		if (mousePos.x >= x0 && mousePos.y >= y0 && mousePos.x < x1 && mousePos.y < y1) {
+		if (textField.isFocused() || mousePos.x >= x0 && mousePos.y >= y0 && mousePos.x < x1 && mousePos.y < y1) {
 			String idText = Integer.toString(sprout.id);
 			TextBounds textBounds = font.getTextBounds(idText);
 			
