@@ -77,8 +77,6 @@ public class GraphicalFacade {
 	}
 	
 	public void createFreshPosition(int numberOfSprouts) {
-		if (numberOfSprouts < 0) numberOfSprouts = 0;
-		
 		double cx = 320;
 		double cy = 240;
 		//double radius = 80 + numberOfSprouts * 12;

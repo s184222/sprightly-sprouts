@@ -22,16 +22,12 @@ public class StressTest {
 
 			Player ai = new RandomPlayer(i);
 			
-			System.out.printf("===================\n");
-			System.out.printf("  iteration: %d\n", i);
-			System.out.printf("===================\n");
+			System.out.printf("iteration: %d\n", i);
 
 			while (!g.isGameOver()) {
 				IdMove aiMove = ai.getMove(a.getPosition());
 				if (aiMove == null) break;
 
-				System.out.printf("ai: %s\n", aiMove.toString());
-				
 				try {
 					String result = g.executeMove(aiMove.toString());
 					if (result == null) break;

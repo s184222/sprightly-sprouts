@@ -473,18 +473,14 @@ public class Test extends TestCase {
 		GraphicalFacade facade = new GraphicalFacade();
 		facade.createFreshPosition(8, 320, 240, 300);
 		
-		facade.executeMove("1<,1<,[2,3,4,5,6,7,8]");
-
-		facade.executeMove("1<,9<,[2]!");
+		facade.executeMove("1<,1<,[2]");
 	}
 	
 	public void test17() {
 		GraphicalFacade facade = new GraphicalFacade();
 		facade.createFreshPosition(8, 320, 240, 300);
 		
-		facade.executeMove("1<,1<,[2,3,4,5,6,7,8]");
-
-		facade.executeMove("1<,9<,[]!");
+		facade.executeMove("1<,1<,[2,3,4]");
 	}
 	
 	public void test18() {
