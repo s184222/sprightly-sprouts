@@ -37,7 +37,7 @@ public class SproutsMain3 {
 	private static final int WINDOW_HEIGHT = 500;
 
 	private static final float PI2 = (float)(2.0 * Math.PI);
-	private static final float OBJ_FOV = 70.0f * PI2 / 360.0f;
+	private static final float OBJ_FOV = 40.0f * PI2 / 360.0f;
 	private static final int NUM_SPROUTS = 400;
 	
 	private final Display display;
@@ -46,6 +46,7 @@ public class SproutsMain3 {
 	
 	private ObjShader objShader;
 	private ObjData groundObj;
+	private ObjData grass;
 	private float groundRot;
 	private List<ObjData> sprouts;
 	
@@ -107,6 +108,12 @@ public class SproutsMain3 {
 		groundObj = ObjLoader.loadObj("/models/ground.obj");
 		groundObj.initBuffers(objShader);
 		groundObj.setTexture(TextureLoader.loadTexture("/textures/groundTexture.png"));
+		
+		grass = ObjLoader.loadObj("/models/grass.obj");
+		grass.initBuffers(objShader);
+		grass.setTexture(TextureLoader.loadTexture("/textures/grassTexture.png"));
+		
+		
 	}
 	
 	private void init() {
@@ -166,7 +173,7 @@ public class SproutsMain3 {
 		Mat4 viewMat = new Mat4();
 		Mat4 modlMat = new Mat4();
 
-		viewMat.translate(0f, 0f, -38.0f);
+		viewMat.translate(0f, -16.0f, -25.0f);
 		viewMat.rotateX(groundRot);
 
 		objShader.setViewMat(viewMat);
@@ -175,7 +182,7 @@ public class SproutsMain3 {
 		groundObj.drawBuffer();
 		
 		for (int i = 0; i < NUM_SPROUTS; i++) {
-			float dr = (groundRot + radOffsetX[i] + 0.75f * PI2 + 0.5f * OBJ_FOV) % PI2;
+			float dr = (groundRot + radOffsetX[i] + 0.87f * PI2 + 0.5f * OBJ_FOV) % PI2;
 			if (dr < OBJ_FOV) {
 				modlMat.toIdentity();
 				modlMat.rotateX(radOffsetX[i]);
@@ -185,6 +192,9 @@ public class SproutsMain3 {
 				objShader.setModlMat(modlMat);
 				
 				sprouts.get(i % 4).drawBuffer();
+				//if(i%2 == 0) {
+					grass.drawBuffer();					
+				//}
 			}
 		}
 	}
