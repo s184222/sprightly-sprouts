@@ -107,8 +107,6 @@ public class ObjLoader {
 
 		buf.close();
 		
-		System.out.println(vPositions.get(0).x + ", " + vPositions.get(0).y + ", " + vPositions.get(0).z);
-		
 		vPositions.clear();
 		vTexCoords.clear();
 		vNormals.clear();
