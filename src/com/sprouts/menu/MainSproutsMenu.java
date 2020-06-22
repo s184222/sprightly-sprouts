@@ -14,7 +14,6 @@ public class MainSproutsMenu extends SproutsMenu {
 
 	private final ButtonComposition playFriendButton;
 	private final ButtonComposition playAIButton;
-	private final ButtonComposition extrasButton;
 	private final ButtonComposition quitButton;
 	
 	public MainSproutsMenu(SproutsMain main) {
@@ -22,7 +21,6 @@ public class MainSproutsMenu extends SproutsMenu {
 
 		playFriendButton = new ButtonComposition("Play Game");
 		playAIButton = new ButtonComposition("Play AI");
-		extrasButton = new ButtonComposition("Extras");
 		quitButton = new ButtonComposition("Quit");
 		
 		uiLayout();
@@ -40,14 +38,11 @@ public class MainSproutsMenu extends SproutsMenu {
 		playFriendButton.setTextAlignment(TextAlignment.CENTER);
 		playAIButton.setPadding(buttonPadding);
 		playAIButton.setTextAlignment(TextAlignment.CENTER);
-		extrasButton.setPadding(buttonPadding);
-		extrasButton.setTextAlignment(TextAlignment.CENTER);
 		quitButton.setPadding(buttonPadding);
 		quitButton.setTextAlignment(TextAlignment.CENTER);
 
 		buttonPanel.add(wrapOverlay(playFriendButton));
 		buttonPanel.add(wrapOverlay(playAIButton));
-		buttonPanel.add(wrapOverlay(extrasButton));
 		buttonPanel.add(wrapOverlay(quitButton));
 	
 		spec.setHorizontalFill(CompositionFill.FILL_MINIMUM);
@@ -65,9 +60,6 @@ public class MainSproutsMenu extends SproutsMenu {
 		
 		playAIButton.addButtonListener((source) -> {
 			main.setMenu(new PlayChoosingSproutsMenu(main, this, new AIGameMenu(main)));
-		});
-
-		extrasButton.addButtonListener((source) -> {
 		});
 
 		quitButton.addButtonListener((source) -> {
