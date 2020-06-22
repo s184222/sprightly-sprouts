@@ -8,7 +8,7 @@ import sprouts.game.model.Vertex;
 
 /**
  * 
- * Auto-generating Unit test code of the moves which have been drawn or request.
+ * Auto-generating Unit test code of the moves which have been drawn or requested.
  * 
  * @author Rasmus Møller Larsen, s184190
  *

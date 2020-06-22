@@ -17,12 +17,12 @@ import sprouts.game.move.triangles.TriangleGenerator;
  */
 public class AdvancedLineGenerator implements LineGenerator {
 	
-	private LineGenerator oneBoundaryGenerator;
 	private LineGenerator twoBoundaryGenerator;
+	private LineGenerator oneBoundaryGenerator;
 	
 	public AdvancedLineGenerator(PathFinder pathfinder, TriangleGenerator triangleGenerator) {
-		oneBoundaryGenerator = new TwoBoundaryLineGenerator(pathfinder, triangleGenerator);
-		twoBoundaryGenerator = new OneBoundaryLineGenerator(pathfinder, triangleGenerator);
+		twoBoundaryGenerator = new TwoBoundaryLineGenerator(pathfinder, triangleGenerator);
+		oneBoundaryGenerator = new OneBoundaryLineGenerator(pathfinder, triangleGenerator);
 	}
 
 	@Override
@@ -30,9 +30,9 @@ public class AdvancedLineGenerator implements LineGenerator {
 		LinePathResult result = null;
 		
 		if (move.region.isInSameBoundary(move.from, move.to)) {
-			result = twoBoundaryGenerator.generate(move, position);
-		} else {
 			result = oneBoundaryGenerator.generate(move, position);
+		} else {
+			result = twoBoundaryGenerator.generate(move, position);
 		}
 		
 		return result;

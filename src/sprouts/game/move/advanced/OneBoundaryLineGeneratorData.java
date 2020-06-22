@@ -14,5 +14,4 @@ public class OneBoundaryLineGeneratorData {
 	public List<Triangle> slither;
 	public List<Triangle> wrapper;
 	public List<Triangle> triangles;
-	public List<Triangle> condense;
 }

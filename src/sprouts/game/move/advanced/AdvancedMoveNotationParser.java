@@ -15,7 +15,7 @@ import sprouts.game.move.pipe.MoveNotationParser;
  * 3. if the sprouts are in the same boundary, which other sprouts should the line contain <br>
  * <br>
  * Advance move notation is given by the following format: 
- * 	"{fromId}{fromAscending},{toId},[{inner1}, {inner2}, ...]{inverted}"
+ * 	"{fromId}{fromAscending},{toId}{toAscending},[{inner1}, {inner2}, ...]{inverted}"
  * 
  * <br>
  * @see Region
