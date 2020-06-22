@@ -293,7 +293,7 @@ public class GameMenu extends SproutsMenu {
 	private void drawGameState(BatchedTessellator2D tessellator) {
 		Position position = facade.getPosition();
 		
-		tessellator.setColor(VertexColor.RED);
+		tessellator.setColor(VertexColor.LIME_GREEN);
 		for (Line line : position.getLines())
 			drawSproutLine(tessellator, line);
 		
