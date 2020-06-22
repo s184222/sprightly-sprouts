@@ -8,7 +8,6 @@ import sprouts.ai.AIFacade;
 import sprouts.ai.player.Player;
 import sprouts.ai.player.RandomPlayer;
 import sprouts.game.move.IdMove;
-import sprouts.game.move.MovePipeLineException;
 
 public class AIGameMenu extends GameMenu {
 
