@@ -369,4 +369,9 @@ public class GameMenu extends SproutsMenu {
 	protected Vertex viewToWorld(float vx, float vy) {
 		return new Vertex(vx - offsetX, vy - offsetY);
 	}
+	
+	@Override
+	public boolean isSimpleBackground() {
+		return true;
+	}
 }

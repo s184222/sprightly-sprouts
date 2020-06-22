@@ -74,9 +74,4 @@ public class MainSproutsMenu extends SproutsMenu {
 	@Override
 	public void drawBackground(BatchedTessellator2D tessellator) {
 	}
-	
-	@Override
-	public boolean isSimpleBackground() {
-		return false;
-	}
 }
