@@ -48,6 +48,8 @@ public class DebugGameRenderer implements IKeyEventListener {
 	private boolean shouldDrawEdgeIndices;
 	private boolean showLineOrientation;
 	
+	private boolean shouldDraw;
+	
 	private boolean shouldDrawPreviousMove;
 	private boolean shouldDrawTriangles;
 	private boolean shouldDrawOneGraph;
@@ -58,6 +60,8 @@ public class DebugGameRenderer implements IKeyEventListener {
 	
 	public DebugGameRenderer(GameMenu gameMenu) {
 		this.gameMenu = gameMenu;
+		
+		shouldDraw = false;
 		
 		shouldDrawEdgeIndices = false;
 		showLineOrientation = false;
@@ -118,25 +122,33 @@ public class DebugGameRenderer implements IKeyEventListener {
 	}
 	
 	public void drawBackground(BatchedTessellator2D tessellator) {
-		if (shouldDrawTriangles && triangles != null) {
-			Vertex mouseVertex = gameMenu.viewToWorld(gameMenu.mousePos);
+		if (shouldDraw) {
 			
-			for (Triangle triangle : triangles) {
-				VertexColor fillColor = VertexColor.LIGHT_GREEN;
+			if (shouldDrawTriangles) {
+				if (shouldDrawTriangles) {
+					if (triangles != null) {
+						Vertex mouseVertex = gameMenu.viewToWorld(gameMenu.mousePos);
+						
+						for (Triangle triangle : triangles) {
+							VertexColor fillColor = VertexColor.LIGHT_GREEN;
+							
+							if (LinMath.isPointInPolygon(mouseVertex, triangle.getCorners()))
+								fillColor = VertexColor.GREEN_YELLOW;
+							
+							tessellator.setColor(fillColor);
+							drawOutlinedTriangle(tessellator, triangle, fillColor, VertexColor.GREEN);
+						}
+					}
+				}
 				
-				if (LinMath.isPointInPolygon(mouseVertex, triangle.getCorners()))
-					fillColor = VertexColor.GREEN_YELLOW;
-				
-				tessellator.setColor(fillColor);
-				drawOutlinedTriangle(tessellator, triangle, fillColor, VertexColor.GREEN);
 			}
+			
+			if (shouldDrawOneGraph)
+				drawOneGraph(tessellator);
+			
+			if (shouldDrawTwoGraph)
+				drawTwoGraph(tessellator);
 		}
-		
-		if (shouldDrawOneGraph)
-			drawOneGraph(tessellator);
-		
-		if (shouldDrawTwoGraph)
-			drawTwoGraph(tessellator);
 	}
 	
 	public void drawForeground(ITessellator2D tessellator) {
@@ -182,18 +194,10 @@ public class DebugGameRenderer implements IKeyEventListener {
 	}
 	
 	private void drawOneGraph(BatchedTessellator2D tessellator) {
+		
+		/*
 		if (oneBoundaryGraph != null) {
-			tessellator.setColor(VertexColor.DARK_GREEN);
-			
-			for (Entry<Triangle, List<Triangle>> entry : oneBoundaryGraph.entrySet()) {
-				drawTriangleOutline(tessellator, entry.getKey());
-				
-				for (Triangle target : entry.getValue())
-					drawTriangleOutline(tessellator, target);
-			}
-			
-			/*
-			tessellator.setColor(VertexColor.BROWN);
+			tessellator.setColor(VertexColor.ORANGE);
 			
 			for (Entry<Triangle, List<Triangle>> entry : oneBoundaryGraph.entrySet()) {
 				Triangle source = entry.getKey();
@@ -205,18 +209,20 @@ public class DebugGameRenderer implements IKeyEventListener {
 					tessellator.drawLine(sourcePos, targetPos, CENTER_LINE_WIDTH);
 				}
 			}
-			*/
 		}
+		*/
 
 		if (shouldDrawSlither) {
 			if (slither != null) {
 				tessellator.setColor(VertexColor.ORANGE);
 				
 				for (Triangle triangle : slither)
-					drawTriangleOutline(tessellator, triangle);
+					drawTriangle(tessellator, triangle);
 				
 				tessellator.setColor(VertexColor.DARK_ORANGE);
-				drawTriangleCenterLines(tessellator, slither);
+				for (Triangle triangle : slither)
+					drawTriangleOutline(tessellator, triangle);
+
 			}
 		}
 		
@@ -233,30 +239,8 @@ public class DebugGameRenderer implements IKeyEventListener {
 				drawTriangleCenterLines(tessellator, wrapper);
 			}
 		}
-
-		if (shouldDrawSlither) {
-			if (slither != null) {
-				tessellator.setColor(VertexColor.WHITE);
-				for (int i = 0; i < slither.size() - 1; i++) {
-					Triangle t1 = slither.get(i);
-					
-					Vertex[] corners = t1.getCorners();
-					for (int j = 0; j < corners.length; j++) {
-						Vertex v0 = corners[j];
-						Vertex v1 = corners[MathUtil.wrap(j + 1, 3)];
-						
-						LineSegment s = new LineSegment(v0, v1);
-						
-						Vec2 c1 = gameMenu.worldToView(s.getMiddle());
-	
-						float width = 3;
-						tessellator.drawQuad(c1.x - width, c1.y - width, c1.x + width, c1.y + width);
-					}
-				}
-			}
-		}
 	}
-	
+
 	private void drawTwoGraph(BatchedTessellator2D tessellator) {
 		if (twoBoundaryGraph != null) {
 			tessellator.setColor(VertexColor.BROWN);
@@ -357,27 +341,46 @@ public class DebugGameRenderer implements IKeyEventListener {
 		}
 		
 		case GLFW.GLFW_KEY_F1: {
-			shouldDrawTwoGraph = !shouldDrawTwoGraph;
-			shouldDrawOneGraph = !shouldDrawOneGraph;
+			shouldDraw = !shouldDraw;
+			
+			if (!shouldDraw) {
+				shouldDrawTriangles = false;
+				shouldDrawTwoGraph = false;
+				shouldDrawOneGraph = false;
+				shouldDrawSlither = false;
+				shouldDrawWrapper = false;
+				shouldDrawPreviousMove = false;
+			}
+			
 			break;
 		}
-
+		
 		case GLFW.GLFW_KEY_F2: {
 			shouldDrawTriangles = !shouldDrawTriangles;
 			break;
 		}
-		
+
 		case GLFW.GLFW_KEY_F3: {
-			shouldDrawSlither = !shouldDrawSlither;
+			shouldDrawTwoGraph = !shouldDrawTwoGraph;
 			break;
 		}
 		
 		case GLFW.GLFW_KEY_F4: {
-			shouldDrawWrapper = !shouldDrawWrapper;
+			shouldDrawOneGraph = !shouldDrawOneGraph;
 			break;
 		}
 		
 		case GLFW.GLFW_KEY_F5: {
+			shouldDrawSlither = !shouldDrawSlither;
+			break;
+		}
+		
+		case GLFW.GLFW_KEY_F6: {
+			shouldDrawWrapper = !shouldDrawWrapper;
+			break;
+		}
+		
+		case GLFW.GLFW_KEY_F7: {
 			shouldDrawPreviousMove = !shouldDrawPreviousMove;
 			break;
 		}
