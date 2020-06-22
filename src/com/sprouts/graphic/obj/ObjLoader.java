@@ -1,16 +1,13 @@
 package com.sprouts.graphic.obj;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sprouts.graphic.buffer.VertexArray;
 import com.sprouts.graphic.buffer.VertexBuffer;
-import com.sprouts.graphic.obj.shader.BasicObjShader;
 import com.sprouts.graphic.tessellator.VertexAttribBuilder;
 import com.sprouts.math.Vec2;
 import com.sprouts.math.Vec3;
