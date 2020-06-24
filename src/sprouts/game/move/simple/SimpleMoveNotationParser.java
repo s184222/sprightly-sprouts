@@ -7,7 +7,6 @@ import sprouts.game.move.MoveNotationException;
 import sprouts.game.move.Regex;
 import sprouts.game.move.pipe.MoveNotationParser;
 
-
 /**
  * 
  * Simple move notation is given by the following format: "{fromId},{toId}"

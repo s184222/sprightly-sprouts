@@ -8,6 +8,12 @@ import java.util.function.Consumer;
 
 import com.sprouts.math.LinMath;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
+
 public class Edge {
 	
 	public Sprout origin;

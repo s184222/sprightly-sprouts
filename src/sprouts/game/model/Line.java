@@ -128,14 +128,6 @@ public class Line extends ArrayList<Vertex> {
 		return totalDistance;
 	}
 	
-	/*
-	 * 
-	 * a --              b !--------------------- c --- d
-	 * a -!- b
-	 * 
-	 * 
-	 */
-	
 	public int addMiddlePoint() {
 		double totalDistance = getDistance();
 		double centerDistance = totalDistance / 2d;
@@ -200,7 +192,7 @@ public class Line extends ArrayList<Vertex> {
 			Vertex v2 = get(i + 1);
 
 			boolean intersection = LinMath.intersect(x1, y1, x2, y2, v1.x, v1.y, v2.x, v2.y);
-			if (intersection)	return true;
+			if (intersection) return true;
 		}
 		
 		return false;

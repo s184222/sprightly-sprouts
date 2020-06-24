@@ -1,5 +1,11 @@
 package sprouts.game.util;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
+
 public class MathUtil {
 	
 	public static double distance(double x1, double y1, double x2, double y2) {

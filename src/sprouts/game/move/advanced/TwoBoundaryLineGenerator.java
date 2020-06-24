@@ -23,6 +23,9 @@ import sprouts.game.move.triangles.TriangleGenerator;
 import sprouts.game.util.MathUtil;
 
 /**
+ * 
+ * Generates a line which satisfies the two boundary move.
+ * 
  * @author Rasmus Møller Larsen, s184190
  * 
  */
@@ -76,6 +79,16 @@ public class TwoBoundaryLineGenerator implements LineGenerator {
 		return result;
 	}
 	
+	/**
+	 * The only sprouts which the graph contains is the source sprout and target sprout.
+	 * 
+	 * @param source - position of the "from" sprout
+	 * @param target - position of the "to" sprout
+	 * @param triangles - the position triangulated
+	 * @param position - the current position
+	 * @return a mapping between a vertex and its neighbours
+	 * 
+	 */
 	private Map<Vertex, List<Vertex>> getVertexGraph(Vertex source, Vertex target, Edge sourceEdge, Edge targetEdge, List<Triangle> triangles, Position position) {
 		Map<Vertex, List<Vertex>> graph = new HashMap<>();
 		
@@ -89,12 +102,14 @@ public class TwoBoundaryLineGenerator implements LineGenerator {
 				
 				LineSegment segment = new LineSegment(v1, v2);
 				
+				// if a sprout is in a boundary, then it may have more sides
+				// so check that the we are on the correct side by comparing with sourceEdge and targetEdge.
 				if (isCorrectSide(segment, source, sourceEdge) || isCorrectSide(segment, target, targetEdge)) {
 					adjacent.add(segment.from);
 				}
 				
 				if (!position.isLineSegmentOnLine(segment.from, segment.to)) {
-					// due to doubleing precision, 2 linesegment which are reversed may yield different middle vertices, so linesegments are canonized:
+					// due to double precision, 2 linesegment which are reversed may yield different middle vertices, so linesegments are canonized:
 					// the same orientation of the linesegment is always selected.
 					if (shouldReverse(segment)) segment.reverse();
 					Vertex vertex = segment.getMiddle();
@@ -126,6 +141,9 @@ public class TwoBoundaryLineGenerator implements LineGenerator {
 		return graph;
 	}
 	
+	/*
+	 *  checks if a linesegment is canonized. 
+	 */
 	private boolean shouldReverse(LineSegment segment) {
 		if (segment.to.x < segment.from.x) {
 			return true;

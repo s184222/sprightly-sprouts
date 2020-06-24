@@ -1,5 +1,12 @@
 package sprouts.game;
 
+/**
+ * Simple Uid generator
+ * 
+ * @author Rasmus Møller Larsen
+ *
+ */
+
 public class UidGenerator {
 	
 	private int nextUid;

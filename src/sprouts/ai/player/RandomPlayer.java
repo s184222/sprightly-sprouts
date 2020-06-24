@@ -8,6 +8,12 @@ import sprouts.ai.AllMoveGenerator;
 import sprouts.ai.Position;
 import sprouts.game.move.IdMove;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen
+ *
+ */
+
 public class RandomPlayer implements Player {
 	
 	private Random random;

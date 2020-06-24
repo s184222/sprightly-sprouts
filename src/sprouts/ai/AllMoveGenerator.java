@@ -13,7 +13,7 @@ import sprouts.game.move.IdMove;
  * 
  * Generates all the possible moves given the AI position
  * 
- * @author Rasmus
+ * @author Rasmus Møller Larsen, s184190
  *
  */
 public class AllMoveGenerator {
@@ -91,7 +91,7 @@ public class AllMoveGenerator {
 							move.toId = id2;
 							move.toAscending = boundary.isAscending(k);
 							
-							if (isAmbigious(id1, sprout1Lives, id2, sprout2Lives, boundary)) {
+							if (isAmbiguous(id1, sprout1Lives, id2, sprout2Lives, boundary)) {
 								move.inner.addAll(inners);
 								move.inverted = true;
 							} else {
@@ -109,7 +109,11 @@ public class AllMoveGenerator {
 		return moves;
 	}
 	
-	private boolean isAmbigious(int id1, int id1Lives, int id2, int id2Lives, Boundary boundary) {
+	/*
+	 *  a boundary containing 2 sprouts is ambiguous, because it is not possible
+	 *  from ascending/descending to determine the side.
+	 */
+	private boolean isAmbiguous(int id1, int id1Lives, int id2, int id2Lives, Boundary boundary) {
 		if (boundary.size() != 2) return false;
 		if (id1Lives != 1) return false;
 		if (id2Lives != 1) return false;

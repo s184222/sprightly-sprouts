@@ -30,6 +30,9 @@ import sprouts.game.util.Assert;
 import sprouts.game.util.MathUtil;
 
 /**
+ * 
+ * Generates a line which satisfies the one boundary move.
+ * 
  * @author Rasmus Møller Larsen, s184190
  * 
  */
@@ -124,7 +127,11 @@ public class OneBoundaryLineGenerator implements LineGenerator {
 		
 		return graph;
 	}
-
+	
+	/*
+	 * Triangles are adjacent if they have a shared side and this side is not part of a line
+	 * already drawn in the given position.
+	 */
 	private boolean areTrianglesAdjacent(Triangle triangleA, Triangle triangleB, Position position) {
 		LineSegment segment = getSharedLineSegment(triangleA, triangleB);
 		if (segment == null) return false;
@@ -214,7 +221,6 @@ public class OneBoundaryLineGenerator implements LineGenerator {
 				at = index;
 				break;
 			}
-			
 		}
 		
 		return at;
@@ -238,6 +244,15 @@ public class OneBoundaryLineGenerator implements LineGenerator {
 		return candidates;
 	}
 	
+	/**
+	 * Moves around a line, starting from the triangle "start" and ending at triangle "end".
+	 * 
+	 * @param start - the triangle to start at
+	 * @param end - the triangle to end at
+	 * @param line - the line to move around
+	 * @param graph
+	 * @return the triangles visited during moving around the line.
+	 */
 	private List<Triangle> moveAround(Triangle start, Triangle end, Line line, Map<Triangle, List<Triangle>> graph) {
 		List<Triangle> path = new ArrayList<>();
 		path.add(start);
@@ -264,6 +279,16 @@ public class OneBoundaryLineGenerator implements LineGenerator {
 	}
 
 	
+	/**
+	 * Wraps around the boundary which contains the sprout specified.
+	 * 
+	 * @param sprout - which boundary the wrapping should occur
+	 * @param start - where the wrapping starts at
+	 * @param region
+	 * @param graph
+	 * @return triangles encountered during the wrapping
+	 */
+
 	private List<Triangle> wrap(Sprout sprout, Triangle start, Region region, Map<Triangle, List<Triangle>> graph) {
 		
 		Line mergedLine;

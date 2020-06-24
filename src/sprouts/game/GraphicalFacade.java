@@ -23,6 +23,12 @@ import sprouts.game.move.simple.SimpleLineGenerationPipeline;
 import sprouts.game.move.triangles.TriangleGenerator;
 import sprouts.game.util.MathUtil;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
+
 public class GraphicalFacade {
 	
 	private Position position;

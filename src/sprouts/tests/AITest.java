@@ -3,7 +3,13 @@ package sprouts.tests;
 import junit.framework.TestCase;
 import sprouts.ai.AIFacade;
 
-public class AbstractTest extends TestCase {
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
+
+public class AITest extends TestCase {
 	
 	public void test1() {
 		AIFacade facade = new AIFacade();

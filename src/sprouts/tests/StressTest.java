@@ -7,6 +7,12 @@ import sprouts.game.GraphicalFacade;
 import sprouts.game.move.IdMove;
 import sprouts.game.move.MovePipeLineException;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
+
 public class StressTest {
 	
 	public static void main(String[] args) {

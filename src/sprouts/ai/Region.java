@@ -2,6 +2,12 @@ package sprouts.ai;
 
 import java.util.LinkedList;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen
+ *
+ */
+
 @SuppressWarnings("serial")
 public class Region extends LinkedList<Boundary> {
 	

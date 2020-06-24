@@ -7,6 +7,12 @@ import com.sprouts.util.SproutUtil.SproutMoves;
 
 import sprouts.game.GraphicalFacade;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
+
 public class SimpleTest {
 	
 	public static void main(String[] args) throws IOException {

@@ -15,6 +15,12 @@ import sprouts.game.move.MoveException;
 import sprouts.game.move.pipe.MovePreprocessor;
 import sprouts.game.util.Assert;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
+
 public class AdvancedPreprocessor implements MovePreprocessor {
 	
 	public Move process(IdMove rawMove, Position position) throws MoveException {

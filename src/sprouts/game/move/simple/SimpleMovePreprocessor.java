@@ -12,6 +12,12 @@ import sprouts.game.move.Move;
 import sprouts.game.move.MoveException;
 import sprouts.game.move.pipe.MovePreprocessor;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
+
 public class SimpleMovePreprocessor implements MovePreprocessor {
 	
 	public Move process(IdMove idMove, Position position) throws MoveException {

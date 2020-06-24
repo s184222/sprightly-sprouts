@@ -11,6 +11,13 @@ import sprouts.game.UidGenerator;
 import sprouts.game.move.IdMove;
 import sprouts.game.util.Assert;
 
+/**
+ * Stores the current position of a game.
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
+
 public class Position {
 	
 	private List<Sprout> sprouts;
@@ -259,7 +266,7 @@ public class Position {
 		
 		List<Edge> transferredBoundaries = new ArrayList<>();
 		for (Edge inner : region.innerBoundaries) {
-			if (newRegionOuterSprouts.contains(inner.origin))	continue;
+			if (newRegionOuterSprouts.contains(inner.origin)) continue;
 			
 			if (LinMath.isPointInPolygon(inner.origin.position, newRegionOuterBoundary)) {
 				inner.setBoundaryRegion(newRegion);

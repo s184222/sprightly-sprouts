@@ -6,6 +6,12 @@ import java.util.List;
 
 import sprouts.game.util.MathUtil;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen
+ *
+ */
+
 @SuppressWarnings("serial")
 public class Boundary extends LinkedList<Integer> {
 	

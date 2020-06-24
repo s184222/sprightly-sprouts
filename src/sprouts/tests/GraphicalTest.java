@@ -5,7 +5,13 @@ import sprouts.game.GraphicalFacade;
 import sprouts.game.model.Line;
 import sprouts.game.model.Vertex;
 
-public class Test extends TestCase {
+/**
+ * 
+ * @author Rasmus Møller Larsen, s184190
+ *
+ */
+
+public class GraphicalTest extends TestCase {
 	
 	public void test1() {
 		GraphicalFacade facade = new GraphicalFacade();

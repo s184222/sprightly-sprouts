@@ -10,6 +10,12 @@ import sprouts.game.UidGenerator;
 import sprouts.game.move.IdMove;
 import sprouts.game.util.Assert;
 
+/**
+ * 
+ * @author Rasmus Møller Larsen
+ *
+ */
+
 public class Position {
 
 	private UidGenerator sproutIdGenerator;
@@ -75,6 +81,7 @@ public class Position {
 		sproutIdToLives.put(sprout2, s2Lives-1);
 	}
 
+	// uses the definition from the paper to execute 1-boundary and 2-boundaries move.
 	public void makeMove(IdMove move) {
 		int from = move.fromId;
 		int to = move.toId;

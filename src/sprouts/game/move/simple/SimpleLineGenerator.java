@@ -21,6 +21,8 @@ import sprouts.game.move.triangles.TriangleGenerator;
 import sprouts.game.util.MathUtil;
 
 /**
+ * Generates a line which satisfies the move.
+ * Assumes the move is a simple move.
  * 
  * @author Rasmus Møller Larsen, s184190
  *
@@ -111,7 +113,7 @@ public class SimpleLineGenerator implements LineGenerator {
 				LineSegment segment = new LineSegment(v0, v1);
 				
 				if (!position.isLineSegmentOnLine(segment.from, segment.to)) {
-					// due to doubleing precision, 2 linesegment which are reversed may yield different middle vertices, so linesegments are canonized
+					// due to double precision, 2 linesegment which are reversed may yield different middle vertices, so linesegments are canonized
 					// so select the same orientation of the linesegment.
 					if (shouldReverse(segment)) segment.reverse();
 					Vertex vertex = segment.getMiddle();

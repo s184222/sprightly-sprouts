@@ -16,7 +16,7 @@ public interface LineGenerator {
 	 * 
 	 * @param move - request
 	 * @param position - the current position of the game
-	 * @return the line and some optimal custom data
+	 * @return the line and some optional custom data
 	 * @throws MoveException if no line satisfies the move
 	 */
 	public LinePathResult generate(Move move, Position position) throws MoveException;
