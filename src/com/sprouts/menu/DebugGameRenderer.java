@@ -27,7 +27,6 @@ import sprouts.game.move.advanced.TwoBoundaryLineGeneratorData;
 import sprouts.game.move.pipe.LinePathResult;
 import sprouts.game.move.simple.SimpleLineGeneratorData;
 import sprouts.game.move.triangles.Triangle;
-import sprouts.game.util.MathUtil;
 
 public class DebugGameRenderer implements IKeyEventListener {
 
@@ -194,8 +193,6 @@ public class DebugGameRenderer implements IKeyEventListener {
 	}
 	
 	private void drawOneGraph(BatchedTessellator2D tessellator) {
-		
-		/*
 		if (oneBoundaryGraph != null) {
 			tessellator.setColor(VertexColor.ORANGE);
 			
@@ -210,7 +207,6 @@ public class DebugGameRenderer implements IKeyEventListener {
 				}
 			}
 		}
-		*/
 
 		if (shouldDrawSlither) {
 			if (slither != null) {
