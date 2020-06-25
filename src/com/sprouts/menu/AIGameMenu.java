@@ -3,11 +3,10 @@ package com.sprouts.menu;
 import java.util.List;
 
 import com.sprouts.SproutsMain;
-
-import sprouts.ai.AIFacade;
-import sprouts.ai.player.Player;
-import sprouts.ai.player.RandomPlayer;
-import sprouts.game.move.IdMove;
+import com.sprouts.ai.AIFacade;
+import com.sprouts.ai.player.Player;
+import com.sprouts.ai.player.RandomPlayer;
+import com.sprouts.game.move.IdMove;
 
 public class AIGameMenu extends GameMenu {
 

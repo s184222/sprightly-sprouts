@@ -2,7 +2,7 @@ package com.sprouts.math;
 
 import java.util.List;
 
-import sprouts.game.model.Vertex;
+import com.sprouts.game.model.Vertex;
 
 public final class LinMath {
 	

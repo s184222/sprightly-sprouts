@@ -21,20 +21,19 @@ import com.sprouts.composition.layout.LinearLayoutManager;
 import com.sprouts.composition.text.ButtonComposition;
 import com.sprouts.composition.text.LabelComposition;
 import com.sprouts.composition.text.editable.TextFieldComposition;
+import com.sprouts.game.GraphicalFacade;
+import com.sprouts.game.model.Line;
+import com.sprouts.game.model.Position;
+import com.sprouts.game.model.Sprout;
+import com.sprouts.game.model.Vertex;
+import com.sprouts.game.move.MovePipeLineException;
+import com.sprouts.game.move.pipe.LinePathResult;
 import com.sprouts.graphic.color.VertexColor;
 import com.sprouts.graphic.font.Font;
 import com.sprouts.graphic.font.TextBounds;
 import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
 import com.sprouts.graphic.tessellator2d.ITessellator2D;
 import com.sprouts.math.Vec2;
-
-import sprouts.game.GraphicalFacade;
-import sprouts.game.model.Line;
-import sprouts.game.model.Position;
-import sprouts.game.model.Sprout;
-import sprouts.game.model.Vertex;
-import sprouts.game.move.MovePipeLineException;
-import sprouts.game.move.pipe.LinePathResult;
 
 public class GameMenu extends SproutsMenu {
 

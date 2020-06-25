@@ -8,6 +8,17 @@ import org.lwjgl.glfw.GLFW;
 
 import com.sprouts.composition.event.IKeyEventListener;
 import com.sprouts.composition.event.KeyEvent;
+import com.sprouts.game.model.Edge;
+import com.sprouts.game.model.Line;
+import com.sprouts.game.model.LineSegment;
+import com.sprouts.game.model.Position;
+import com.sprouts.game.model.Region;
+import com.sprouts.game.model.Vertex;
+import com.sprouts.game.move.advanced.OneBoundaryLineGeneratorData;
+import com.sprouts.game.move.advanced.TwoBoundaryLineGeneratorData;
+import com.sprouts.game.move.pipe.LinePathResult;
+import com.sprouts.game.move.simple.SimpleLineGeneratorData;
+import com.sprouts.game.move.triangles.Triangle;
 import com.sprouts.graphic.color.VertexColor;
 import com.sprouts.graphic.font.TextBounds;
 import com.sprouts.graphic.tessellator2d.BatchedTessellator2D;
@@ -15,18 +26,6 @@ import com.sprouts.graphic.tessellator2d.ITessellator2D;
 import com.sprouts.graphic.tessellator2d.color.LinearColorGradient2D;
 import com.sprouts.math.LinMath;
 import com.sprouts.math.Vec2;
-
-import sprouts.game.model.Edge;
-import sprouts.game.model.Line;
-import sprouts.game.model.LineSegment;
-import sprouts.game.model.Position;
-import sprouts.game.model.Region;
-import sprouts.game.model.Vertex;
-import sprouts.game.move.advanced.OneBoundaryLineGeneratorData;
-import sprouts.game.move.advanced.TwoBoundaryLineGeneratorData;
-import sprouts.game.move.pipe.LinePathResult;
-import sprouts.game.move.simple.SimpleLineGeneratorData;
-import sprouts.game.move.triangles.Triangle;
 
 public class DebugGameRenderer implements IKeyEventListener {
 
